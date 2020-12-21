@@ -6,6 +6,7 @@ import model.Model;
 import model.entities.*;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,7 +20,16 @@ public class Controller
     }
 
     public Customer createCustomer(String login, String password){
+        Customer customer = Model.createCustomer(login, password);
+        return customer;
+    }
 
+    public void updateCustomer(BigInteger id, String firstName, String lastName, String password, String number, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+        Model.updateCustomer(id, firstName, lastName, password, number, addres, balance, servicesIds, ordersIds);
+    }
+
+    public void deleteCustomer(BigInteger id){
+        Model.deleteCustomer(id);
     }
 
     public Employee createEmployee(String login, String password){

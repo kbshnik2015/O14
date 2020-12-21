@@ -32,6 +32,51 @@ public class Model implements Observable
         return instance;
     }
 
+    public static Customer createCustomer(String firstName, String lastName, String login, String password, String number, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+    Customer customer = new Customer(firstName, lastName, login, password, number, addres, balance, servicesIds, ordersIds);
+    customers.add(customer);
+    return customer;
+}
+
+    public static Customer createCustomer(String login, String password){
+        Customer customer = new Customer(login, password);
+        customers.add(customer);
+        return customer;
+    }
+
+    public static void updateCustomer(BigInteger id, String firstName, String lastName, String password, String number, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+        for (Customer cust : customers)
+        {
+            if (cust.getId() == id)
+            {
+                if (firstName != null)
+                    cust.setFirstName(firstName);
+                if (lastName != null)
+                    cust.setLastName(lastName);
+                if (password != null)
+                    cust.setPassword(password);
+                if (number != null)
+                    cust.setNumber(number);
+                if (addres != null)
+                    cust.setAddres(addres);
+                if (balance >= 0)
+                    cust.setBalance(balance);
+                if (servicesIds != null)
+                    cust.setServicesIds(servicesIds);
+                if (ordersIds != null)
+                    cust.setOrdersIds(ordersIds);
+            }
+        }
+    }
+
+    public static void deleteCustomer(BigInteger id){
+        for (Customer cust : customers)
+        {
+            if (cust.getId() == id)
+                customers.remove(cust);
+        }
+    }
+
     public void subscribeEmployeeToWaitingForOrders(BigInteger employeeId){
 
     }
