@@ -30,10 +30,13 @@ public class Customer extends AbstractUser
         this.ordersIds = ordersIds;
     }
 
-    public Customer (String login, String password){
+    public Customer (String firstName, String lastName, String login, String password, String number, String addres){
+        super(firstName, lastName, login, password);
         this.setId(IdGenerator.generateNextId());
-        this.setLogin(login);
-        this.setPassword(password);
+        this.number = number;
+        this.addres = addres;
+        this.servicesIds = servicesIds;
+        this.ordersIds = ordersIds;
     }
 
 }

@@ -38,8 +38,8 @@ public class Model implements Observable
     return customer;
 }
 
-    public static Customer createCustomer(String login, String password){
-        Customer customer = new Customer(login, password);
+    public static Customer createCustomer(String firstName, String lastName, String login, String password, String number, String addres){
+        Customer customer = new Customer(firstName, lastName, login, password, number, addres);
         customers.add(customer);
         return customer;
     }

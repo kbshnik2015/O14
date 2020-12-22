@@ -19,9 +19,12 @@ public class Controller
 
     }
 
-    public Customer createCustomer(String login, String password){
-        Customer customer = Model.createCustomer(login, password);
-        return customer;
+    public Customer createCustomer(String firstName, String lastName, String login, String password, String number, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+        return Model.createCustomer( firstName, lastName, login, password, number, addres, balance,  servicesIds, ordersIds);
+    }
+
+    public Customer createCustomer(String firstName, String lastName, String login, String password, String number, String addres){
+        return Model.createCustomer( firstName, lastName, login, password, number, addres);
     }
 
     public void updateCustomer(BigInteger id, String firstName, String lastName, String password, String number, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
