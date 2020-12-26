@@ -8,22 +8,12 @@ import lombok.Data;
 public abstract class AbstractUser
 {
 
-    private BigInteger id;
+    protected String firstName;
 
-    private String firstName;
+    protected String lastName;
 
-    private String lastName;
+    protected String login;
 
-    //todo: unique
-    private String login;
-
-    private String password;
-
-    public AbstractUser (String firstName, String lastName, String login, String password){
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.login = login;
-        this.password = password;
-    }
+    protected String password;
 
 }

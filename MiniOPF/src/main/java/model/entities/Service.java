@@ -1,12 +1,10 @@
 package model.entities;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 
 import lombok.Data;
-import model.generators.IdGenerator;
-import model.statuses.ServiceStatus;
+import model.enums.ServiceStatus;
 
 @Data
 public class Service
@@ -16,15 +14,14 @@ public class Service
 
     private Date payDay;
 
-    private Specification spec;
+    private BigInteger specificationId;
 
-    private ServiceStatus servStatus;
+    private ServiceStatus serviceStatus;
 
-    public Service(Date payDay, Specification spec, ServiceStatus servStatus){
-        this.setId(IdGenerator.generateNextId());
+    public Service(Date payDay, BigInteger spec, ServiceStatus servStatus){
         this.payDay = payDay;
-        this.spec = spec;
-        this.servStatus = servStatus;
+        this.specificationId = spec;
+        this.serviceStatus = servStatus;
     }
 
 }

@@ -1,12 +1,10 @@
 package model.entities;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 
 import lombok.Data;
-import model.generators.IdGenerator;
-import model.statuses.OrderAim;
-import model.statuses.OrderStatus;
+import model.enums.OrderAim;
+import model.enums.OrderStatus;
 
 @Data
 public class Order
@@ -14,28 +12,26 @@ public class Order
 
     private BigInteger id;
 
-    private Customer customer;
+    private String customerLogin;
 
-    private Employee employee;
+    private String employeeLogin;
 
     private OrderAim orderAim;
 
     private OrderStatus orderStatus;
 
-    private Address address;
+    private String address;
 
-    public Order(Customer customer, Employee employee, OrderAim orderAim, OrderStatus orderStatus, Address address){
-        this.setId(IdGenerator.generateNextId());
-        this.customer = customer;
-        this.employee = employee;
+    public Order(String customerLogin, String employeeLogin, OrderAim orderAim, OrderStatus orderStatus, String address){
+        this.customerLogin = customerLogin;
+        this.employeeLogin = employeeLogin;
         this.orderAim = orderAim;
         this.orderStatus = orderStatus;
         this.address = address;
     }
 
-    public Order(Customer customer, OrderAim orderAim, OrderStatus orderStatus){
-        this.setId(IdGenerator.generateNextId());
-        this.customer = customer;
+    public Order(String customerLogin, OrderAim orderAim, OrderStatus orderStatus){
+        this.customerLogin = customerLogin;
         this.orderAim = orderAim;
         this.orderStatus = orderStatus;
     }

@@ -1,4 +1,4 @@
-package model.statuses;
+package model.enums;
 
 public enum EmployeeStatus
 {

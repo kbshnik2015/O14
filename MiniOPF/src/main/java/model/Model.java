@@ -20,26 +20,28 @@ public class Model
 
     private static Model instance; //Singleton
 
-    @Getter
-    private static HashMap<BigInteger,Customer> customers;
+    private BigInteger nextId = BigInteger.valueOf(1);
 
     @Getter
-    private static HashMap<BigInteger,Employee> employees;
+    private HashMap<String,Customer> customers;
 
     @Getter
-    private static HashMap<BigInteger,Specification> specifications;
+    private HashMap<String,Employee> employees;
 
     @Getter
-    private static ArrayList<BigInteger> employeesWaitingForOrders;
+    private HashMap<BigInteger,Specification> specifications;
 
     @Getter
-    private static HashMap<BigInteger,Order> orders; //Этого поля нет на диаграмме
+    private ArrayList<BigInteger> employeesWaitingForOrders;
 
     @Getter
-    private static HashMap<BigInteger,District> districts; //Этого поля нет на диаграмме
+    private HashMap<BigInteger,Order> orders;
 
     @Getter
-    private static HashMap<BigInteger,Service> services; //Этого поля нет на диаграмме
+    private HashMap<BigInteger,District> districts;
+
+    @Getter
+    private HashMap<BigInteger,Service> services;
 
 
 
@@ -50,85 +52,115 @@ public class Model
         return instance;
     }
 
+    public BigInteger generateNextId(){
+        return nextId.add(BigInteger.valueOf(1));
+    }
 
-    public static Customer createCustomer(Customer customer) {
-        customers.put(customer.getId(), customer);
+
+    public Customer createCustomer(Customer customer) {
+        customers.put(customer.getLogin(), customer);
         return customer;
     }
 
-    public static void updateCustomer(Customer customer){
-        customers.put(customer.getId(), customer);
+    public void updateCustomer(Customer customer){
+        customers.put(customer.getLogin(), customer);
     }
 
-    public static void deleteCustomer(Customer customer){
-        customers.remove(customer.getId());
+    public void deleteCustomer(Customer customer){
+        customers.remove(customer.getLogin());
     }
 
-    public static Employee createEmployee(Employee employee) {
-        employees.put(employee.getId(), employee);
+    public Customer getCustomerByLogin(String login) {
+        return customers.get(login);
+    }
+
+    public Employee createEmployee(Employee employee) {
+        employees.put(employee.getLogin(), employee);
         return employee;
     }
 
-    public static void updateEmployee(Employee employee){
-        employees.put(employee.getId(), employee);
+    public void updateEmployee(Employee employee){
+        employees.put(employee.getLogin(), employee);
     }
 
-    public static void deleteEmployee(Employee employee){
-        employees.remove(employee.getId());
+    public void deleteEmployee(Employee employee){
+        employees.remove(employee.getLogin());
     }
 
+    public Employee getEmployeeByLogin(String login) {
+        return employees.get(login);
+    }
 
-
-    public static District createDistrict(District district){
+    public District createDistrict(District district){
+        district.setId(generateNextId());
         districts.put(district.getId(), district);
         return district;
     }
 
-    public static void updateDistrict(District district){
+    public void updateDistrict(District district){
         districts.put(district.getId(), district);
     }
 
-    public static void deleteDistrict(District district){
+    public void deleteDistrict(District district){
         districts.remove(district.getId());
     }
 
-    public static Specification createSpecification(Specification specification){
-        specifications.put(specification.getSpecificationId(), specification);
+    public District getDistrictById(BigInteger Id) {
+        return districts.get(Id);
+    }
+
+    public Specification createSpecification(Specification specification){
+        specification.setId(generateNextId());
+        specifications.put(specification.getId(), specification);
         return specification;
     }
 
-    public static void updateSpecification(Specification specification){
-        specifications.put(specification.getSpecificationId(), specification);
+    public void updateSpecification(Specification specification){
+        specifications.put(specification.getId(), specification);
     }
 
-    public static void deleteSpecification(Specification specification){
-        specifications.remove(specification.getSpecificationId());
+    public void deleteSpecification(Specification specification){
+        specifications.remove(specification.getId());
     }
 
-    public static Service createService(Service service){
+    public Specification getSpecificationById(BigInteger Id) {
+        return specifications.get(Id);
+    }
+
+    public Service createService(Service service){
+        service.setId(generateNextId());
         services.put(service.getId(), service);
         return service;
     }
 
-    public static void updateService(Service service){
+    public void updateService(Service service){
         services.put(service.getId(), service);
     }
 
-    public static void deleteService(Service service){
+    public void deleteService(Service service){
         services.remove(service.getId());
     }
 
-    public static Order createOrder(Order order){
+    public Service getServiceById(BigInteger Id) {
+        return services.get(Id);
+    }
+
+    public Order createOrder(Order order){
+        order.setId(generateNextId());
         orders.put(order.getId(), order);
         return order;
     }
 
-    public static void updateOrder(Order order){
+    public void updateOrder(Order order){
         orders.put(order.getId(), order);
     }
 
-    public static void deleteOrder(Order order){
+    public void deleteOrder(Order order){
         orders.remove(order.getId());
+    }
+
+    public Order getOrderById(BigInteger Id) {
+        return orders.get(Id);
     }
 
     public void subscribeEmployeeToWaitingForOrders(BigInteger employeeId){
