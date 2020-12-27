@@ -10,8 +10,6 @@ import model.enums.EmployeeStatus;
 public class Employee extends AbstractUser
 {
 
-    //private ArrayList<BigInteger> ordersIds;
-
     private EmployeeStatus employeeStatus;
 
     public Employee (String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus){
