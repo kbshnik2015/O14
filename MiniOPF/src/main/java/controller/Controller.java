@@ -1,6 +1,7 @@
 package controller;
 
 
+import controller.exceptions.IllegalTransitionException;
 import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
 import controller.exceptions.IllegalLoginException;
@@ -41,10 +42,6 @@ public class Controller
             }
         }
         return result;
-    }
-
-    public AbstractUser login(String login, String password){
-        return null;
     }
 
     public Customer createCustomer(String firstName, String lastName, String login, String password, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
@@ -256,41 +253,80 @@ public class Controller
         return model.getOrderById(id);
     }
 
-    public void startOrder(BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void suspendOrder(BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void restoreOrder(BigInteger employeeId, BigInteger orderId) {
-
-    }
-
-    public void cancelOrder (BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void completeOrder (BigInteger employeeId, BigInteger orderId)
+    public AbstractUser login(String login, String password) throws IllegalLoginException
     {
-
+        AbstractUser user;
+        if((user = model.getCustomerByLogin(login))==null)
+            user = model.getEmployeeByLogin(login);
+        if((user!=null)&&(user.getPassword().equals(password))){
+            return user;
+        }
+        else
+            throw new IllegalLoginException();
     }
 
-    public void topUpBalance(Float amountOfMoney){
-
-    }
-
-    public void topDownBalance(Float amountOfMoney)
+    public void startOrder( BigInteger orderId) throws IllegalTransitionException
     {
-
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.ENTERING)
+            order.setOrderStatus(OrderStatus.IN_PROGRESS);
+        else
+            throw new IllegalTransitionException();
     }
 
-    public ArrayList<Service> getCustomerConnectedServices(BigInteger customerId){
+    public void suspendOrder( BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.IN_PROGRESS)
+            order.setOrderStatus(OrderStatus.SUSPENDED);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void restoreOrder(BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.SUSPENDED)
+            order.setOrderStatus(OrderStatus.IN_PROGRESS);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void cancelOrder (BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()!=OrderStatus.COMPLETED)
+            order.setOrderStatus(OrderStatus.CANCELLED);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void completeOrder (BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()!=OrderStatus.CANCELLED)
+            order.setOrderStatus(OrderStatus.COMPLETED);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void topUpBalance(Float amountOfMoney, String login)
+    {
+        Customer customer = getCustomerByLogin(login);
+        customer.setBalance(customer.getBalance()+amountOfMoney);
+    }
+
+    public void topDownBalance(Float amountOfMoney, String login)
+    {
+        Customer customer = getCustomerByLogin(login);
+        customer.setBalance(customer.getBalance()-amountOfMoney);
+    }
+
+    public ArrayList<Service> getCustomerConnectedServices(String login){
         return null;
     }
 
-    public ArrayList<Service> getCustomerNotFinishedOrders(BigInteger customerId){
+    public ArrayList<Service> getCustomerNotFinishedOrders(String login){
         return null;
     }
 
