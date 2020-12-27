@@ -16,6 +16,7 @@ import model.enums.ServiceStatus;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Data
 public class Controller
@@ -45,7 +46,7 @@ public class Controller
     }
 
     public Customer createCustomer(String firstName, String lastName, String login, String password, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
-        Customer customer = new Customer(firstName, lastName, login, password, addres, balance, servicesIds, ordersIds);
+        Customer customer = new Customer(firstName, lastName, login, password, addres, balance);
         if(!isLoginExisted(customer))
         {
             return model.createCustomer(customer);
@@ -55,7 +56,7 @@ public class Controller
         }
     }
 
-    public void updateCustomer(String firstName, String lastName, String login, String password, String address, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+    public void updateCustomer(String firstName, String lastName, String login, String password, String address, float balance){
         if (model.getCustomers().containsKey(login))
         {
             Customer customer = model.getCustomerByLogin(login);
@@ -69,10 +70,7 @@ public class Controller
                 customer.setAddress(address);
             if(balance >= 0)
                 customer.setBalance(balance);
-            if(servicesIds != null)
-                customer.setServicesIds(servicesIds);
-            if(ordersIds != null)
-                customer.setOrdersIds(ordersIds);
+
             model.updateCustomer(customer);
         }
         else {
@@ -89,7 +87,7 @@ public class Controller
     }
 
     public Employee createEmployee(String firstName, String lastName, String login, String password, ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus){
-        Employee employee = new Employee(firstName, lastName,login,password,ordersIds, employeeStatus);
+        Employee employee = new Employee(firstName, lastName,login,password, employeeStatus);
         if(!isLoginExisted(employee))
         {
             return model.createEmployee(employee);
@@ -109,8 +107,6 @@ public class Controller
                 employee.setLastName(lastName);
             if(password != null)
                 employee.setPassword(password);
-            if(ordersIds != null)
-                employee.setOrdersIds(ordersIds);
             if(employeeStatus != null)
                 employee.setEmployeeStatus(employeeStatus);
             model.updateEmployee(employee);
@@ -189,8 +185,8 @@ public class Controller
         return model.getSpecificationById(id);
     }
 
-    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus){
-        Service service = new Service(payDay, specificationId, servStatus);
+    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus, String customerLogin){
+        Service service = new Service(payDay, specificationId, servStatus, customerLogin);
         return model.createService(service);
     }
 
@@ -323,22 +319,28 @@ public class Controller
     }
 
     public ArrayList<Service> getCustomerConnectedServices(String login){
-        return null;
+        ArrayList<Service> connectedServices = (ArrayList<Service>) model.getCustomerServices(login).stream()
+                .filter(x->x.getServiceStatus()==ServiceStatus.ACTIVE)
+                .collect(Collectors.toList());
+        return connectedServices;
     }
 
-    public ArrayList<Service> getCustomerNotFinishedOrders(String login){
-        return null;
+    public ArrayList<Order> getCustomerNotFinishedOrders(String login){
+        ArrayList<Order> notFinishedOrder = (ArrayList<Order>) model.getCustomerOrders(login).stream()
+                .filter(x->x.getOrderStatus()!=OrderStatus.COMPLETED)
+                .collect(Collectors.toList());
+        return notFinishedOrder;
     }
 
     public Order createNewOrder(String customerLogin, BigInteger specId, boolean isForced){
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.NEW, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
 
-        Service service = new Service(new Date(), specId, isForced? (ServiceStatus.ACTIVE) : (ServiceStatus.SUSPENDED));
+
+        Service service = new Service(new Date(), specId, isForced? (ServiceStatus.ACTIVE) : (ServiceStatus.SUSPENDED), customerLogin);
         model.createService(service);
-        customer.getServicesIds().add(service.getId());
+
 
         return order;
     }
@@ -347,7 +349,6 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.SUSPENDED, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
 
         if(isForced)
         {
@@ -361,7 +362,7 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.RESTORE, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
+
 
         if(isForced && ((model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.SUSPENDED) || (model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.DISCONNECTED)))))
         {
@@ -375,7 +376,7 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.DISCONNECT, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
+
 
         if(isForced)
         {
@@ -391,12 +392,11 @@ public class Controller
         for (Employee emp : model.getEmployees().values()) {
             if (emp.getEmployeeStatus().equals(EmployeeStatus.ON_VACATION))
             {
-                for (int i = 0; i < emp.getOrdersIds().size(); i++){
-                    orders.add(model.getOrders().get(emp.getOrdersIds().get(i)));
+                for (int i = 0; i < model.getEmployeeOrders(emp.getLogin()).size(); i++){
+                    orders.add( model.getEmployeeOrders(emp.getLogin()).get(i));
                 }
             }
         }
-
         return orders;
     }
 

@@ -1,8 +1,8 @@
 package model;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 import lombok.Data;
@@ -161,6 +161,30 @@ public class Model
 
     public Order getOrderById(BigInteger Id) {
         return orders.get(Id);
+    }
+
+    public List<Order> getCustomerOrders(String login){
+        List<Order> list = orders.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(e -> e.getCustomerLogin().equals(login))
+                .collect(Collectors.toList());
+         return list;
+    }
+
+    public List<Service> getCustomerServices(String login){
+        List<Service> list = services.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(e -> e.getCustomerLogin().equals(login))
+                .collect(Collectors.toList());
+        return list;
+    }
+
+    public List<Order> getEmployeeOrders(String login){
+        List<Order> list = orders.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(e -> e.getEmployeeLogin().equals(login))
+                .collect(Collectors.toList());
+        return list;
     }
 
     public void subscribeEmployeeToWaitingForOrders(BigInteger employeeId){
