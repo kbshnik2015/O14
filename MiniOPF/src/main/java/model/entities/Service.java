@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import model.enums.ServiceStatus;
 
 @Data
+@NoArgsConstructor
 public class Service
 {
 

@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import model.enums.EmployeeStatus;
 
 @Data
+@NoArgsConstructor
 public class Employee extends AbstractUser
 {
 

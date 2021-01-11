@@ -3,10 +3,12 @@ package model.entities;
 import java.math.BigInteger;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import model.enums.OrderAim;
 import model.enums.OrderStatus;
 
 @Data
+@NoArgsConstructor
 public class Order
 {
 

@@ -1,12 +1,27 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.json.simple.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
+import jdk.nashorn.internal.parser.JSONParser;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import model.entities.Customer;
 import model.entities.District;
 import model.entities.Employee;
@@ -15,33 +30,43 @@ import model.entities.Service;
 import model.entities.Specification;
 
 @Data
+@NoArgsConstructor
 public class Model
 {
 
     private static Model instance; //Singleton
 
+    @Setter
+    @Getter
     private BigInteger nextId = BigInteger.valueOf(1);
 
+    @Setter
     @Getter
-    private HashMap<String,Customer> customers;
+    private HashMap<String,Customer> customers = new HashMap<>();
 
+    @Setter
     @Getter
-    private HashMap<String,Employee> employees;
+    private HashMap<String,Employee> employees = new HashMap<>();
 
+    @Setter
     @Getter
-    private HashMap<BigInteger,Specification> specifications;
+    private HashMap<BigInteger,Specification> specifications = new HashMap<>();
 
+    @Setter
     @Getter
     private ArrayList<BigInteger> employeesWaitingForOrders;
 
+    @Setter
     @Getter
-    private HashMap<BigInteger,Order> orders;
+    private HashMap<BigInteger,Order> orders = new HashMap<>();
 
+    @Setter
     @Getter
-    private HashMap<BigInteger,District> districts;
+    private HashMap<BigInteger,District> districts = new HashMap<>();
 
+    @Setter
     @Getter
-    private HashMap<BigInteger,Service> services;
+    private HashMap<BigInteger,Service> services = new HashMap<>();
 
 
 
@@ -53,7 +78,8 @@ public class Model
     }
 
     public BigInteger generateNextId(){
-        return nextId.add(BigInteger.valueOf(1));
+        nextId = nextId.add(BigInteger.valueOf(1));
+        return nextId;
     }
 
 
@@ -175,20 +201,38 @@ public class Model
 
     }
 
-    public void saveToFile(){
-
+    public void saveToFile() throws IOException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        try(FileWriter writer = new FileWriter("test.json", false)){
+            mapper.writeValue(writer, instance);
+        }
     }
 
-    public void saveToFile(String filepath){
-
+    public void saveToFile(String filepath)throws IOException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        try(FileWriter writer = new FileWriter(filepath, false)){
+            mapper.writeValue(writer, instance);
+        }
     }
 
-    public void loadFromFile(){
-
+    public Model loadFromFile() throws IOException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        try(FileReader reader = new FileReader("test.json")){
+            instance = mapper.readValue(reader, Model.class);
+        }
+        return instance;
     }
 
-    public void loadFromFile(String filepath){
-
+    public Model loadFromFile(String filepath)throws IOException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        try(FileReader reader = new FileReader(filepath)){
+            instance = mapper.readValue(reader, Model.class);
+        }
+        return instance;
     }
 
 }
