@@ -1,6 +1,7 @@
 package controller;
 
 
+import controller.exceptions.IllegalTransitionException;
 import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
 import controller.exceptions.IllegalLoginException;
@@ -15,6 +16,7 @@ import model.enums.ServiceStatus;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Data
 public class Controller
@@ -43,12 +45,8 @@ public class Controller
         return result;
     }
 
-    public AbstractUser login(String login, String password){
-        return null;
-    }
-
     public Customer createCustomer(String firstName, String lastName, String login, String password, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
-        Customer customer = new Customer(firstName, lastName, login, password, addres, balance, servicesIds, ordersIds);
+        Customer customer = new Customer(firstName, lastName, login, password, addres, balance);
         if(!isLoginExisted(customer))
         {
             return model.createCustomer(customer);
@@ -58,7 +56,7 @@ public class Controller
         }
     }
 
-    public void updateCustomer(String firstName, String lastName, String login, String password, String address, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+    public void updateCustomer(String firstName, String lastName, String login, String password, String address, float balance){
         if (model.getCustomers().containsKey(login))
         {
             Customer customer = model.getCustomerByLogin(login);
@@ -72,10 +70,7 @@ public class Controller
                 customer.setAddress(address);
             if(balance >= 0)
                 customer.setBalance(balance);
-            if(servicesIds != null)
-                customer.setServicesIds(servicesIds);
-            if(ordersIds != null)
-                customer.setOrdersIds(ordersIds);
+
             model.updateCustomer(customer);
         }
         else {
@@ -92,7 +87,7 @@ public class Controller
     }
 
     public Employee createEmployee(String firstName, String lastName, String login, String password, ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus){
-        Employee employee = new Employee(firstName, lastName,login,password,ordersIds, employeeStatus);
+        Employee employee = new Employee(firstName, lastName,login,password, employeeStatus);
         if(!isLoginExisted(employee))
         {
             return model.createEmployee(employee);
@@ -112,8 +107,6 @@ public class Controller
                 employee.setLastName(lastName);
             if(password != null)
                 employee.setPassword(password);
-            if(ordersIds != null)
-                employee.setOrdersIds(ordersIds);
             if(employeeStatus != null)
                 employee.setEmployeeStatus(employeeStatus);
             model.updateEmployee(employee);
@@ -192,8 +185,8 @@ public class Controller
         return model.getSpecificationById(id);
     }
 
-    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus){
-        Service service = new Service(payDay, specificationId, servStatus);
+    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus, String customerLogin){
+        Service service = new Service(payDay, specificationId, servStatus, customerLogin);
         return model.createService(service);
     }
 
@@ -256,53 +249,98 @@ public class Controller
         return model.getOrderById(id);
     }
 
-    public void startOrder(BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void suspendOrder(BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void restoreOrder(BigInteger employeeId, BigInteger orderId) {
-
-    }
-
-    public void cancelOrder (BigInteger employeeId, BigInteger orderId){
-
-    }
-
-    public void completeOrder (BigInteger employeeId, BigInteger orderId)
+    public AbstractUser login(String login, String password) throws IllegalLoginException
     {
-
+        AbstractUser user;
+        if((user = model.getCustomerByLogin(login))==null)
+            user = model.getEmployeeByLogin(login);
+        if((user!=null)&&(user.getPassword().equals(password))){
+            return user;
+        }
+        else
+            throw new IllegalLoginException();
     }
 
-    public void topUpBalance(Float amountOfMoney){
-
-    }
-
-    public void topDownBalance(Float amountOfMoney)
+    public void startOrder( BigInteger orderId) throws IllegalTransitionException
     {
-
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.ENTERING)
+            order.setOrderStatus(OrderStatus.IN_PROGRESS);
+        else
+            throw new IllegalTransitionException();
     }
 
-    public ArrayList<Service> getCustomerConnectedServices(BigInteger customerId){
-        return null;
+    public void suspendOrder( BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.IN_PROGRESS)
+            order.setOrderStatus(OrderStatus.SUSPENDED);
+        else
+            throw new IllegalTransitionException();
     }
 
-    public ArrayList<Service> getCustomerNotFinishedOrders(BigInteger customerId){
-        return null;
+    public void restoreOrder(BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()==OrderStatus.SUSPENDED)
+            order.setOrderStatus(OrderStatus.IN_PROGRESS);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void cancelOrder (BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()!=OrderStatus.COMPLETED)
+            order.setOrderStatus(OrderStatus.CANCELLED);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void completeOrder (BigInteger orderId) throws IllegalTransitionException
+    {
+        Order order = model.getOrderById(orderId);
+        if(order.getOrderStatus()!=OrderStatus.CANCELLED)
+            order.setOrderStatus(OrderStatus.COMPLETED);
+        else
+            throw new IllegalTransitionException();
+    }
+
+    public void topUpBalance(Float amountOfMoney, String login)
+    {
+        Customer customer = getCustomerByLogin(login);
+        customer.setBalance(customer.getBalance()+amountOfMoney);
+    }
+
+    public void topDownBalance(Float amountOfMoney, String login)
+    {
+        Customer customer = getCustomerByLogin(login);
+        customer.setBalance(customer.getBalance()-amountOfMoney);
+    }
+
+    public ArrayList<Service> getCustomerConnectedServices(String login){
+        ArrayList<Service> connectedServices = (ArrayList<Service>) model.getCustomerServices(login).stream()
+                .filter(x->x.getServiceStatus()==ServiceStatus.ACTIVE)
+                .collect(Collectors.toList());
+        return connectedServices;
+    }
+
+    public ArrayList<Order> getCustomerNotFinishedOrders(String login){
+        ArrayList<Order> notFinishedOrder = (ArrayList<Order>) model.getCustomerOrders(login).stream()
+                .filter(x->x.getOrderStatus()!=OrderStatus.COMPLETED)
+                .collect(Collectors.toList());
+        return notFinishedOrder;
     }
 
     public Order createNewOrder(String customerLogin, BigInteger specId, boolean isForced){
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.NEW, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
 
-        Service service = new Service(new Date(), specId, isForced? (ServiceStatus.ACTIVE) : (ServiceStatus.SUSPENDED));
+
+        Service service = new Service(new Date(), specId, isForced? (ServiceStatus.ACTIVE) : (ServiceStatus.SUSPENDED), customerLogin);
         model.createService(service);
-        customer.getServicesIds().add(service.getId());
+
 
         return order;
     }
@@ -311,7 +349,6 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.SUSPENDED, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
 
         if(isForced)
         {
@@ -325,7 +362,7 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.RESTORE, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
+
 
         if(isForced && ((model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.SUSPENDED) || (model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.DISCONNECTED)))))
         {
@@ -339,7 +376,7 @@ public class Controller
         Customer customer = model.getCustomers().get(customerLogin);
         Order order = new Order(customer.getLogin(), OrderAim.DISCONNECT, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
         model.createOrder(order);
-        customer.getOrdersIds().add(order.getId());
+
 
         if(isForced)
         {
@@ -355,12 +392,11 @@ public class Controller
         for (Employee emp : model.getEmployees().values()) {
             if (emp.getEmployeeStatus().equals(EmployeeStatus.ON_VACATION))
             {
-                for (int i = 0; i < emp.getOrdersIds().size(); i++){
-                    orders.add(model.getOrders().get(emp.getOrdersIds().get(i)));
+                for (int i = 0; i < model.getEmployeeOrders(emp.getLogin()).size(); i++){
+                    orders.add( model.getEmployeeOrders(emp.getLogin()).get(i));
                 }
             }
         }
-
         return orders;
     }
 

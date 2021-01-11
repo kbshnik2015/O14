@@ -15,27 +15,14 @@ public class Customer extends AbstractUser
 
     private float balance;
 
-    private ArrayList<BigInteger> servicesIds;
-
-    private ArrayList<BigInteger> ordersIds;
-
-    public Customer (String firstName, String lastName, String login, String password, String address, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+    public Customer (String firstName, String lastName, String login, String password, String address, float balance){
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
         this.password = password;
         this.address = address;
         this.balance = balance;
-        this.servicesIds = servicesIds;
-        this.ordersIds = ordersIds;
-    }
 
-//    public Customer (String firstName, String lastName, String login, String password, String address){
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.login = login;
-//        this.password = password;
-//        this.address = address;
-//    }
+    }
 
 }

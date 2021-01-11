@@ -20,10 +20,12 @@ public class Service
 
     private ServiceStatus serviceStatus;
 
-    public Service(Date payDay, BigInteger spec, ServiceStatus servStatus){
+    private String customerLogin;
+
+    public Service(Date payDay, BigInteger spec, ServiceStatus servStatus, String customerLogin){
         this.payDay = payDay;
         this.specificationId = spec;
         this.serviceStatus = servStatus;
+        this.customerLogin = customerLogin;
     }
-
 }
