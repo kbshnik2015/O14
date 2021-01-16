@@ -18,24 +18,23 @@ public class Order
 
     private String employeeLogin;
 
+    private BigInteger specId;
+    private BigInteger serviceId;
     private OrderAim orderAim;
 
     private OrderStatus orderStatus;
 
     private String address;
 
-    public Order(String customerLogin, String employeeLogin, OrderAim orderAim, OrderStatus orderStatus, String address){
+    public Order(String customerLogin, String employeeLogin, BigInteger specId, BigInteger serviceId, OrderAim orderAim,OrderStatus orderStatus)
+    {
         this.customerLogin = customerLogin;
         this.employeeLogin = employeeLogin;
+        this.specId = specId;
+        this.serviceId = serviceId;
         this.orderAim = orderAim;
-        this.orderStatus = orderStatus;
-        this.address = address;
-    }
-
-    public Order(String customerLogin, OrderAim orderAim, OrderStatus orderStatus){
-        this.customerLogin = customerLogin;
-        this.orderAim = orderAim;
-        this.orderStatus = orderStatus;
+        this.orderStatus = orderStatus != null ? orderStatus : OrderStatus.ENTERING;
+        this.orderAim = orderStatus != null ? orderAim : OrderAim.NEW ;
     }
 
 }

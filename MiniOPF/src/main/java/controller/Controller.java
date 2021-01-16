@@ -4,7 +4,7 @@ package controller;
 import controller.exceptions.IllegalTransitionException;
 import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
-import controller.exceptions.IllegalLoginException;
+import controller.exceptions.IllegalLoginOrPasswordException;
 import lombok.Data;
 import model.Model;
 import model.entities.*;
@@ -16,6 +16,7 @@ import model.enums.ServiceStatus;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
@@ -24,400 +25,477 @@ public class Controller
 
     Model model = Model.getInstance();
 
-    private <T> boolean isLoginExisted(T t){
+    private <T> boolean isLoginExisted(T t)
+    {
         boolean result = false;
         if (t instanceof Customer)
         {
-            if (model.getCustomers().containsKey(((Customer) t).getLogin()))
+            if (model.getCustomers()
+                    .containsKey(((Customer) t).getLogin()))
             {
                 result = true;
-                new IllegalLoginException();
+                new IllegalLoginOrPasswordException();
             }
         }
         if (t instanceof Employee)
         {
-            if (model.getEmployees().containsKey(((Employee) t).getLogin()))
+            if (model.getEmployees()
+                    .containsKey(((Employee) t).getLogin()))
             {
                 result = true;
-                new IllegalLoginException();
+                new IllegalLoginOrPasswordException();
             }
         }
         return result;
     }
 
-    public Customer createCustomer(String firstName, String lastName, String login, String password, String addres, float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds){
+    public Customer createCustomer(String firstName, String lastName, String login, String password, String addres,
+                                   float balance, ArrayList<BigInteger> servicesIds, ArrayList<BigInteger> ordersIds)
+    {
         Customer customer = new Customer(firstName, lastName, login, password, addres, balance);
-        if(!isLoginExisted(customer))
+        if (!isLoginExisted(customer))
         {
             return model.createCustomer(customer);
         }
-        else {
+        else
+        {
             return null;
         }
     }
 
-    public void updateCustomer(String firstName, String lastName, String login, String password, String address, float balance){
-        if (model.getCustomers().containsKey(login))
+    public void updateCustomer(String firstName, String lastName, String login, String password, String address,
+                               float balance)
+    {
+        if (model.getCustomers()
+                .containsKey(login))
         {
-            Customer customer = model.getCustomerByLogin(login);
+            Customer customer = model.getCustomer(login);
             if (firstName != null)
+            {
                 customer.setFirstName(firstName);
-            if(lastName != null)
+            }
+            if (lastName != null)
+            {
                 customer.setLastName(lastName);
-            if(password != null)
+            }
+            if (password != null)
+            {
                 customer.setPassword(password);
-            if(address != null)
+            }
+            if (address != null)
+            {
                 customer.setAddress(address);
-            if(balance >= 0)
+            }
+            if (balance >= 0)
+            {
                 customer.setBalance(balance);
+            }
 
             model.updateCustomer(customer);
         }
-        else {
+        else
+        {
             new UserNotFoundException();
         }
     }
 
-    public void deleteCustomer(Customer customer){
+    public void deleteCustomer(Customer customer)
+    {
         model.deleteCustomer(customer);
     }
 
-    public Customer getCustomerByLogin(String login) {
-        return model.getCustomerByLogin(login);
+    public Customer getCustomerByLogin(String login)
+    {
+        return model.getCustomer(login);
     }
 
-    public Employee createEmployee(String firstName, String lastName, String login, String password, ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus){
-        Employee employee = new Employee(firstName, lastName,login,password, employeeStatus);
-        if(!isLoginExisted(employee))
+    public Employee createEmployee(String firstName, String lastName, String login, String password,
+                                   ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus)
+    {
+        Employee employee = new Employee(firstName, lastName, login, password, employeeStatus);
+        if (!isLoginExisted(employee))
         {
             return model.createEmployee(employee);
         }
-        else {
+        else
+        {
             return null;
         }
     }
 
-    public void updateEmployee(String firstName, String lastName, String login, String password, ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus) {
-        if (model.getEmployees().containsKey(login))
+    public void updateEmployee(String firstName, String lastName, String login, String password,
+                               ArrayList<BigInteger> ordersIds, EmployeeStatus employeeStatus)
+    {
+        if (model.getEmployees()
+                .containsKey(login))
         {
-            Employee employee = model.getEmployeeByLogin(login);
+            Employee employee = model.getEmployee(login);
             if (firstName != null)
+            {
                 employee.setFirstName(firstName);
-            if(lastName != null)
+            }
+            if (lastName != null)
+            {
                 employee.setLastName(lastName);
-            if(password != null)
+            }
+            if (password != null)
+            {
                 employee.setPassword(password);
-            if(employeeStatus != null)
+            }
+            if (employeeStatus != null)
+            {
                 employee.setEmployeeStatus(employeeStatus);
+            }
             model.updateEmployee(employee);
         }
-        else {
+        else
+        {
             new UserNotFoundException();
         }
     }
 
-    public void deleteEmployee(Employee employee){
+    public void deleteEmployee(Employee employee)
+    {
         model.deleteEmployee(employee);
     }
 
-    public Employee getEmployeeByLogin(String login) {
-        return model.getEmployeeByLogin(login);
+    public Employee getEmployeeByLogin(String login)
+    {
+        return model.getEmployee(login);
     }
 
-    public District createDistrict(String name, ArrayList<BigInteger> childrenIds, BigInteger parentId){
+    public District createDistrict(String name, ArrayList<BigInteger> childrenIds, BigInteger parentId)
+    {
         District district = new District(name, childrenIds, parentId);
         return model.createDistrict(district);
     }
 
-    public void updateDistrict(BigInteger id, String name, ArrayList<BigInteger> childrenIds, BigInteger parentId){
-        if (model.getDistricts().containsKey(id))
+    public void updateDistrict(BigInteger id, String name, ArrayList<BigInteger> childrenIds, BigInteger parentId)
+    {
+        if (model.getDistricts()
+                .containsKey(id))
         {
-            District district = model.getDistrictById(id);
+            District district = model.getDistrict(id);
             if (name != null)
+            {
                 district.setName(name);
-            if(childrenIds != null)
+            }
+            if (childrenIds != null)
+            {
                 district.setChildrenIds(childrenIds);
-            if(parentId != null)
+            }
+            if (parentId != null)
+            {
                 district.setParentId(parentId);
+            }
             model.updateDistrict(district);
         }
-        else {
+        else
+        {
             new ObjectNotFoundException();
         }
     }
 
-    public void deleteDistrict(District district){
+    public void deleteDistrict(District district)
+    {
         model.deleteDistrict(district);
     }
 
-    public District getDistrictById(BigInteger id) {
-        return model.getDistrictById(id);
+    public District getDistrictById(BigInteger id)
+    {
+        return model.getDistrict(id);
     }
 
-    public Specification createSpecification(float price, String description, boolean isAddressDepended, ArrayList<BigInteger> districtsIds){
+    public Specification createSpecification(float price, String description, boolean isAddressDepended,
+                                             ArrayList<BigInteger> districtsIds)
+    {
         Specification specification = new Specification(price, description, isAddressDepended, districtsIds);
         return model.createSpecification(specification);
     }
 
-    public void updateSpecification(BigInteger id, float price, String description, boolean isAddressDepended, ArrayList<BigInteger> districtsIds){
-        if (model.getSpecifications().containsKey(id))
+    public void updateSpecification(BigInteger id, float price, String description, boolean isAddressDepended,
+                                    ArrayList<BigInteger> districtsIds)
+    {
+        if (model.getSpecifications()
+                .containsKey(id))
         {
-            Specification specification = model.getSpecificationById(id);
+            Specification specification = model.getSpecification(id);
             if (price >= 0)
+            {
                 specification.setPrice(price);
-            if(description != null)
+            }
+            if (description != null)
+            {
                 specification.setDescription(description);
-            if(districtsIds != null)
+            }
+            if (districtsIds != null)
+            {
                 specification.setDistrictsIds(districtsIds);
+            }
             specification.setAddressDepended(isAddressDepended);
             model.updateSpecification(specification);
         }
-        else {
+        else
+        {
             new ObjectNotFoundException();
         }
     }
 
-    public void deleteSpecification(Specification specification){
+    public void deleteSpecification(Specification specification)
+    {
         model.deleteSpecification(specification);
     }
 
-    public Specification getSpecificationById(BigInteger id) {
-        return model.getSpecificationById(id);
+    public Specification getSpecificationById(BigInteger id)
+    {
+        return model.getSpecification(id);
     }
 
-    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus, String customerLogin){
+    public Service createService(Date payDay, BigInteger specificationId, ServiceStatus servStatus,
+                                 String customerLogin)
+    {
         Service service = new Service(payDay, specificationId, servStatus, customerLogin);
         return model.createService(service);
     }
 
-    public void updateService(BigInteger id, Date payDay, BigInteger specificationId, ServiceStatus servStatus){
-        if (model.getServices().containsKey(id))
+    public void updateService(BigInteger id, Date payDay, BigInteger specificationId, ServiceStatus servStatus)
+    {
+        if (model.getServices()
+                .containsKey(id))
         {
-            Service service = model.getServiceById(id);
+            Service service = model.getService(id);
             if (payDay != null)
+            {
                 service.setPayDay(payDay);
-            if(specificationId != null)
+            }
+            if (specificationId != null)
+            {
                 service.setSpecificationId(specificationId);
-            if(servStatus != null)
+            }
+            if (servStatus != null)
+            {
                 service.setServiceStatus(servStatus);
+            }
             model.updateService(service);
         }
-        else {
+        else
+        {
             new ObjectNotFoundException();
         }
     }
 
-    public void deleteService(Service service){
+    public void deleteService(Service service)
+    {
         model.deleteService(service);
     }
 
-    public Service getServiceById(BigInteger id) {
-        return model.getServiceById(id);
-    }
-
-    public Order createOrder(String customerLogin, String employeeLogin, OrderAim orderAim, OrderStatus orderStatus, String address){
-        Order order = new Order(customerLogin, employeeLogin, orderAim, orderStatus, address);
-        return model.createOrder(order);
-    }
-
-    public void updateOrder(BigInteger id, String customerLogin, String employeeLogin, OrderAim orderAim, OrderStatus orderStatus, String address){
-        if (model.getOrders().containsKey(id))
+    public void updateOrder(BigInteger id, String customerLogin, String employeeLogin, OrderAim orderAim,
+                            OrderStatus orderStatus, String address)
+    {
+        if (model.getOrders()
+                .containsKey(id))
         {
-            Order order = model.getOrderById(id);
+            Order order = model.getOrder(id);
             if (customerLogin != null)
+            {
                 order.setCustomerLogin(customerLogin);
-            if(employeeLogin!= null)
+            }
+            if (employeeLogin != null)
+            {
                 order.setEmployeeLogin(employeeLogin);
-            if(orderAim != null)
+            }
+            if (orderAim != null)
+            {
                 order.setOrderAim(orderAim);
-            if(orderStatus != null)
+            }
+            if (orderStatus != null)
+            {
                 order.setOrderStatus(orderStatus);
-            if(address != null)
+            }
+            if (address != null)
+            {
                 order.setAddress(address);
+            }
             model.updateOrder(order);
         }
-        else {
+        else
+        {
             new ObjectNotFoundException();
         }
     }
 
-    public void deleteOrder(Order order){
-        model.deleteOrder(order);
-    }
-
-    public Order getOrderById(BigInteger id) {
-        return model.getOrderById(id);
-    }
-
-    public AbstractUser login(String login, String password) throws IllegalLoginException
+    public AbstractUser login(String login, String password) throws IllegalLoginOrPasswordException
     {
-        AbstractUser user;
-        if((user = model.getCustomerByLogin(login))==null)
-            user = model.getEmployeeByLogin(login);
-        if((user!=null)&&(user.getPassword().equals(password))){
+        AbstractUser user = model.getCustomer(login);
+        if (user == null)
+        {
+            user = model.getEmployee(login);
+        }
+        if (user != null && user.getPassword()
+                .equals(password))
+        {
             return user;
         }
         else
-            throw new IllegalLoginException();
+        {
+            throw new IllegalLoginOrPasswordException();
+        }
     }
 
-    public void startOrder( BigInteger orderId) throws IllegalTransitionException
+    public void startOrder(BigInteger orderId) throws IllegalTransitionException
     {
-        Order order = model.getOrderById(orderId);
-        if(order.getOrderStatus()==OrderStatus.ENTERING)
-            order.setOrderStatus(OrderStatus.IN_PROGRESS);
-        else
-            throw new IllegalTransitionException();
+        moveOrderFromTo(orderId, OrderStatus.ENTERING, OrderStatus.IN_PROGRESS);
     }
 
-    public void suspendOrder( BigInteger orderId) throws IllegalTransitionException
+    public void suspendOrder(BigInteger orderId) throws IllegalTransitionException
     {
-        Order order = model.getOrderById(orderId);
-        if(order.getOrderStatus()==OrderStatus.IN_PROGRESS)
-            order.setOrderStatus(OrderStatus.SUSPENDED);
-        else
-            throw new IllegalTransitionException();
+        moveOrderFromTo(orderId, OrderStatus.IN_PROGRESS, OrderStatus.SUSPENDED);
     }
 
     public void restoreOrder(BigInteger orderId) throws IllegalTransitionException
     {
-        Order order = model.getOrderById(orderId);
-        if(order.getOrderStatus()==OrderStatus.SUSPENDED)
-            order.setOrderStatus(OrderStatus.IN_PROGRESS);
-        else
-            throw new IllegalTransitionException();
+        moveOrderFromTo(orderId, OrderStatus.SUSPENDED, OrderStatus.IN_PROGRESS);
     }
 
-    public void cancelOrder (BigInteger orderId) throws IllegalTransitionException
+    public void cancelOrder(BigInteger orderId) throws IllegalTransitionException
     {
-        Order order = model.getOrderById(orderId);
-        if(order.getOrderStatus()!=OrderStatus.COMPLETED)
-            order.setOrderStatus(OrderStatus.CANCELLED);
-        else
+        Order order = model.getOrder(orderId);
+        if (order.getOrderStatus() == OrderStatus.COMPLETED)
+        {
             throw new IllegalTransitionException();
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
     }
 
-    public void completeOrder (BigInteger orderId) throws IllegalTransitionException
+    public void completeOrder(BigInteger orderId) throws IllegalTransitionException
     {
-        Order order = model.getOrderById(orderId);
-        if(order.getOrderStatus()!=OrderStatus.CANCELLED)
-            order.setOrderStatus(OrderStatus.COMPLETED);
-        else
-            throw new IllegalTransitionException();
+        moveOrderFromTo(orderId, OrderStatus.IN_PROGRESS, OrderStatus.COMPLETED);
     }
 
-    public void topUpBalance(Float amountOfMoney, String login)
+    private void moveOrderFromTo(BigInteger orderId, OrderStatus entering, OrderStatus inProgress) throws
+            IllegalTransitionException
+    {
+        Order order = model.getOrder(orderId);
+        checkOrderInitialStatus(order, entering);
+        order.setOrderStatus(inProgress);
+    }
+
+    private void checkOrderInitialStatus(Order order, OrderStatus initialStatus) throws IllegalTransitionException
+    {
+        if (order.getOrderStatus() != initialStatus)
+        {
+            throw new IllegalTransitionException();
+        }
+    }
+
+    public void changeBalanceOn(Float amountOfMoney, String login)
     {
         Customer customer = getCustomerByLogin(login);
-        customer.setBalance(customer.getBalance()+amountOfMoney);
+        customer.setBalance(customer.getBalance() + amountOfMoney);
     }
 
-    public void topDownBalance(Float amountOfMoney, String login)
+    /**
+     * Method for Customer to get his Services
+     */
+    public ArrayList<Service> getCustomerConnectedServices(String login)
     {
-        Customer customer = getCustomerByLogin(login);
-        customer.setBalance(customer.getBalance()-amountOfMoney);
-    }
-
-    public ArrayList<Service> getCustomerConnectedServices(String login){
-        ArrayList<Service> connectedServices = (ArrayList<Service>) model.getCustomerServices(login).stream()
-                .filter(x->x.getServiceStatus()==ServiceStatus.ACTIVE)
+        ArrayList<Service> connectedServices = (ArrayList<Service>) model.getCustomerServices(login)
+                .stream()
+                .filter(x -> x.getServiceStatus() != ServiceStatus.DISCONNECTED)
                 .collect(Collectors.toList());
+
         return connectedServices;
     }
 
-    public ArrayList<Order> getCustomerNotFinishedOrders(String login){
-        ArrayList<Order> notFinishedOrder = (ArrayList<Order>) model.getCustomerOrders(login).stream()
-                .filter(x->x.getOrderStatus()!=OrderStatus.COMPLETED)
+    public ArrayList<Order> getCustomerNotFinishedOrders(String login)
+    {
+        ArrayList<Order> notFinishedOrder = (ArrayList<Order>) model.getCustomerOrders(login)
+                .stream()
+                .filter(x -> x.getOrderStatus() != OrderStatus.COMPLETED)
                 .collect(Collectors.toList());
+
         return notFinishedOrder;
     }
 
-    public Order createNewOrder(String customerLogin, BigInteger specId, boolean isForced){
-        Customer customer = model.getCustomers().get(customerLogin);
-        Order order = new Order(customer.getLogin(), OrderAim.NEW, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
-        model.createOrder(order);
-
-
-        Service service = new Service(new Date(), specId, isForced? (ServiceStatus.ACTIVE) : (ServiceStatus.SUSPENDED), customerLogin);
-        model.createService(service);
-
-
-        return order;
+    public List<Order> getOrdersByEmployee(String employeeLogin){
+        ArrayList <Order> orders = (ArrayList<Order>) model.getOrders().entrySet()
+                .stream()
+                .map(x->x.getValue())
+                .filter(x->x.getEmployeeLogin().equals(employeeLogin))
+                .collect(Collectors.toList());
+        return null;
     }
 
-    public Order createSuspendOrder(String customerLogin, BigInteger serviceId, boolean isForced){
-        Customer customer = model.getCustomers().get(customerLogin);
-        Order order = new Order(customer.getLogin(), OrderAim.SUSPENDED, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
-        model.createOrder(order);
-
-        if(isForced)
-        {
-            model.getServices().get(serviceId).setServiceStatus(ServiceStatus.SUSPENDED);
-        }
-
-        return order;
+    public Order createNewOrder(String customerLogin, BigInteger specId)
+    {
+        Order order = new Order(customerLogin, null, specId, null, OrderAim.NEW, null);
+        return model.createOrder(order);
     }
 
-    public Order createRestoreOrder(String customerLogin, BigInteger serviceId, boolean isForced){
-        Customer customer = model.getCustomers().get(customerLogin);
-        Order order = new Order(customer.getLogin(), OrderAim.RESTORE, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
-        model.createOrder(order);
-
-
-        if(isForced && ((model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.SUSPENDED) || (model.getServiceById(serviceId).getServiceStatus().equals(ServiceStatus.DISCONNECTED)))))
-        {
-            model.getServices().get(serviceId).setServiceStatus(ServiceStatus.ACTIVE);
-        }
-
-        return order;
+    public Order createSuspendOrder(String customerLogin, BigInteger serviceId)
+    {
+        Order order = new Order(customerLogin, null, null, serviceId, OrderAim.SUSPEND, null);
+        return model.createOrder(order);
     }
 
-    public Order createDisconnectOrder(String customerLogin, BigInteger serviceId, boolean isForced){
-        Customer customer = model.getCustomers().get(customerLogin);
-        Order order = new Order(customer.getLogin(), OrderAim.DISCONNECT, isForced? (OrderStatus.COMPLETED) : (OrderStatus.ENTERING));
-        model.createOrder(order);
-
-
-        if(isForced)
-        {
-            model.getServices().get(serviceId).setServiceStatus(ServiceStatus.DISCONNECTED);
-        }
-
-        return order;
+    public Order createRestoreOrder(String customerLogin, BigInteger serviceId)
+    {
+        Order order = new Order(customerLogin,null, null,serviceId,OrderAim.RESTORE, null );
+        return model.createOrder(order);
     }
 
+    public Order createDisconnectOrder(String customerLogin, BigInteger serviceId)
+    {
+        Order order = new Order(customerLogin, null,null,serviceId,OrderAim.DISCONNECT,null);
+        return model.createOrder(order);
+    }
 
-    public  ArrayList<Order> getOrdersOfEmployeesOnVacation(){
+    public ArrayList<Order> getOrdersOfEmployeesOnVacation()
+    {
         ArrayList<Order> orders = new ArrayList<>();
-        for (Employee emp : model.getEmployees().values()) {
-            if (emp.getEmployeeStatus().equals(EmployeeStatus.ON_VACATION))
+        for (Employee employee : model.getEmployees().values())
+        {
+            if (EmployeeStatus.ON_VACATION.equals(employee.getEmployeeStatus()))
             {
-                for (int i = 0; i < model.getEmployeeOrders(emp.getLogin()).size(); i++){
-                    orders.add( model.getEmployeeOrders(emp.getLogin()).get(i));
-                }
+                orders.addAll(model.getEmployeeOrders(employee.getLogin()));
             }
         }
         return orders;
     }
 
-    public  void goOnVacation(String login){
-        model.getEmployees().get(login).setEmployeeStatus(EmployeeStatus.ON_VACATION);
+    public void goOnVacation(String login)
+    {
+        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.ON_VACATION);
     }
 
-    public  void returnFromVacation(String login){
-        model.getEmployees().get(login).setEmployeeStatus(EmployeeStatus.WORKING);
+    public void returnFromVacation(String login)
+    {
+        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.WORKING);
     }
 
-    public void retireEmployee(String login){
-        model.getEmployees().get(login).setEmployeeStatus(EmployeeStatus.RETIRED);
+    public void retireEmployee(String login)
+    {
+        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.RETIRED);
+        ArrayList<Order> orders = (ArrayList)getOrdersByEmployee(login);
+        for(Order order : orders)
+            order.setEmployeeLogin(null);
     }
 
-    public void subscribeToWork(BigInteger employeeId){
-        model.getEmployeesWaitingForOrders().add(employeeId);
+    public void assignOrder(String employeeLogin, BigInteger orderId)
+    {
+        Order order = model.getOrder(orderId);
+        order.setCustomerLogin(employeeLogin);
     }
 
-    public void unsubscribeFromWork(BigInteger employeeId){
-        model.getEmployeesWaitingForOrders().remove(employeeId);
+    public void processOrder(String employeeLogin, BigInteger orderId) throws IllegalTransitionException
+    {
+        assignOrder(employeeLogin, orderId);
+        startOrder(orderId);
     }
 
+    public void usassignOrder(BigInteger orderId)
+    {
+        Order order = model.getOrder(orderId);
+        order.setEmployeeLogin(null);
+    }
 }

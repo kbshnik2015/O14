@@ -96,7 +96,7 @@ public class Model
         customers.remove(customer.getLogin());
     }
 
-    public Customer getCustomerByLogin(String login) {
+    public Customer getCustomer(String login) {
         return customers.get(login);
     }
 
@@ -113,7 +113,7 @@ public class Model
         employees.remove(employee.getLogin());
     }
 
-    public Employee getEmployeeByLogin(String login) {
+    public Employee getEmployee(String login) {
         return employees.get(login);
     }
 
@@ -131,7 +131,7 @@ public class Model
         districts.remove(district.getId());
     }
 
-    public District getDistrictById(BigInteger Id) {
+    public District getDistrict(BigInteger Id) {
         return districts.get(Id);
     }
 
@@ -149,7 +149,7 @@ public class Model
         specifications.remove(specification.getId());
     }
 
-    public Specification getSpecificationById(BigInteger Id) {
+    public Specification getSpecification(BigInteger Id) {
         return specifications.get(Id);
     }
 
@@ -167,7 +167,7 @@ public class Model
         services.remove(service.getId());
     }
 
-    public Service getServiceById(BigInteger Id) {
+    public Service getService(BigInteger Id) {
         return services.get(Id);
     }
 
@@ -185,7 +185,7 @@ public class Model
         orders.remove(order.getId());
     }
 
-    public Order getOrderById(BigInteger Id) {
+    public Order getOrder(BigInteger Id) {
         return orders.get(Id);
     }
 
