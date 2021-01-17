@@ -1,26 +1,17 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.json.simple.JSONObject;
-
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-import jdk.nashorn.internal.parser.JSONParser;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import model.entities.Customer;
 import model.entities.District;
@@ -28,12 +19,13 @@ import model.entities.Employee;
 import model.entities.Order;
 import model.entities.Service;
 import model.entities.Specification;
+import model.enums.EmployeeStatus;
 
 @Data
-@NoArgsConstructor
 public class Model
 {
 
+    @Setter
     private static Model instance; //Singleton
 
     @Setter
@@ -42,33 +34,41 @@ public class Model
 
     @Setter
     @Getter
-    private HashMap<String,Customer> customers = new HashMap<>();
+    private Map<String,Customer> customers;
 
     @Setter
     @Getter
-    private HashMap<String,Employee> employees = new HashMap<>();
+    private Map<String,Employee> employees;
 
     @Setter
     @Getter
-    private HashMap<BigInteger,Specification> specifications = new HashMap<>();
+    private Map<BigInteger,Specification> specifications;
 
     @Setter
     @Getter
-    private ArrayList<BigInteger> employeesWaitingForOrders;
+    private Map<BigInteger,Order> orders;
 
     @Setter
     @Getter
-    private HashMap<BigInteger,Order> orders = new HashMap<>();
+    private Map<BigInteger,District> districts;
 
     @Setter
     @Getter
-    private HashMap<BigInteger,District> districts = new HashMap<>();
+    private Map<BigInteger,Service> services;
 
     @Setter
     @Getter
-    private HashMap<BigInteger,Service> services = new HashMap<>();
+    private WorkWaiters workWaiters;
 
-
+    public Model(){
+        this.orders = new HashMap<>();
+        this.services = new HashMap<>();
+        this.specifications = new HashMap<>();
+        this.districts = new HashMap<>();
+        this.employees = new HashMap<>();
+        this.customers = new HashMap<>();
+        this.workWaiters = new WorkWaiters();
+    }
 
     public static synchronized Model getInstance() {
         if (instance == null) {
@@ -82,8 +82,10 @@ public class Model
         return nextId;
     }
 
-
     public Customer createCustomer(Customer customer) {
+        if (customers == null){
+            customers = new HashMap<>();
+        }
         customers.put(customer.getLogin(), customer);
         return customer;
     }
@@ -101,6 +103,9 @@ public class Model
     }
 
     public Employee createEmployee(Employee employee) {
+        if (employees == null){
+            employees = new HashMap<>();
+        }
         employees.put(employee.getLogin(), employee);
         return employee;
     }
@@ -118,6 +123,9 @@ public class Model
     }
 
     public District createDistrict(District district){
+        if (districts == null){
+            districts = new HashMap<>();
+        }
         district.setId(generateNextId());
         districts.put(district.getId(), district);
         return district;
@@ -136,6 +144,9 @@ public class Model
     }
 
     public Specification createSpecification(Specification specification){
+        if (specifications == null){
+            specifications = new HashMap<>();
+        }
         specification.setId(generateNextId());
         specifications.put(specification.getId(), specification);
         return specification;
@@ -154,6 +165,9 @@ public class Model
     }
 
     public Service createService(Service service){
+        if (services == null){
+            services = new HashMap<>();
+        }
         service.setId(generateNextId());
         services.put(service.getId(), service);
         return service;
@@ -172,6 +186,9 @@ public class Model
     }
 
     public Order createOrder(Order order){
+        if (orders == null){
+            orders = new HashMap<>();
+        }
         order.setId(generateNextId());
         orders.put(order.getId(), order);
         return order;
@@ -187,6 +204,29 @@ public class Model
 
     public Order getOrder(BigInteger Id) {
         return orders.get(Id);
+    }
+
+    @JsonIgnore
+    public List<Order> getFreeOrders(){
+        List<Order> list = new ArrayList<>();
+        for (Order ord : orders.values()) {
+            if (ord.getEmployeeLogin() == null)
+            {
+                    list.add(ord);
+            }
+        }
+        return list;
+    }
+
+    @JsonIgnore
+    public Order getFreeOrder(){
+        for (Order ord : orders.values()) {
+            if (ord.getEmployeeLogin() == null)
+            {
+                return ord;
+            }
+        }
+        return null;
     }
 
     public List<Order> getCustomerOrders(String login){
@@ -211,18 +251,6 @@ public class Model
                 .filter(e -> e.getEmployeeLogin().equals(login))
                 .collect(Collectors.toList());
         return list;
-    }
-
-    public void subscribeEmployeeToWaitingForOrders(BigInteger employeeId){
-
-    }
-
-    public void unsubscribeEmployeeFromWaitingForWork(BigInteger employeeId){
-
-    }
-
-    public void notifyEmployeesWaitingForWork(BigInteger newOrderId){
-
     }
 
     public void saveToFile() throws IOException

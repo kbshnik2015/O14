@@ -4,11 +4,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import model.enums.EmployeeStatus;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Employee extends AbstractUser
 {
 

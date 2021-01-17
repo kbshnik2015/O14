@@ -1,5 +1,7 @@
 import java.io.IOException;
+import java.util.List;
 
+import controller.Controller;
 import model.Model;
 import model.entities.Customer;
 import model.entities.Employee;
@@ -28,22 +30,6 @@ public class Test
 //        model.createCustomer(customer2);
 //        model.createCustomer(customer3);
 //
-////        System.out.println(model.getCustomers().toString());
-////        model.saveToFile();
-////        System.out.println();
-////
-////        model.getCustomers().clear();
-////
-////
-////        System.out.println(model.getCustomers().toString());
-////        System.out.println();
-////
-////        model.loadFromFile();
-////        System.out.println(model.getCustomers().toString());
-////        System.out.println(model.getCustomerByLogin("login2").toString());
-////        System.out.println(model.getCustomers().getClass().toString());
-////        System.out.println(model.getCustomers().get("login2").getClass().toString());
-//
 //        Employee employee1 = new Employee();
 //        employee1.setFirstName("Employee 1");
 //        employee1.setLogin("emp1");
@@ -56,18 +42,18 @@ public class Test
 //        model.createEmployee(employee1);
 //        model.createEmployee(employee2);
 //        model.createEmployee(employee3);
-////        System.out.println(model.getCustomers().toString());
-////        System.out.println(model.getCustomerByLogin("cust2").getFirstName());
-////        System.out.println(model.getEmployees().toString());
-////        System.out.println(model.getEmployeeByLogin("emp2").getFirstName());
-////        System.out.println();
+//        model.getWorkWaiters().subscribe(employee1.getLogin());
+//        model.getWorkWaiters().subscribe(employee2.getLogin());
 //
 //        Order order1 = new Order();
 //        order1.setCustomerLogin("custLogOrd1");
+//        order1.setEmployeeLogin("empLogOrd1");
 //        Order order2 = new Order();
 //        order2.setCustomerLogin("custLogOrd2");
+//        Order order3 = new Order();
 //        model.createOrder(order1);
 //        model.createOrder(order2);
+//        model.createOrder(order3);
 //
 //        Service service1 = new Service();
 //        service1.setServiceStatus(ServiceStatus.SUSPENDED);
@@ -76,11 +62,12 @@ public class Test
 //        model.createService(service1);
 //        model.createService(service2);
 //
+//        model.saveToFile();
+//
 ////        System.out.println(model.toString());
 ////        System.out.println(model.getOrders().toString());
 ////        System.out.println(model.getServices().toString());
-//
-//        model.saveToFile();
+//         model.saveToFile();
 //
 //        model.getCustomers().clear();
 //        model.getEmployees().clear();
@@ -122,17 +109,20 @@ public class Test
 //        model.getServices().clear();
 //        model.getOrders().clear();
 
-        System.out.println();
-        System.out.println(model.toString());
-
+//        System.out.println();
+//        System.out.println(model.toString());
+//
         model = model.loadFromFile();
 
         System.out.println();
-        System.out.println(model.toString());
+        System.out.println(model.toString() + "\n");
 
         System.out.println();
-        System.out.println(model.getCustomerByLogin("cust4").getFirstName());
+        System.out.println(model.getCustomerByLogin("cust3").getFirstName() + "\n");
+        System.out.println(model.getWorkWaiters().getEmployeesWaitingForOrders().toString() + "\n");
 
+        System.out.println(model.toString() + "\n");
+        System.out.println(model.getWorkWaiters().getEmployeesWaitingForOrders().toString() + "\n");
 
 
 
