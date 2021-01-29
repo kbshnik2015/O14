@@ -16,13 +16,10 @@ public class District
 
     private String name;
 
-    private ArrayList<BigInteger> childrenIds;
-
     private BigInteger parentId;
 
-    public District(String name, ArrayList<BigInteger> childrenIds, BigInteger parentId){
+    public District(String name, BigInteger parentId){
         this.name = name;
-        this.childrenIds = childrenIds;
         this.parentId = parentId;
     }
 

@@ -1,14 +1,15 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.Getter;
@@ -20,6 +21,9 @@ import model.entities.Order;
 import model.entities.Service;
 import model.entities.Specification;
 import model.enums.EmployeeStatus;
+import model.enums.OrderAim;
+import model.enums.OrderStatus;
+import model.enums.ServiceStatus;
 
 @Data
 public class Model
@@ -30,100 +34,176 @@ public class Model
 
     @Setter
     @Getter
-    private BigInteger nextId = BigInteger.valueOf(1);
+    private BigInteger nextId = BigInteger.valueOf(0);
 
     @Setter
     @Getter
-    private Map<String,Customer> customers;
+    private Map<String, Customer> customers;
 
     @Setter
     @Getter
-    private Map<String,Employee> employees;
+    private Map<String, Employee> employees;
 
     @Setter
     @Getter
-    private Map<BigInteger,Specification> specifications;
+    private Map<BigInteger, Specification> specifications;
 
     @Setter
     @Getter
-    private Map<BigInteger,Order> orders;
+    private Map<BigInteger, Order> orders;
 
     @Setter
     @Getter
-    private Map<BigInteger,District> districts;
+    private Map<BigInteger, District> districts;
 
     @Setter
     @Getter
-    private Map<BigInteger,Service> services;
+    private Map<BigInteger, Service> services;
 
-    @Setter
-    @Getter
-    private WorkWaiters workWaiters;
-
-    public Model(){
+    private Model()
+    {
         this.orders = new HashMap<>();
         this.services = new HashMap<>();
         this.specifications = new HashMap<>();
         this.districts = new HashMap<>();
         this.employees = new HashMap<>();
         this.customers = new HashMap<>();
-        this.workWaiters = new WorkWaiters();
     }
 
-    public static synchronized Model getInstance() {
-        if (instance == null) {
-            instance = new Model();
+    public static synchronized Model getInstance() throws IOException
+    {
+        if (instance == null)
+        {
+            loadFromFile();
         }
         return instance;
     }
 
-    public BigInteger generateNextId(){
+    public void clear()
+    {
+        nextId = BigInteger.valueOf(0);
+        customers.clear();
+        employees.clear();
+        services.clear();
+        specifications.clear();
+        orders.clear();
+        districts.clear();
+    }
+
+    public BigInteger generateNextId()
+    {
         nextId = nextId.add(BigInteger.valueOf(1));
         return nextId;
     }
 
-    public Customer createCustomer(Customer customer) {
-        if (customers == null){
+    public Customer createCustomer(Customer customer)
+    {
+        if (customers == null)
+        {
             customers = new HashMap<>();
         }
         customers.put(customer.getLogin(), customer);
         return customer;
     }
 
-    public void updateCustomer(Customer customer){
+    public void updateCustomer(Customer customer)
+    {
         customers.put(customer.getLogin(), customer);
     }
 
-    public void deleteCustomer(Customer customer){
+    public void updateCustomer(String firstName, String lastName, String login, String password, String address,
+            float balance)
+    {
+        Customer customer = getCustomer(login);
+        if (customer != null)
+        {
+            if (firstName != null)
+            {
+                customer.setFirstName(firstName);
+            }
+            if (lastName != null)
+            {
+                customer.setLastName(lastName);
+            }
+            if (password != null)
+            {
+                customer.setPassword(password);
+            }
+            if (address != null)
+            {
+                customer.setAddress(address);
+            }
+            if (balance >= 0)
+            {
+                customer.setBalance(balance);
+            }
+        }
+    }
+
+    public void deleteCustomer(Customer customer)
+    {
         customers.remove(customer.getLogin());
     }
 
-    public Customer getCustomer(String login) {
+    public Customer getCustomer(String login)
+    {
         return customers.get(login);
     }
 
-    public Employee createEmployee(Employee employee) {
-        if (employees == null){
+    public Employee createEmployee(Employee employee)
+    {
+        if (employees == null)
+        {
             employees = new HashMap<>();
         }
         employees.put(employee.getLogin(), employee);
         return employee;
     }
 
-    public void updateEmployee(Employee employee){
+    public void updateEmployee(Employee employee)
+    {
         employees.put(employee.getLogin(), employee);
     }
 
-    public void deleteEmployee(Employee employee){
+    public void updateEmployee(String firstName, String lastName, String login, String password,
+            EmployeeStatus employeeStatus)
+    {
+        Employee employee = getEmployee(login);
+        if (employee != null)
+        {
+            if (firstName != null)
+            {
+                employee.setFirstName(firstName);
+            }
+            if (lastName != null)
+            {
+                employee.setLastName(lastName);
+            }
+            if (password != null)
+            {
+                employee.setPassword(password);
+            }
+            if (employeeStatus != null)
+            {
+                employee.setEmployeeStatus(employeeStatus);
+            }
+        }
+    }
+
+    public void deleteEmployee(Employee employee)
+    {
         employees.remove(employee.getLogin());
     }
 
-    public Employee getEmployee(String login) {
+    public Employee getEmployee(String login)
+    {
         return employees.get(login);
     }
 
-    public District createDistrict(District district){
-        if (districts == null){
+    public District createDistrict(District district)
+    {
+        if (districts == null)
+        {
             districts = new HashMap<>();
         }
         district.setId(generateNextId());
@@ -131,20 +211,47 @@ public class Model
         return district;
     }
 
-    public void updateDistrict(District district){
+    public District createDistrict(String name, BigInteger parentId)
+    {
+        District district = new District(name, parentId);
+        return createDistrict(district);
+    }
+
+    public void updateDistrict(District district)
+    {
         districts.put(district.getId(), district);
     }
 
-    public void deleteDistrict(District district){
+    public void updateDistrict(BigInteger id, String name, BigInteger parentId)
+    {
+        District district = getDistrict(id);
+        if (district != null)
+        {
+            if (name != null)
+            {
+                district.setName(name);
+            }
+            if (parentId != null)
+            {
+                district.setParentId(parentId);
+            }
+        }
+    }
+
+    public void deleteDistrict(District district)
+    {
         districts.remove(district.getId());
     }
 
-    public District getDistrict(BigInteger Id) {
+    public District getDistrict(BigInteger Id)
+    {
         return districts.get(Id);
     }
 
-    public Specification createSpecification(Specification specification){
-        if (specifications == null){
+    public Specification createSpecification(Specification specification)
+    {
+        if (specifications == null)
+        {
             specifications = new HashMap<>();
         }
         specification.setId(generateNextId());
@@ -152,20 +259,60 @@ public class Model
         return specification;
     }
 
-    public void updateSpecification(Specification specification){
+    public Specification createSpecification(float price, String description, boolean isAddressDepended,
+            ArrayList<BigInteger> districtsIds)
+    {
+        Specification specification = new Specification(price, description, isAddressDepended, districtsIds);
+
+        return createSpecification(specification);
+    }
+
+
+    public void updateSpecification(Specification specification)
+    {
         specifications.put(specification.getId(), specification);
     }
 
-    public void deleteSpecification(Specification specification){
+    public void updateSpecification(BigInteger id, float price, String description, boolean isAddressDepended,
+            ArrayList<BigInteger> districtsIds)
+    {
+        Specification specification = getSpecification(id);
+        if (specification != null)
+        {
+            if (price >= 0)
+            {
+                specification.setPrice(price);
+            }
+            if (description != null)
+            {
+                specification.setDescription(description);
+            }
+            specification.setAddressDepended(isAddressDepended);
+            if (isAddressDepended && districtsIds != null)
+            {
+                specification.setDistrictsIds(districtsIds);
+            }
+            else
+            {
+                specification.setDistrictsIds(new ArrayList<>());
+            }
+        }
+    }
+
+    public void deleteSpecification(Specification specification)
+    {
         specifications.remove(specification.getId());
     }
 
-    public Specification getSpecification(BigInteger Id) {
+    public Specification getSpecification(BigInteger Id)
+    {
         return specifications.get(Id);
     }
 
-    public Service createService(Service service){
-        if (services == null){
+    public Service createService(Service service)
+    {
+        if (services == null)
+        {
             services = new HashMap<>();
         }
         service.setId(generateNextId());
@@ -173,20 +320,50 @@ public class Model
         return service;
     }
 
-    public void updateService(Service service){
+    public void updateService(Service service)
+    {
         services.put(service.getId(), service);
     }
 
-    public void deleteService(Service service){
+    public void updateService(BigInteger id, Date payDay, BigInteger specificationId, ServiceStatus servStatus)
+    {
+        Service service = getService(id);
+        if (service != null)
+        {
+            if (payDay != null)
+            {
+                service.setPayDay(payDay);
+            }
+            if (specificationId != null && getSpecifications().containsKey(specificationId))
+            {
+                service.setSpecificationId(specificationId);
+            }
+            if (servStatus != null)
+            {
+                service.setServiceStatus(servStatus);
+            }
+        }
+    }
+
+    public void deleteService(Service service)
+    {
         services.remove(service.getId());
     }
 
-    public Service getService(BigInteger Id) {
+    public void deleteService(BigInteger id)
+    {
+        services.remove(id);
+    }
+
+    public Service getService(BigInteger Id)
+    {
         return services.get(Id);
     }
 
-    public Order createOrder(Order order){
-        if (orders == null){
+    public Order createOrder(Order order)
+    {
+        if (orders == null)
+        {
             orders = new HashMap<>();
         }
         order.setId(generateNextId());
@@ -194,97 +371,85 @@ public class Model
         return order;
     }
 
-    public void updateOrder(Order order){
+    public void updateOrder(Order order)
+    {
         orders.put(order.getId(), order);
     }
 
-    public void deleteOrder(Order order){
+    public void updateOrder(BigInteger id, String customerLogin, String employeeLogin, OrderAim orderAim,
+            OrderStatus orderStatus, String address)
+    {
+        Order order = getOrder(id);
+        if (order != null)
+        {
+            if (customerLogin != null && getCustomers().containsKey(customerLogin))
+            {
+                order.setCustomerLogin(customerLogin);
+            }
+            if (employeeLogin != null && getEmployees().containsKey(employeeLogin))
+            {
+                order.setEmployeeLogin(employeeLogin);
+            }
+            if (orderAim != null)
+            {
+                order.setOrderAim(orderAim);
+            }
+            if (orderStatus != null)
+            {
+                order.setOrderStatus(orderStatus);
+            }
+            if (address != null)
+            {
+                order.setAddress(address);
+            }
+        }
+    }
+
+    public void deleteOrder(Order order)
+    {
         orders.remove(order.getId());
     }
 
-    public Order getOrder(BigInteger Id) {
+    public Order getOrder(BigInteger Id)
+    {
         return orders.get(Id);
     }
 
-    @JsonIgnore
-    public List<Order> getFreeOrders(){
-        List<Order> list = new ArrayList<>();
-        for (Order ord : orders.values()) {
-            if (ord.getEmployeeLogin() == null)
-            {
-                    list.add(ord);
-            }
-        }
-        return list;
-    }
-
-    @JsonIgnore
-    public Order getFreeOrder(){
-        for (Order ord : orders.values()) {
-            if (ord.getEmployeeLogin() == null)
-            {
-                return ord;
-            }
-        }
-        return null;
-    }
-
-    public List<Order> getCustomerOrders(String login){
-        List<Order> list = orders.entrySet().stream()
-                .map(Map.Entry::getValue)
-                .filter(e -> e.getCustomerLogin().equals(login))
-                .collect(Collectors.toList());
-         return list;
-    }
-
-    public List<Service> getCustomerServices(String login){
-        List<Service> list = services.entrySet().stream()
-                .map(Map.Entry::getValue)
-                .filter(e -> e.getCustomerLogin().equals(login))
-                .collect(Collectors.toList());
-        return list;
-    }
-
-    public List<Order> getEmployeeOrders(String login){
-        List<Order> list = orders.entrySet().stream()
-                .map(Map.Entry::getValue)
-                .filter(e -> e.getEmployeeLogin().equals(login))
-                .collect(Collectors.toList());
-        return list;
-    }
 
     public void saveToFile() throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try(FileWriter writer = new FileWriter("test.json", false)){
+        try (FileWriter writer = new FileWriter("test.json", false))
+        {
             mapper.writeValue(writer, instance);
         }
     }
 
-    public void saveToFile(String filepath)throws IOException
+    public void saveToFile(String filepath) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try(FileWriter writer = new FileWriter(filepath, false)){
+        try (FileWriter writer = new FileWriter(filepath, false))
+        {
             mapper.writeValue(writer, instance);
         }
     }
 
-    public Model loadFromFile() throws IOException
+    public static void loadFromFile() throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try(FileReader reader = new FileReader("test.json")){
+        try (FileReader reader = new FileReader("test.json"))
+        {
             instance = mapper.readValue(reader, Model.class);
         }
-        return instance;
     }
 
-    public Model loadFromFile(String filepath)throws IOException
+    public static void loadFromFile(String filepath) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try(FileReader reader = new FileReader(filepath)){
+        try (FileReader reader = new FileReader(filepath))
+        {
             instance = mapper.readValue(reader, Model.class);
         }
-        return instance;
     }
 
 }

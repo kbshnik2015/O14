@@ -1,15 +1,14 @@
 package model.entities;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Customer extends AbstractUser
 {
 
