@@ -21,7 +21,7 @@ public class WorkWaiters
     {
         if (!model.getEmployees().containsKey(login))
         {
-            throw new UserNotFoundException("Employee login " + login + "doesn't exist!");
+            throw new UserNotFoundException("Employee login " + login + " doesn't exist!");
         }
         model.getEmployee(login).setWaitingForOrders(true);
     }
@@ -30,7 +30,7 @@ public class WorkWaiters
     {
         if (!model.getEmployees().containsKey(login))
         {
-            throw new UserNotFoundException("Employee login " + login + "doesn't exist!");
+            throw new UserNotFoundException("Employee login " + login + " doesn't exist!");
         }
         model.getEmployee(login).setWaitingForOrders(false);
     }

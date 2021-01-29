@@ -4,212 +4,471 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import controller.exceptions.IllegalLoginException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Date;
+
+import controller.exceptions.IllegalLoginOrPasswordException;
+import controller.exceptions.IllegalTransitionException;
+import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
-import model.Model;
 import model.entities.AbstractUser;
 import model.entities.Customer;
+import model.entities.District;
 import model.entities.Employee;
+import model.entities.Order;
+import model.entities.Service;
+import model.entities.Specification;
 import model.enums.EmployeeStatus;
+import model.enums.OrderAim;
+import model.enums.OrderStatus;
+import model.enums.ServiceStatus;
 
 public class ControllerTest
 {
 
     private Controller controller;
 
-    private String firstName1;
-    private String lastName1;
-    private String login1;
-    private String password1;
-    private String address1;
-    private float balance1;
-    private Customer customer1;
-
-    private String empFirstName;
-    private String empLastName;
-    private String empLogin;
-    private String empPassword;
-    private EmployeeStatus empStatus;
-    private Employee employee1;
-
     @Before
     public void setUp() throws Exception
     {
-        Model.setInstance(new Model());
         controller = new Controller();
-
-        firstName1 = "Customer1firstName";
-        lastName1 = "Customer1lastName";
-        login1 = "Customer1login";
-        password1 = "Customer1password";
-        address1 = "Customer1address";
-        balance1 = 100;
-        customer1 = new Customer(firstName1, lastName1, login1, password1, address1, balance1);
-
-        empFirstName = "Employee1firstName";
-        empLastName = "Employee1lastName";
-        empLogin = "Employee1login";
-        empPassword = "Employee1Password";
-        empStatus = EmployeeStatus.WORKING;
-        employee1 = new Employee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        controller.getModel().clear();
     }
 
     @Test
-    public void createCustomer() throws IllegalLoginException
+    public void createCustomer() throws IllegalLoginOrPasswordException
     {
-        Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        Assert.assertEquals(expected, customer1);
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
+        Customer expected = new Customer(firstName1, lastName1, login1, password1, address1, balance1);
+        Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+
+        Assert.assertEquals(expected, actual);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void createCustomer_WITH_EXISTED_LOGIN() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createCustomer_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException
     {
-        Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
 
+        Customer customer = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         Customer existedCustomer =
                 controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void createCustomer_LOGIN_IS_NULL() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createCustomer_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException
     {
-        Customer customerWithoutLogin = controller.createCustomer(firstName1, lastName1, null, password1, address1, balance1);
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
+        Customer customerWithoutLogin =
+                controller.createCustomer(firstName1, lastName1, null, password1, address1, balance1);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void createCustomer_PASSWORD_IS_NULL() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createCustomer_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException
     {
-        Customer customerWithoutLogin = controller.createCustomer(firstName1, lastName1, login1, null, address1, balance1);
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 200;
+
+        Customer customerWithoutPassword =
+                controller.createCustomer(firstName1, lastName1, login1, null, address1, balance1);
     }
 
     @Test
-    public void updateCustomer() throws IllegalLoginException, UserNotFoundException
+    public void updateCustomer() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
+        Customer expected = new Customer(firstName1, lastName1, login1, password1, address1, balance1);
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+
         controller.updateCustomer("newFirstName", null, login1, null, null, -1);
-        customer1.setFirstName("newFirstName");
-        Assert.assertEquals(actual, customer1);
+        expected.setFirstName("newFirstName");
+
+        Assert.assertEquals(expected, actual);
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void updateCustomer_NOT_FOUND() throws IllegalLoginException, UserNotFoundException
+    public void updateCustomer_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         controller.updateCustomer("newFirstName", null, "randomlogin", null, null, -1);
     }
 
     @Test
-    public void deleteCustomer() throws IllegalLoginException
+    public void deleteCustomer() throws IllegalLoginOrPasswordException
     {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.deleteCustomer(actual);
+        controller.getModel().deleteCustomer(actual);
+
         Assert.assertNull(controller.getModel().getCustomers().get(login1));
     }
 
     @Test
-    public void getCustomerByLogin() throws IllegalLoginException
+    public void getCustomerByLogin() throws IllegalLoginOrPasswordException
     {
-        Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        Customer expected = controller.getCustomerByLogin(login1);
-        Assert.assertEquals(actual, expected);
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
+        Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        Customer actual = controller.getModel().getCustomer(login1);
+
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void createEmployee() throws IllegalLoginException
+    public void getCustomerByLogin_NOT_FOUND()
     {
+        Customer actual = controller.getModel().getCustomer("RandomCustomerLogin");
+    }
+
+    @Test
+    public void createEmployee() throws IllegalLoginOrPasswordException
+    {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee expected = new Employee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createEmployee_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException
+    {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
         Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        Assert.assertEquals(expected, employee1);
+
+        Employee existedEmployee =
+                controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void createEmployee_WITH_EXISTED_LOGIN() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createEmployee_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
 
-        Employee existedEmployee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        Employee employeeWithoutLogin =
+                controller.createEmployee(empFirstName, empLastName, null, empPassword, empStatus);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void createEmployee_LOGIN_IS_NULL() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void createEmployee_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException
     {
-        Employee employeeWithoutLogin = controller.createEmployee(empFirstName, empLastName, null, empPassword, empStatus);
-    }
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
 
-    @Test(expected = IllegalLoginException.class)
-    public void createEmployee_PASSWORD_IS_NULL() throws IllegalLoginException
-    {
         Employee employeeWithoutLogin = controller.createEmployee(empFirstName, empLastName, empLogin, null, empStatus);
     }
 
     @Test
-    public void updateEmployee()throws IllegalLoginException, UserNotFoundException
+    public void updateEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee expected = new Employee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+
         controller.updateEmployee("newFirstName", null, empLogin, null, null);
-        employee1.setFirstName("newFirstName");
-        Assert.assertEquals(actual, employee1);
+        expected.setFirstName("newFirstName");
+
+        Assert.assertEquals(expected, actual);
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void updateEmployee_NOT_FOUND() throws IllegalLoginException, UserNotFoundException
+    public void updateEmployee_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         controller.updateEmployee("newFirstName", null, "nullLogin", null, null);
     }
 
     @Test
-    public void deleteEmployee()throws IllegalLoginException
+    public void deleteEmployee() throws IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        controller.deleteEmployee(actual);
+        controller.getModel().deleteEmployee(actual);
+
         Assert.assertNull(controller.getModel().getCustomers().get(empLogin));
     }
 
     @Test
-    public void getEmployeeByLogin()throws IllegalLoginException
+    public void getEmployeeByLogin() throws IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        Employee expected = controller.getEmployeeByLogin(empLogin);
-        Assert.assertEquals(actual, expected);
+        Employee expected = controller.getModel().getEmployee(empLogin);
+
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void login_CUSTOMER() throws IllegalLoginException
+    public void createDistrict() throws ObjectNotFoundException
     {
-        Employee expected2 = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        controller.getModel().createDistrict("Samara", null);
+        BigInteger districtSamaraId = BigInteger.valueOf(1);
+        BigInteger expectedId = BigInteger.valueOf(2);
+
+        District expected = new District("Name", districtSamaraId);
+        expected.setId(expectedId);
+
+        District actual = controller.createDistrict("Name", districtSamaraId);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void createDistrict_PARENT_NOT_EXISTS() throws ObjectNotFoundException
+    {
+        BigInteger notExistParentId = BigInteger.valueOf(666);
+
+        District actual = controller.createDistrict("Name", notExistParentId);
+    }
+
+    @Test
+    public void createDistrict_PARENT_IS_NULL() throws ObjectNotFoundException
+    {
+        BigInteger expectedId = BigInteger.valueOf(1);
+
+        District expected = new District("Name", null);
+        expected.setId(expectedId);
+
+        District actual = controller.createDistrict("Name", null);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void updateDistrict() throws ObjectNotFoundException
+    {
+        controller.getModel().createDistrict("Samara", null);
+        BigInteger districtSamaraId = BigInteger.valueOf(1);
+        BigInteger expectedId = BigInteger.valueOf(2);
+
+
+        District expected = new District("NewName", districtSamaraId);
+        expected.setId(expectedId);
+
+        District actual = controller.createDistrict("Name", null);
+        controller.updateDistrict(expectedId, "NewName", districtSamaraId);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void createSpecification() throws ObjectNotFoundException
+    {
+        controller.getModel().createDistrict("Samara", null);
+        BigInteger districtSamaraId = BigInteger.valueOf(1);
+        controller.getModel().createDistrict("Togliatti", null);
+        BigInteger districtTogliattiId = BigInteger.valueOf(2);
+        BigInteger expectedId = BigInteger.valueOf(3);
+        ArrayList<BigInteger> districtIds = new ArrayList<>();
+        districtIds.add(districtSamaraId);
+        districtIds.add(districtTogliattiId);
+
+        Specification expected = new Specification(100, null, true, districtIds);
+        expected.setId(expectedId);
+        Specification actual = controller.createSpecification(100, null, true, districtIds);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void updateSpecification() throws ObjectNotFoundException
+    {
+        controller.getModel().createDistrict("Samara", null);
+        BigInteger districtSamaraId = BigInteger.valueOf(1);
+        controller.getModel().createDistrict("Togliatti", null);
+        BigInteger districtTogliattiId = BigInteger.valueOf(2);
+        BigInteger expectedId = BigInteger.valueOf(3);
+        ArrayList<BigInteger> districtIds = new ArrayList<>();
+        districtIds.add(districtSamaraId);
+        districtIds.add(districtTogliattiId);
+
+        Specification expected = new Specification(200, null, true, districtIds);
+        expected.setId(expectedId);
+        Specification actual = controller.createSpecification(100, null, false, null);
+        controller.updateSpecification(expectedId, 200, null, true, districtIds);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void updateSpecification_NOT_EXISTS() throws ObjectNotFoundException
+    {
+        BigInteger notExistSpecId = BigInteger.valueOf(666);
+
+        controller.updateSpecification(notExistSpecId, 200, null, true, null);
+    }
+
+    @Test
+    public void login_CUSTOMER() throws IllegalLoginOrPasswordException
+    {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
         Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         AbstractUser actual = controller.login(login1, password1);
-        Assert.assertEquals(actual, expected);
+
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void login_EMPLOYEE() throws IllegalLoginException
+    public void login_EMPLOYEE() throws IllegalLoginOrPasswordException
     {
-        Customer expected1 = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
         Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         AbstractUser actual = controller.login(empLogin, empPassword);
-        Assert.assertEquals(actual, expected);
+
+        Assert.assertEquals(expected, actual);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void login_WRONG_LOGIN() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void login_WRONG_LOGIN() throws IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
         Customer expected1 = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         Employee expected2 = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+
         AbstractUser actual = controller.login("empLoginRandom", empPassword);
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void login_EMPLOYEE_WRONG_PASSWORD() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void login_EMPLOYEE_WRONG_PASSWORD() throws IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 100;
+
         Customer expected1 = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         Employee expected2 = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+
         AbstractUser actual = controller.login(empLogin, "empPasswordRandom");
     }
 
-    @Test(expected = IllegalLoginException.class)
-    public void login_CUSTOMER_WRONG_PASSWORD() throws IllegalLoginException
+    @Test(expected = IllegalLoginOrPasswordException.class)
+    public void login_CUSTOMER_WRONG_PASSWORD() throws IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 200;
+
         Customer expected1 = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         Employee expected2 = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         AbstractUser actual = controller.login(login1, "empPasswordRandom");
@@ -217,43 +476,248 @@ public class ControllerTest
 
     @Test
     public void startOrder()
+            throws IllegalTransitionException, ObjectNotFoundException, IllegalLoginOrPasswordException,
+            UserNotFoundException
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.ENTERING, order.getOrderStatus());
+
+        controller.startOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void startOrder_ORDER_NOT_EXIST()
+            throws IllegalTransitionException, ObjectNotFoundException
+    {
+        BigInteger orderId = BigInteger.valueOf(666);
+
+        controller.startOrder(orderId);
+    }
+
+    @Test(expected = IllegalTransitionException.class)
+    public void startOrder_ILLEGAL_TRANSITION()
+            throws IllegalTransitionException, ObjectNotFoundException
+    {
+        Order order = new Order(null, null, null, null, OrderAim.NEW, OrderStatus.CANCELLED);
+        controller.getModel().createOrder(order);
+        BigInteger orderId = BigInteger.valueOf(1);
+
+        controller.startOrder(orderId);
     }
 
     @Test
     public void suspendOrder()
+            throws IllegalTransitionException, ObjectNotFoundException, IllegalLoginOrPasswordException,
+            UserNotFoundException
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        controller.suspendOrder(orderId);
+
+        Assert.assertEquals(order.getOrderStatus(), OrderStatus.SUSPENDED);
     }
 
     @Test
-    public void restoreOrder()
+    public void restoreOrder() throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
+            IllegalLoginOrPasswordException
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+
+        order.setOrderStatus(OrderStatus.SUSPENDED);
+
+        controller.restoreOrder(orderId);
+
+        Assert.assertEquals(order.getOrderStatus(), OrderStatus.IN_PROGRESS);
     }
 
     @Test
-    public void cancelOrder()
+    public void cancelOrder() throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
+            IllegalLoginOrPasswordException
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+
+        controller.cancelOrder(orderId);
+
+        Assert.assertEquals(order.getOrderStatus(), OrderStatus.CANCELLED);
+    }
+
+    @Test(expected = IllegalTransitionException.class)
+    public void cancelOrder_ILLEGAL_TRANSITION()
+            throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
+            IllegalLoginOrPasswordException
+    {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+
+        order.setOrderStatus(OrderStatus.COMPLETED);
+
+        controller.cancelOrder(orderId);
     }
 
     @Test
-    public void completeOrder()
+    public void completeOrder_NEW_ORDER()
+            throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
+            IllegalLoginOrPasswordException
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+
+        Order order = controller.getModel().getOrder(orderId);
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        controller.completeOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
+        Assert.assertEquals(ServiceStatus.ACTIVE,
+                controller.getModel().getService(order.getServiceId()).getServiceStatus());
     }
 
     @Test
-    public void topUpBalance() throws IllegalLoginException
+    public void completeOrder_DISCONNECT_ORDER() throws Exception
     {
-        Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.topUpBalance(login1, 50);
-        Assert.assertEquals(balance1  + 50, expected.getBalance(), 0);
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Service service = controller.getModel()
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
+        controller.createDisconnectOrder(cust1_login, service.getId());
+        BigInteger orderId = BigInteger.valueOf(3);
+
+        Order order = controller.getModel().getOrder(orderId);
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        controller.completeOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
+        Assert.assertEquals(ServiceStatus.DISCONNECTED,
+                controller.getModel().getService(order.getServiceId()).getServiceStatus());
     }
 
     @Test
-    public void topDownBalance() throws IllegalLoginException
+    public void completeOrder_SUSPEND_ORDER() throws Exception
     {
-        Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.topDownBalance(login1, 50);
-        Assert.assertEquals(balance1  - 50, expected.getBalance(), 0);
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Service service = controller.getModel()
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
+        controller.createSuspendOrder(cust1_login, service.getId());
+        BigInteger orderId = BigInteger.valueOf(3);
+
+        Order order = controller.getModel().getOrder(orderId);
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        controller.completeOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
+        Assert.assertEquals(ServiceStatus.SUSPENDED,
+                controller.getModel().getService(order.getServiceId()).getServiceStatus());
+    }
+
+    @Test
+    public void completeOrder_RESTORE_ORDER() throws Exception
+    {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Service service = controller.getModel()
+                .createService(new Service(new Date(), specId, ServiceStatus.DISCONNECTED, cust1_login));
+        controller.createRestoreOrder(cust1_login, service.getId());
+        BigInteger orderId = BigInteger.valueOf(3);
+
+        Order order = controller.getModel().getOrder(orderId);
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        controller.completeOrder(orderId);
+
+        Assert.assertEquals(OrderStatus.COMPLETED, order.getOrderStatus());
+        Assert.assertEquals(ServiceStatus.ACTIVE,
+                controller.getModel().getService(order.getServiceId()).getServiceStatus());
+    }
+
+
+    @Test
+    public void changeBalanceOn_UP() throws IllegalLoginOrPasswordException, UserNotFoundException
+    {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 200;
+
+        Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        controller.changeBalanceOn(login1, (float) 50);
+
+        Assert.assertEquals(balance1 + 50, actual.getBalance(), 0);
+    }
+
+    @Test
+    public void changeBalanceOn_DOWN() throws IllegalLoginOrPasswordException, UserNotFoundException
+    {
+        String firstName1 = "Customer1firstName";
+        String lastName1 = "Customer1lastName";
+        String login1 = "Customer1login";
+        String password1 = "Customer1password";
+        String address1 = "Customer1address";
+        float balance1 = 200;
+
+        Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        controller.changeBalanceOn(login1, (float) -50);
+
+        Assert.assertEquals(balance1 - 50, actual.getBalance(), 0);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void changeBalanceOn_NOT_EXISTED_CUSTOMER() throws UserNotFoundException
+    {
+        controller.changeBalanceOn("login1USERRANDOM", (float) -50);
     }
 
     @Test
@@ -267,23 +731,33 @@ public class ControllerTest
     }
 
     @Test
-    public void createNewOrder()
+    public void getOrdersByEmployee()
     {
     }
 
-    @Test
-    public void createSuspendOrder()
+    @Test(expected = Exception.class)
+    public void createSuspendOrder_SERVICE_NOT_BELONGS_TO_CUSTOMER() throws Exception
     {
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Service service = controller.getModel()
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
+        String newLogin = "newLogin";
+        controller.createCustomer(null, null, newLogin, "pass", null, 0);
+
+        controller.createSuspendOrder(newLogin, service.getId());
     }
 
-    @Test
-    public void createRestoreOrder()
+    @Test(expected = Exception.class)
+    public void createSuspendOrder_SERVICE_NOT_EXISTS() throws Exception
     {
-    }
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        BigInteger randomId = BigInteger.valueOf(666);
 
-    @Test
-    public void createDisconnectOrder()
-    {
+        Order suspendOrder = controller.createSuspendOrder(cust1_login, randomId);
     }
 
     @Test
@@ -292,62 +766,153 @@ public class ControllerTest
     }
 
     @Test
-    public void goOnVacation() throws IllegalLoginException
+    public void goOnVacation() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+
         controller.goOnVacation(empLogin);
-        Assert.assertEquals(expected.getEmployeeStatus(), EmployeeStatus.ON_VACATION);
+
+        Assert.assertEquals(EmployeeStatus.ON_VACATION, actual.getEmployeeStatus());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void goOnVacation_NOT_EXISTED_EMPLOYEE() throws UserNotFoundException
+    {
+        controller.goOnVacation("RandomEmpLogin");
     }
 
     @Test
-    public void returnFromVacation() throws IllegalLoginException
+    public void returnFromVacation() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, EmployeeStatus.ON_VACATION);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+
+        Employee actual =
+                controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, EmployeeStatus
+                        .ON_VACATION);
+
         controller.returnFromVacation(empLogin);
-        Assert.assertEquals(expected.getEmployeeStatus(), EmployeeStatus.WORKING);
+
+        Assert.assertEquals(EmployeeStatus.WORKING, actual.getEmployeeStatus());
     }
 
     @Test
-    public void retireEmployee() throws IllegalLoginException
+    public void retireEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+
         controller.retireEmployee(empLogin);
-        Assert.assertEquals(expected.getEmployeeStatus(), EmployeeStatus.RETIRED);
+
+        Assert.assertEquals(EmployeeStatus.RETIRED, employee.getEmployeeStatus());
     }
 
     @Test
-    public void subscribeToWork() throws IllegalLoginException
+    public void retireEmployee_ORDERS_EXISTS() throws IllegalLoginOrPasswordException, UserNotFoundException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        controller.subscribeToWork(empLogin);
-        boolean checker = false;
-        if (controller.getModel().getWorkWaiters().getEmployeesWaitingForOrders().indexOf(empLogin) != -1)
-            checker = true;
-        Assert.assertTrue(checker);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
+        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
+        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
+
+        controller.retireEmployee(empLogin);
+
+        if (controller.getEmployeeOrders(empLogin).size() != 0)
+        {
+            Assert.fail("Orders of retired employee keep existing!!!");
+        }
     }
 
     @Test
-    public void subscribeToWork_ALREADY_SUBSCRIBED() throws IllegalLoginException
+    public void assignOrder() throws UserNotFoundException, ObjectNotFoundException, IllegalLoginOrPasswordException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        Employee tmp1 = controller.createEmployee(empFirstName, empLastName, "tmpEployee1", empPassword, empStatus);
-        Employee tmp2 = controller.createEmployee(empFirstName, empLastName, "tmpEployee2", empPassword, empStatus);
-        controller.subscribeToWork(empLogin);
-        controller.subscribeToWork("tmpEmployee1");
-        controller.subscribeToWork("tmpEmployee2");
-        Assert.assertEquals(controller.getModel().getWorkWaiters().getEmployeesWaitingForOrders().indexOf(empLogin), controller.getModel().getWorkWaiters().getEmployeesWaitingForOrders().lastIndexOf(empLogin));
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Order order = controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+        Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+
+        controller.assignOrder(empLogin, orderId);
+
+        Assert.assertEquals(empLogin, order.getEmployeeLogin());
     }
 
     @Test
-    public void unsubscribeFromWork() throws IllegalLoginException
+    public void processOrder() throws UserNotFoundException, IllegalTransitionException, ObjectNotFoundException,
+            IllegalLoginOrPasswordException
     {
-        Employee expected = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        controller.unsubscribeFromWork(empLogin);
-        Assert.assertEquals(controller.getModel().getWorkWaiters().getEmployeesWaitingForOrders().indexOf(empLogin), -1);
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Order order = controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+        Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+
+        controller.processOrder(empLogin, orderId);
+        Assert.assertEquals(empLogin, order.getEmployeeLogin());
+        Assert.assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
     }
 
     @Test
-    public void distributeOrders()
+    public void usassignOrder() throws UserNotFoundException, ObjectNotFoundException,
+            IllegalLoginOrPasswordException
     {
+        String empFirstName = "Employee1firstName";
+        String empLastName = "Employee1lastName";
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        String cust1_login = "cust1_login";
+        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        controller.createSpecification(100, "Internet100", false, null);
+        BigInteger specId = BigInteger.valueOf(1);
+        Order order = controller.createNewOrder(cust1_login, specId);
+        BigInteger orderId = BigInteger.valueOf(2);
+        Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
+                empStatus);
+
+        controller.assignOrder(empLogin, orderId);
+
+        controller.usassignOrder(orderId);
+
+        Assert.assertNull(order.getEmployeeLogin());
     }
+
 }
