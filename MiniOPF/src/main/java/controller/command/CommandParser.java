@@ -57,11 +57,11 @@ public class CommandParser
                     result = Command.update_district.execute(words);
                     break;
                 case "CREATESPECIFICATION":
-                    checkArgumentsLength(words, 5);
+                    checkArgumentsLength(words, 6);
                     result = Command.create_specification.execute(words);
                     break;
                 case "UPDATESPECIFICATION":
-                    checkArgumentsLength(words, 6);
+                    checkArgumentsLength(words, 7);
                     result = Command.update_specification.execute(words);
                     break;
                 case "DELETECUSTOMERCASCADE":

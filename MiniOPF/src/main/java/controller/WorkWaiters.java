@@ -60,11 +60,11 @@ public class WorkWaiters
 
     public Order getFreeOrder(Model model)
     {
-        for (Order ord : model.getOrders().values())
+        for (Order order : model.getOrders().values())
         {
-            if (ord.getEmployeeLogin() == null)
+            if (order.getEmployeeLogin() == null)
             {
-                return ord;
+                return order;
             }
         }
         return null;

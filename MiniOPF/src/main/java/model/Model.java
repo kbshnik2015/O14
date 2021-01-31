@@ -259,10 +259,10 @@ public class Model
         return specification;
     }
 
-    public Specification createSpecification(float price, String description, boolean isAddressDepended,
+    public Specification createSpecification(String name, float price, String description, boolean isAddressDepended,
             ArrayList<BigInteger> districtsIds)
     {
-        Specification specification = new Specification(price, description, isAddressDepended, districtsIds);
+        Specification specification = new Specification(name, price, description, isAddressDepended, districtsIds);
 
         return createSpecification(specification);
     }
@@ -273,12 +273,17 @@ public class Model
         specifications.put(specification.getId(), specification);
     }
 
-    public void updateSpecification(BigInteger id, float price, String description, boolean isAddressDepended,
+    public void updateSpecification(BigInteger id, String name, float price, String description,
+            boolean isAddressDepended,
             ArrayList<BigInteger> districtsIds)
     {
         Specification specification = getSpecification(id);
         if (specification != null)
         {
+            if (name != null)
+            {
+                specification.setName(name);
+            }
             if (price >= 0)
             {
                 specification.setPrice(price);

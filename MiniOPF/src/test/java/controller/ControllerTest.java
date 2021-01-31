@@ -346,9 +346,9 @@ public class ControllerTest
         districtIds.add(districtSamaraId);
         districtIds.add(districtTogliattiId);
 
-        Specification expected = new Specification(100, null, true, districtIds);
+        Specification expected = new Specification("Spec name", 100, null, true, districtIds);
         expected.setId(expectedId);
-        Specification actual = controller.createSpecification(100, null, true, districtIds);
+        Specification actual = controller.createSpecification("Spec name", 100, null, true, districtIds);
 
         Assert.assertEquals(expected, actual);
     }
@@ -365,10 +365,10 @@ public class ControllerTest
         districtIds.add(districtSamaraId);
         districtIds.add(districtTogliattiId);
 
-        Specification expected = new Specification(200, null, true, districtIds);
+        Specification expected = new Specification("Spec name", 200, null, true, districtIds);
         expected.setId(expectedId);
-        Specification actual = controller.createSpecification(100, null, false, null);
-        controller.updateSpecification(expectedId, 200, null, true, districtIds);
+        Specification actual = controller.createSpecification("Spec name", 100, null, false, null);
+        controller.updateSpecification(expectedId,"Spec name", 200, null, true, districtIds);
 
         Assert.assertEquals(expected, actual);
     }
@@ -378,7 +378,7 @@ public class ControllerTest
     {
         BigInteger notExistSpecId = BigInteger.valueOf(666);
 
-        controller.updateSpecification(notExistSpecId, 200, null, true, null);
+        controller.updateSpecification(notExistSpecId, "Spec name",  200, null, true, null);
     }
 
     @Test
@@ -481,7 +481,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -522,7 +522,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -542,7 +542,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -562,7 +562,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -581,7 +581,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -600,7 +600,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -620,7 +620,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
                 .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
@@ -642,7 +642,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
                 .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
@@ -664,7 +664,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
                 .createService(new Service(new Date(), specId, ServiceStatus.DISCONNECTED, cust1_login));
@@ -740,7 +740,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
                 .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
@@ -855,7 +855,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Order order = controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -878,7 +878,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Order order = controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);
@@ -901,7 +901,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
-        controller.createSpecification(100, "Internet100", false, null);
+        controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Order order = controller.createNewOrder(cust1_login, specId);
         BigInteger orderId = BigInteger.valueOf(2);

@@ -152,16 +152,18 @@ public enum Command
                         throws WrongCommandArgumentsException, IOException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
-                    float price = Command.parseToFloat(args[1]);
-                    String description = !args[2].equalsIgnoreCase("null") ? args[2] : null;
-                    boolean isAddressDepended = Command.parseToBoolean(args[3]);
-                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[4]);
+                    String name = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    float price = Command.parseToFloat(args[2]);
+                    String description = !args[3].equalsIgnoreCase("null") ? args[3] : null;
+                    boolean isAddressDepended = Command.parseToBoolean(args[4]);
+                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[5]);
 
                     Specification specification = controller
-                            .createSpecification(price, description, isAddressDepended, districtsIds);
+                            .createSpecification(name, price, description, isAddressDepended, districtsIds);
 
-                    return "Specification was created: price: " + specification.getPrice() + " , description: " +
-                            specification.getDescription() + " (id: " + specification.getId() + ").";
+                    return "Specification was created: name : " + specification.getName() +
+                            ", id: " + specification.getId() + ")." + "price: " + specification.getPrice() +
+                            " , description: " + specification.getDescription();
                 }
             },
 
@@ -173,16 +175,18 @@ public enum Command
                 {
                     Controller controller = new Controller();
                     BigInteger specId = Command.parseToBigInteger(args[1]);
-                    float price = Command.parseToFloat(args[2]);
-                    String description = !args[3].equalsIgnoreCase("null") ? args[3] : null;
-                    boolean isAddressDepended = Command.parseToBoolean(args[4]);
-                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[5]);
+                    String name = !args[2].equalsIgnoreCase("null") ? args[2] : null;
+                    float price = Command.parseToFloat(args[3]);
+                    String description = !args[4].equalsIgnoreCase("null") ? args[4] : null;
+                    boolean isAddressDepended = Command.parseToBoolean(args[5]);
+                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[6]);
 
-                    controller.updateSpecification(specId, price, description, isAddressDepended, districtsIds);
+                    controller.updateSpecification(specId, name, price, description, isAddressDepended, districtsIds);
                     Specification specification = controller.getModel().getSpecification(specId);
 
-                    return "Specification was updated: price: " + specification.getPrice() + " , description: " +
-                            specification.getDescription() + " (id: " + specification.getId() + ").";
+                    return "Specification was updated: name : " + specification.getName() +
+                            ", id: " + specification.getId() + ")." + "price: " + specification.getPrice() +
+                            " , description: " + specification.getDescription();
                 }
             },
 
@@ -361,7 +365,7 @@ public enum Command
                     for (Specification specification : controller.getModel().getSpecifications().values())
                     {
                         result = result.concat("\t" + specification.getId() + ": " + specification.getDescription() +
-                                " price: " + specification.getPrice() + "\n");
+                                "name: " + specification.getName() + "price: " + specification.getPrice() + "\n");
                     }
 
                     return result;
@@ -378,12 +382,12 @@ public enum Command
                     String result = "Orders: \n";
                     for (Order order : controller.getModel().getOrders().values())
                     {
-                        result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
-                                order.getOrderStatus() + ", Customer: " +
-                                controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                                controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
-                                " (login: " + order.getCustomerLogin() + "), specification id: " + order.getSpecId() +
-                                "\n");
+                        Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                        result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() +
+                                ", status: " + order.getOrderStatus() +
+                                ", Customer: " + customer.getFirstName() + " " + customer.getLastName() +
+                                " (login: " + order.getCustomerLogin() +
+                                "), specification id: " + order.getSpecId() + "\n");
                     }
 
                     return result;
@@ -417,11 +421,13 @@ public enum Command
                     String result = "Services: \n";
                     for (Service service : controller.getModel().getServices().values())
                     {
-                        result = result.concat("\t" + service.getId() + ": " +
-                                controller.getModel().getCustomer(service.getCustomerLogin()).getFirstName() + " " +
-                                controller.getModel().getCustomer(service.getCustomerLogin()).getLastName() +
-                                " (login: " + service.getCustomerLogin() + "), specification id: " +
-                                service.getSpecificationId() + ", status: " + service.getServiceStatus() + "\n");
+                        Customer customer = controller.getModel().getCustomer(service.getCustomerLogin());
+                        result = result.concat("\t" + service.getId() + ": " + customer.getFirstName() + " " +
+                                customer.getLastName() + " (login: " + service.getCustomerLogin() +
+                                "), specification: " +
+                                controller.getModel().getSpecification(service.getSpecificationId()).getName() +
+                                " (id: " + service.getSpecificationId() + "), status: " + service.getServiceStatus() +
+                                "\n");
                     }
 
                     return result;
@@ -475,36 +481,31 @@ public enum Command
                     BigInteger id = Command.parseToBigInteger(args[1]);
 
                     Order order = controller.getModel().getOrder(id);
+                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
 
-                    String result = "Order: " + order.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
-                            " (login: " + order.getCustomerLogin() + ")" + "\n"
-                            + "\tEmployee: ";
+                    String result = "Order: " + order.getId() + "\tCustomer: " + customer.getFirstName() + " " +
+                            customer.getLastName() + " (login: " + order.getCustomerLogin() + ")" + "\n\tEmployee: ";
                     if (order.getEmployeeLogin() != null)
                     {
-                        result = result
-                                .concat(controller.getModel().getEmployee(order.getEmployeeLogin()).getFirstName() +
-                                        " " +
-                                        controller.getModel().getEmployee(order.getEmployeeLogin()).getLastName() +
-                                        " (login: " + order.getEmployeeLogin() + ")");
+                        Employee employee = controller.getModel().getEmployee(order.getEmployeeLogin());
+                        result = result.concat(employee.getFirstName() + " " + employee.getLastName() +
+                                " (login: " + order.getEmployeeLogin() + ")");
                     }
-                    result = result.concat("\n\tAim: " + order.getOrderAim() + "\n"
-                            + "\tStatus: " + order.getOrderStatus() + "\n" +
-                            "\tSpecification: id: " + order.getSpecId() + ", " +
-                            "price: " + controller.getModel().getSpecification(order.getSpecId()).getPrice() +
-                            ", description: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getDescription() + "\n" +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(order.getSpecId()).isAddressDepended() +
-                            "\n" + "\tService:");
+                    result = result.concat("\n\tAim: " + order.getOrderAim() +
+                            "\n\tStatus: " + order.getOrderStatus() +
+                            "\n\tSpecification:" +
+                            "\n\t\tid: " + order.getSpecId() +
+                            "\n\t\tname: " + specification.getName() +
+                            "\n\t\tprice: " + specification.getPrice() +
+                            "\n\t\tdescription: " + specification.getDescription() +
+                            "\n\t\taddress depended: " + specification.isAddressDepended() +
+                            "\n\tService:");
                     if (order.getServiceId() != null)
                     {
+                        Service service = controller.getModel().getService(order.getServiceId());
                         result = result.concat(" id: " + order.getServiceId() + ", status: " +
-                                controller.getModel().getService(order.getServiceId()).getServiceStatus() +
-                                ", pay day: " +
-                                controller.getModel().getService(order.getServiceId()).getPayDay() + "\n");
+                                service.getServiceStatus() + ", pay day: " + service.getPayDay() + "\n");
                     }
 
                     return result;
@@ -520,21 +521,18 @@ public enum Command
                     BigInteger id = Command.parseToBigInteger(args[1]);
 
                     Service service = controller.getModel().getService(id);
+                    Specification specification = controller.getModel().getSpecification(service.getSpecificationId());
+                    Customer customer = controller.getModel().getCustomer(service.getCustomerLogin());
 
                     return "Service: " + service.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(service.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(service.getCustomerLogin()).getLastName() +
+                            + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + service.getCustomerLogin() + ")" + "\n"
-                            + "\tSpecification: id: " + service.getSpecificationId() + ", price: " +
-                            controller.getModel().getSpecification(service.getSpecificationId()).getPrice() +
-                            ", description: " +
-                            controller.getModel().getSpecification(service.getSpecificationId()).getDescription() +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(service.getSpecificationId()).isAddressDepended() +
-                            "\n"
-                            + "\tStatus: " + service.getServiceStatus() + "\n"
-                            + "\tPay day: " + service.getPayDay() + "\n";
+                            + "\tSpecification: id: " + service.getSpecificationId() + ", name: " +
+                            specification.getName() + ", price:" + specification.getPrice() +
+                            ", description: " + specification.getDescription() +
+                            ", address depended: " + specification.isAddressDepended() +
+                            "\n\tStatus: " + service.getServiceStatus() +
+                            "\n\tPay day: " + service.getPayDay() + "\n";
                 }
             },
 
@@ -549,6 +547,7 @@ public enum Command
                     Specification specification = controller.getModel().getSpecification(id);
 
                     String result = "Specification: " + specification.getId() + "\n"
+                            + "\tName: " + specification.getName() + "\n"
                             + "\tDescription: " + specification.getDescription() + "\n"
                             + "\tPrice: " + specification.getPrice() + "\n"
                             + "\tAddress depended : " + specification.isAddressDepended() + "\n";
@@ -557,8 +556,8 @@ public enum Command
                         result = result.concat("\tDistricts: ");
                         for (BigInteger districtId : specification.getDistrictsIds())
                         {
-                            result = result.concat(controller.getModel().getDistrict(districtId).getName() + " (id: " +
-                                    controller.getModel().getDistrict(districtId).getId() + "), ");
+                            District district = controller.getModel().getDistrict(districtId);
+                            result = result.concat(district.getName() + " (id: " + district.getId() + "), ");
                         }
                     }
 
@@ -582,8 +581,8 @@ public enum Command
                     if (district.getParentId() != null)
                     {
                         result = result
-                                .concat(controller.getModel().getDistrict(district.getParentId()).getName() + " (id: " +
-                                        district.getParentId() + ") ");
+                                .concat(controller.getModel().getDistrict(district.getParentId()).getName() +
+                                        " (id: " + district.getParentId() + ") ");
                     }
                     result = result.concat(" \n\tChildren: ");
                     if (controller.getDistrictChildrens(district.getId()) != null)
@@ -615,18 +614,18 @@ public enum Command
 
                     Order order = controller.createNewOrder(customerLogin, specId);
 
+                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+
                     return "New order was created: " + order.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                            + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + order.getCustomerLogin() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
-                            + "\tSpecification: id: " + order.getSpecId() + ", price: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getPrice() + ", description: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getDescription() +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(order.getSpecId()).isAddressDepended() + "\n";
+                            + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
+                            ", price: " + specification.getPrice() +
+                            ", description: " + specification.getDescription() +
+                            ", address depended: " + specification.isAddressDepended() + "\n";
                 }
             },
 
@@ -641,21 +640,21 @@ public enum Command
 
                     Order order = controller.createSuspendOrder(customerLogin, serviceId);
 
+                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    Service service = controller.getModel().getService(order.getServiceId());
+
                     return "Suspend order was created: " + order.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                            + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + order.getCustomerLogin() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
-                            + "\tSpecification: id: " + order.getSpecId() + ", price: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getPrice() + ", description: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getDescription() +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(order.getSpecId()).isAddressDepended() + "\n"
-                            + "\tService: id: " + order.getServiceId() + ", status: " +
-                            controller.getModel().getService(order.getServiceId()).getServiceStatus() + ", pay day: " +
-                            controller.getModel().getService(order.getServiceId()).getPayDay() + "\n";
+                            + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
+                            ", price: " + specification.getPrice() +
+                            ", description: " + specification.getDescription() +
+                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
+                            ", pay day: " + service.getPayDay() + "\n";
                 }
             },
 
@@ -670,21 +669,21 @@ public enum Command
 
                     Order order = controller.createRestoreOrder(customerLogin, serviceId);
 
+                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    Service service = controller.getModel().getService(order.getServiceId());
+
                     return "Restore order was created: " + order.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                            + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + order.getCustomerLogin() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
-                            + "\tSpecification: id: " + order.getSpecId() + ", price: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getPrice() + ", description: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getDescription() +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(order.getSpecId()).isAddressDepended() + "\n"
-                            + "\tService: id: " + order.getServiceId() + ", status: " +
-                            controller.getModel().getService(order.getServiceId()).getServiceStatus() + ", pay day: " +
-                            controller.getModel().getService(order.getServiceId()).getPayDay() + "\n";
+                            + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
+                            ", price: " + specification.getPrice() +
+                            ", description: " + specification.getDescription() +
+                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
+                            ", pay day: " + service.getPayDay() + "\n";
                 }
             },
 
@@ -699,21 +698,21 @@ public enum Command
 
                     Order order = controller.createDisconnectOrder(customerLogin, serviceId);
 
+                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    Service service = controller.getModel().getService(order.getServiceId());
+
                     return "Disconnect order was created: " + order.getId() + "\n"
-                            + "\tCustomer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                            + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + order.getCustomerLogin() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
-                            + "\tSpecification: id: " + order.getSpecId() + ", price: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getPrice() + ", description: " +
-                            controller.getModel().getSpecification(order.getSpecId()).getDescription() +
-                            ", address depended: " +
-                            controller.getModel().getSpecification(order.getSpecId()).isAddressDepended() + "\n"
-                            + "\tService: id: " + order.getServiceId() + ", status: " +
-                            controller.getModel().getService(order.getServiceId()).getServiceStatus() + ", pay day: " +
-                            controller.getModel().getService(order.getServiceId()).getPayDay() + "\n";
+                            + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
+                            ", price: " + specification.getPrice() +
+                            ", description: " + specification.getDescription() +
+                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
+                            ", pay day: " + service.getPayDay() + "\n";
                 }
             },
 
@@ -809,9 +808,10 @@ public enum Command
 
                     controller.changeBalanceOn(login, amountOfMoney);
 
-                    return "Balance of customer " + controller.getModel().getCustomer(login).getFirstName() + " " +
-                            controller.getModel().getCustomer(login).getLastName() + " (login: " +
-                            controller.getModel().getCustomer(login).getLogin() + ") was changed by " + amountOfMoney;
+                    Customer customer = controller.getModel().getCustomer(login);
+
+                    return "Balance of customer " + customer.getFirstName() + " " + customer.getLastName() +
+                            " (login: " + customer.getLogin() + ") was changed by " + amountOfMoney;
                 }
             },
 
@@ -825,12 +825,11 @@ public enum Command
                     String result = "Free orders: \n";
                     for (Order order : controller.getFreeOrders())
                     {
+                        Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
                         result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
-                                order.getOrderStatus() + ", Customer: " +
-                                controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                                controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
-                                " (login: " + order.getCustomerLogin() + "), specification id: " + order.getSpecId() +
-                                "\n");
+                                order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
+                                customer.getLastName() + " (login: " + order.getCustomerLogin() +
+                                "), specification id: " + order.getSpecId() + "\n");
                     }
 
                     return result;
@@ -845,12 +844,12 @@ public enum Command
                     Controller controller = new Controller();
                     Order order = controller.getFreeOrder();
 
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+
                     return "Free order: \n(id: " + order.getId() + ") " + order.getOrderAim() + ", status: " +
-                            order.getOrderStatus() + ", Customer: " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                            controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
-                            " (login: " + order.getCustomerLogin() + "), specification id: " + order.getSpecId() +
-                            "\n";
+                            order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
+                            customer.getLastName() + " (login: " + order.getCustomerLogin() +
+                            "), specification id: " + order.getSpecId() + "\n";
                 }
             },
 
@@ -864,10 +863,9 @@ public enum Command
 
                     List<Order> orders = (List<Order>) controller.getCustomerOrders(login);
 
-                    String result =
-                            "Orders of customer " + controller.getModel().getCustomer(login).getFirstName() + " " +
-                                    controller.getModel().getCustomer(login).getLastName() + " (login: " + login +
-                                    "):" + "\n";
+                    Customer customer = controller.getModel().getCustomer(login);
+                    String result = "Orders of customer " + customer.getFirstName() + " " + customer.getLastName() +
+                            " (login: " + login + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
@@ -891,10 +889,9 @@ public enum Command
 
                     List<Service> services = (List<Service>) controller.getCustomerServices(login);
 
-                    String result =
-                            "Services of customer " + controller.getModel().getCustomer(login).getFirstName() + " " +
-                                    controller.getModel().getCustomer(login).getLastName() + " (login: " + login +
-                                    "):" + "\n";
+                    Customer customer = controller.getModel().getCustomer(login);
+                    String result = "Services of customer " + customer.getFirstName() + " " + customer.getLastName() +
+                            " (login: " + login + "):\n";
                     if (services != null)
                     {
                         for (Service service : services)
@@ -919,17 +916,16 @@ public enum Command
 
                     List<Order> orders = (List<Order>) controller.getEmployeeOrders(login);
 
-                    String result =
-                            "Orders of employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                                    controller.getModel().getEmployee(login).getLastName() + " (login: " + login +
-                                    "):" + "\n";
+                    Employee employee = controller.getModel().getEmployee(login);
+                    String result = "Orders of employee " + employee.getFirstName() + " " + employee.getLastName() +
+                            " (login: " + login + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
                         {
+                            Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
-                                    controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                                    controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                                    customer.getFirstName() + " " + customer.getLastName() +
                                     " (login: " + order.getCustomerLogin() + "), status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
                         }
@@ -949,11 +945,9 @@ public enum Command
 
                     List<Service> services = (List<Service>) controller.getCustomerConnectedServices(login);
 
-                    String result =
-                            "Connected services of customer " +
-                                    controller.getModel().getCustomer(login).getFirstName() + " " +
-                                    controller.getModel().getCustomer(login).getLastName() + " (login: " + login +
-                                    "):" + "\n";
+                    Customer customer = controller.getModel().getCustomer(login);
+                    String result = "Connected services of customer " + customer.getFirstName() + " " +
+                            customer.getLastName() + " (login: " + login + ")\n";
                     if (services != null)
                     {
                         for (Service service : services)
@@ -978,11 +972,9 @@ public enum Command
 
                     List<Order> orders = (List<Order>) controller.getCustomerNotFinishedOrders(login);
 
-                    String result =
-                            "Not finished orders of customer " +
-                                    controller.getModel().getCustomer(login).getFirstName() + " " +
-                                    controller.getModel().getCustomer(login).getLastName() + " (login: " + login +
-                                    "):" + "\n";
+                    Customer customer = controller.getModel().getCustomer(login);
+                    String result = "Not finished orders of customer " + customer.getFirstName() + " " +
+                            customer.getLastName() + " (login: " + login + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
@@ -1009,13 +1001,14 @@ public enum Command
                     {
                         for (Order order : orders)
                         {
+                            Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
-                                    controller.getModel().getCustomer(order.getCustomerLogin()).getFirstName() + " " +
-                                    controller.getModel().getCustomer(order.getCustomerLogin()).getLastName() +
+                                    customer.getFirstName() + " " + customer.getLastName() +
                                     " (login: " + order.getCustomerLogin() + "), status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
                         }
                     }
+
                     return result;
                 }
             },
@@ -1030,9 +1023,10 @@ public enum Command
 
                     controller.goOnVacation(login);
 
-                    return "Employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() + ") went to vacation.";
+                    Employee employee = controller.getModel().getEmployee(login);
+
+                    return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
+                            " (login: " + employee.getLogin() + ") went to vacation.";
                 }
             },
 
@@ -1046,9 +1040,10 @@ public enum Command
 
                     controller.returnFromVacation(login);
 
-                    return "Employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() + ") was returned from vacation.";
+                    Employee employee = controller.getModel().getEmployee(login);
+
+                    return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
+                            " (login: " + employee.getLogin() + ") was returned from vacation.";
                 }
             },
 
@@ -1062,9 +1057,10 @@ public enum Command
 
                     controller.retireEmployee(login);
 
-                    return "Employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() + ") was retired.";
+                    Employee employee = controller.getModel().getEmployee(login);
+
+                    return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
+                            " (login: " + employee.getLogin() + ") was retired.";
                 }
             },
 
@@ -1081,11 +1077,11 @@ public enum Command
 
                     controller.assignOrder(login, orderId);
 
+                    Employee employee = controller.getModel().getEmployee(login);
+
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
-                            ") was assigned to employee " +
-                            controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() + ").";
+                            ") was assigned to employee " + employee.getFirstName() + " " +
+                            employee.getLastName() + " (login: " + employee.getLogin() + ").";
                 }
             },
 
@@ -1102,11 +1098,11 @@ public enum Command
 
                     controller.processOrder(login, orderId);
 
+                    Employee employee = controller.getModel().getEmployee(login);
+
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
-                            ") was started by employee " +
-                            controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() + ").";
+                            ") was started by employee " + employee.getFirstName() + " " +
+                            employee.getLastName() + " (login: " + employee.getLogin() + ").";
                 }
             },
 
@@ -1137,10 +1133,10 @@ public enum Command
 
                     workWaiters.subscribe(controller.getModel(), login);
 
-                    return "Employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() +
-                            ") was subscribed for getting free orders.";
+                    Employee employee = controller.getModel().getEmployee(login);
+
+                    return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
+                            employee.getLogin() + ") was subscribed for getting free orders.";
                 }
             },
 
@@ -1155,10 +1151,10 @@ public enum Command
 
                     workWaiters.unsubscribe(controller.getModel(), login);
 
-                    return "Employee " + controller.getModel().getEmployee(login).getFirstName() + " " +
-                            controller.getModel().getEmployee(login).getLastName() + " (login: " +
-                            controller.getModel().getEmployee(login).getLogin() +
-                            ") was unsubscribed from work waiters.";
+                    Employee employee = controller.getModel().getEmployee(login);
+
+                    return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
+                            employee.getLogin() + ") was unsubscribed from work waiters.";
                 }
             },
 

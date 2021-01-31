@@ -13,6 +13,8 @@ public class Specification
 
     private BigInteger Id;
 
+    private String name;
+
     private float price;
 
     private String description;
@@ -22,7 +24,10 @@ public class Specification
     private ArrayList<BigInteger> districtsIds;
 
 
-    public Specification(float price, String description, boolean isAddressDepended, ArrayList<BigInteger> districtsIds){
+    public Specification(String name, float price, String description, boolean isAddressDepended,
+            ArrayList<BigInteger> districtsIds)
+    {
+        this.name = name;
         this.price = price;
         this.description = description;
         this.isAddressDepended = isAddressDepended;

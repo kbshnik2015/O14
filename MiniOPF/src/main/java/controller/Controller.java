@@ -135,7 +135,7 @@ public class Controller
         model.updateDistrict(id, name, parentId);
     }
 
-    public Specification createSpecification(float price, String description, boolean isAddressDepended,
+    public Specification createSpecification(String name, float price, String description, boolean isAddressDepended,
             ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException
     {
         if (districtsIds != null)
@@ -146,12 +146,13 @@ public class Controller
             }
         }
 
-        Specification specification = new Specification(price, description, isAddressDepended, districtsIds);
+        Specification specification = new Specification(name, price, description, isAddressDepended, districtsIds);
 
         return model.createSpecification(specification);
     }
 
-    public void updateSpecification(BigInteger id, float price, String description, boolean isAddressDepended,
+    public void updateSpecification(BigInteger id, String name, float price, String description,
+            boolean isAddressDepended,
             ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException
     {
         checkSpecificationExists(id);
@@ -164,7 +165,7 @@ public class Controller
             }
         }
 
-        model.updateSpecification(id, price, description, isAddressDepended, districtsIds);
+        model.updateSpecification(id, name, price, description, isAddressDepended, districtsIds);
     }
 
     public void deleteCustomerCascade(String login) throws UserNotFoundException
@@ -279,7 +280,9 @@ public class Controller
         checkServiceBelongsToCustomer(customerLogin, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null, model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId, OrderAim.SUSPEND, null);
+        Order order = new Order(customerLogin, null,
+                model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
+                OrderAim.SUSPEND, null);
 
         return model.createOrder(order);
     }
@@ -291,7 +294,9 @@ public class Controller
         checkServiceBelongsToCustomer(customerLogin, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null, model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId, OrderAim.RESTORE, null);
+        Order order = new Order(customerLogin, null,
+                model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
+                OrderAim.RESTORE, null);
 
         return model.createOrder(order);
     }
@@ -303,7 +308,9 @@ public class Controller
         checkServiceBelongsToCustomer(customerLogin, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null, model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId, OrderAim.DISCONNECT, null);
+        Order order = new Order(customerLogin, null,
+                model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
+                OrderAim.DISCONNECT, null);
 
         return model.createOrder(order);
     }
