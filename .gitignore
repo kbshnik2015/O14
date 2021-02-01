@@ -1,4 +1,4 @@
 *.class
 *.iml
-.target/
-.idea/
+.MiniOPF/target/
+.MiniOPF/idea/
