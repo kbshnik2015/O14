@@ -364,8 +364,9 @@ public enum Command
                     String result = "Specifications: \n";
                     for (Specification specification : controller.getModel().getSpecifications().values())
                     {
-                        result = result.concat("\t" + specification.getId() + ": " + specification.getDescription() +
-                                "name: " + specification.getName() + "price: " + specification.getPrice() + "\n");
+                        result = result.concat("\t" + specification.getId() + ": name: " + specification.getName() +
+                                ", description: " + specification.getDescription() + ", price: " +
+                                specification.getPrice() + "\n");
                     }
 
                     return result;
