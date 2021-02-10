@@ -13,6 +13,7 @@ import controller.exceptions.IllegalLoginOrPasswordException;
 import controller.exceptions.IllegalTransitionException;
 import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
+import controller.managers.WorkWaitersManager;
 import lombok.Data;
 import lombok.Getter;
 import model.Model;
@@ -57,23 +58,27 @@ public class Controller
     }
 
     public Customer createCustomer(String firstName, String lastName, String login, String password, String address,
-            float balance) throws IllegalLoginOrPasswordException
+            float balance) throws IllegalLoginOrPasswordException, IOException
     {
         checkLoginAndPassword(login, password);
 
         Customer customer = new Customer(firstName, lastName, login, password, address, balance);
+        customer = model.createCustomer(customer);
+        model.saveToFile();
 
-        return model.createCustomer(customer);
+        return customer;
     }
 
     public Employee createEmployee(String firstName, String lastName, String login, String password,
-            EmployeeStatus employeeStatus) throws IllegalLoginOrPasswordException
+            EmployeeStatus employeeStatus) throws IllegalLoginOrPasswordException, IOException
     {
         checkLoginAndPassword(login, password);
 
         Employee employee = new Employee(firstName, lastName, login, password, employeeStatus);
+        employee = model.createEmployee(employee);
+        model.saveToFile();
 
-        return model.createEmployee(employee);
+        return employee;
     }
 
     private void checkLoginAndPassword(String login, String password) throws IllegalLoginOrPasswordException
@@ -97,34 +102,39 @@ public class Controller
     }
 
     public void updateCustomer(String firstName, String lastName, String login, String password, String address,
-            float balance) throws UserNotFoundException
+            float balance) throws UserNotFoundException, IOException
     {
         checkCustomerExists(login);
 
         model.updateCustomer(firstName, lastName, login, password, address, balance);
+        model.saveToFile();
     }
 
     public void updateEmployee(String firstName, String lastName, String login, String password,
-            EmployeeStatus employeeStatus) throws UserNotFoundException
+            EmployeeStatus employeeStatus) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
         model.updateEmployee(firstName, lastName, login, password, employeeStatus);
+        model.saveToFile();
     }
 
     public District createDistrict(String name, BigInteger parentId)
-            throws ObjectNotFoundException
+            throws ObjectNotFoundException, IOException
     {
         if (parentId != null)
         {
             checkDistrictExists(parentId);
         }
 
-        return model.createDistrict(name, parentId);
+        District district = model.createDistrict(name, parentId);
+        model.saveToFile();
+
+        return district;
     }
 
     public void updateDistrict(BigInteger id, String name, BigInteger parentId)
-            throws ObjectNotFoundException
+            throws ObjectNotFoundException, IOException
     {
         checkDistrictExists(id);
         if (parentId != null)
@@ -133,10 +143,11 @@ public class Controller
         }
 
         model.updateDistrict(id, name, parentId);
+        model.saveToFile();
     }
 
     public Specification createSpecification(String name, float price, String description, boolean isAddressDepended,
-            ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException
+            ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException, IOException
     {
         if (districtsIds != null)
         {
@@ -147,13 +158,15 @@ public class Controller
         }
 
         Specification specification = new Specification(name, price, description, isAddressDepended, districtsIds);
+        specification = model.createSpecification(specification);
+        model.saveToFile();
 
-        return model.createSpecification(specification);
+        return specification;
     }
 
     public void updateSpecification(BigInteger id, String name, float price, String description,
             boolean isAddressDepended,
-            ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException
+            ArrayList<BigInteger> districtsIds) throws ObjectNotFoundException, IOException
     {
         checkSpecificationExists(id);
 
@@ -166,9 +179,10 @@ public class Controller
         }
 
         model.updateSpecification(id, name, price, description, isAddressDepended, districtsIds);
+        model.saveToFile();
     }
 
-    public void deleteCustomerCascade(String login) throws UserNotFoundException
+    public void deleteCustomerCascade(String login) throws UserNotFoundException, IOException
     {
         checkCustomerExists(login);
 
@@ -181,9 +195,10 @@ public class Controller
             model.deleteOrder(order);
         }
         model.deleteCustomer(model.getCustomer(login));
+        model.saveToFile();
     }
 
-    public void deleteEmployeeCascade(String login) throws UserNotFoundException
+    public void deleteEmployeeCascade(String login) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
@@ -192,9 +207,10 @@ public class Controller
             model.deleteOrder(order);
         }
         model.deleteEmployee(model.getEmployee(login));
+        model.saveToFile();
     }
 
-    public void deleteEmployee(String login) throws UserNotFoundException
+    public void deleteEmployee(String login) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
@@ -203,17 +219,19 @@ public class Controller
             order.setEmployeeLogin(null);
         }
         model.deleteEmployee(model.getEmployee(login));
+        model.saveToFile();
     }
 
-    public void deleteOrderCascade(BigInteger id) throws ObjectNotFoundException
+    public void deleteOrderCascade(BigInteger id) throws ObjectNotFoundException, IOException
     {
         checkOrderExists(id);
 
         model.deleteService(model.getService(model.getOrder(id).getServiceId()));
         model.deleteOrder(model.getOrder(id));
+        model.saveToFile();
     }
 
-    public void deleteSpecificationCascade(BigInteger id) throws ObjectNotFoundException
+    public void deleteSpecificationCascade(BigInteger id) throws ObjectNotFoundException, IOException
     {
         checkSpecificationExists(id);
 
@@ -222,9 +240,10 @@ public class Controller
             model.deleteService(service);
         }
         model.deleteSpecification(model.getSpecification(id));
+        model.saveToFile();
     }
 
-    public void deleteDistrictCascade(BigInteger id) throws ObjectNotFoundException
+    public void deleteDistrictCascade(BigInteger id) throws ObjectNotFoundException, IOException
     {
         checkDistrictExists(id);
 
@@ -237,9 +256,11 @@ public class Controller
         }
 
         model.deleteDistrict(model.getDistrict(id));
+        model.saveToFile();
     }
 
-    public void deleteDistrict(BigInteger id, boolean isLeaveChildrenInHierarchy) throws ObjectNotFoundException
+    public void deleteDistrict(BigInteger id, boolean isLeaveChildrenInHierarchy)
+            throws ObjectNotFoundException, IOException
     {
         checkDistrictExists(id);
 
@@ -259,17 +280,21 @@ public class Controller
         }
 
         model.deleteDistrict(model.getDistrict(id));
+        model.saveToFile();
     }
 
     public Order createNewOrder(String customerLogin, BigInteger specId)
-            throws UserNotFoundException, ObjectNotFoundException
+            throws UserNotFoundException, ObjectNotFoundException, IOException
     {
         checkCustomerExists(customerLogin);
         checkSpecificationExists(specId);
 
         Order order = new Order(customerLogin, null, specId, null, OrderAim.NEW, null);
+        order = model.createOrder(order);
+        WorkWaitersManager.distributeOrders();
+        model.saveToFile();
 
-        return model.createOrder(order);
+        return order;
     }
 
     public Order createSuspendOrder(String customerLogin, BigInteger serviceId)
@@ -283,8 +308,11 @@ public class Controller
         Order order = new Order(customerLogin, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.SUSPEND, null);
+        order = model.createOrder(order);
+        WorkWaitersManager.distributeOrders();
+        model.saveToFile();
 
-        return model.createOrder(order);
+        return order;
     }
 
     public Order createRestoreOrder(String customerLogin, BigInteger serviceId) throws Exception
@@ -297,8 +325,11 @@ public class Controller
         Order order = new Order(customerLogin, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.RESTORE, null);
+        order = model.createOrder(order);
+        WorkWaitersManager.distributeOrders();
+        model.saveToFile();
 
-        return model.createOrder(order);
+        return order;
     }
 
     public Order createDisconnectOrder(String customerLogin, BigInteger serviceId) throws Exception
@@ -311,32 +342,35 @@ public class Controller
         Order order = new Order(customerLogin, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.DISCONNECT, null);
+        order = model.createOrder(order);
+        WorkWaitersManager.distributeOrders();
+        model.saveToFile();
 
-        return model.createOrder(order);
+        return order;
     }
 
-    public void startOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException
+    public void startOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 
         moveOrderFromTo(orderId, OrderStatus.ENTERING, OrderStatus.IN_PROGRESS);
     }
 
-    public void suspendOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException
+    public void suspendOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 
         moveOrderFromTo(orderId, OrderStatus.IN_PROGRESS, OrderStatus.SUSPENDED);
     }
 
-    public void restoreOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException
+    public void restoreOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 
         moveOrderFromTo(orderId, OrderStatus.SUSPENDED, OrderStatus.IN_PROGRESS);
     }
 
-    public void cancelOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException
+    public void cancelOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 
@@ -346,51 +380,60 @@ public class Controller
             throw new IllegalTransitionException("Completed order (id: " + orderId + ") can't be cancelled!");
         }
         order.setOrderStatus(OrderStatus.CANCELLED);
+        model.saveToFile();
     }
 
-    public void completeOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException
+    public void completeOrder(BigInteger orderId)
+            throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
         moveOrderFromTo(orderId, OrderStatus.IN_PROGRESS, OrderStatus.COMPLETED);
 
+        Date payDayPlusMonth = new Date(System.currentTimeMillis() + 2592000000L);
         Order order = model.getOrder(orderId);
+
         if (OrderAim.NEW.equals(order.getOrderAim()))
         {
             checkSpecificationExists(order.getSpecId());
 
             Service service =
-                    new Service(new Date(), order.getSpecId(), ServiceStatus.ACTIVE, order.getCustomerLogin());
+                    new Service(payDayPlusMonth, order.getSpecId(), ServiceStatus.ACTIVE, order.getCustomerLogin());
             order.setServiceId(model.createService(service).getId());
         }
-        if (OrderAim.DISCONNECT.equals(order.getOrderAim()))
+        else
         {
             checkServiceExists(order.getServiceId());
-
-            model.getService(order.getServiceId()).setServiceStatus(ServiceStatus.DISCONNECTED);
+            Service service = model.getService(order.getServiceId());
+            if (OrderAim.DISCONNECT.equals(order.getOrderAim()))
+            {
+                service.setPayDay(null);
+                service.setServiceStatus(ServiceStatus.DISCONNECTED);
+            }
+            else if (OrderAim.SUSPEND.equals(order.getOrderAim()))
+            {
+                service.setPayDay(null);
+                service.setServiceStatus(ServiceStatus.SUSPENDED);
+            }
+            else if (OrderAim.RESTORE.equals(order.getOrderAim()))
+            {
+                service.setPayDay(payDayPlusMonth);
+                service.setServiceStatus(ServiceStatus.ACTIVE);
+            }
         }
-        if (OrderAim.SUSPEND.equals(order.getOrderAim()))
-        {
-            checkServiceExists(order.getServiceId());
 
-            model.getService(order.getServiceId()).setServiceStatus(ServiceStatus.SUSPENDED);
-        }
-        if (OrderAim.RESTORE.equals(order.getOrderAim()))
-        {
-            checkServiceExists(order.getServiceId());
-
-            model.getService(order.getServiceId()).setServiceStatus(ServiceStatus.ACTIVE);
-        }
-
+        model.saveToFile();
     }
 
     private void moveOrderFromTo(BigInteger orderId, OrderStatus entering, OrderStatus inProgress) throws
-            IllegalTransitionException
+            IllegalTransitionException, IOException
     {
         Order order = model.getOrder(orderId);
 
         checkOrderInitialStatus(order, entering);
 
         order.setOrderStatus(inProgress);
+
+        model.saveToFile();
     }
 
     private void checkOrderInitialStatus(Order order, OrderStatus initialStatus) throws IllegalTransitionException
@@ -404,12 +447,13 @@ public class Controller
         }
     }
 
-    public void changeBalanceOn(String login, float amountOfMoney) throws UserNotFoundException
+    public void changeBalanceOn(String login, float amountOfMoney) throws UserNotFoundException, IOException
     {
         checkCustomerExists(login);
 
         Customer customer = model.getCustomer(login);
         customer.setBalance(customer.getBalance() + amountOfMoney);
+        model.saveToFile();
     }
 
     public List<Order> getFreeOrders()
@@ -524,21 +568,37 @@ public class Controller
         return orders;
     }
 
-    public void goOnVacation(String login) throws UserNotFoundException
+    public void setEmployeeWaitingStatus(String login, boolean isWaiting) throws UserNotFoundException, IOException
+    {
+        checkEmployeeExists(login);
+
+        model.getEmployee(login).setWaitingForOrders(isWaiting);
+
+        if (isWaiting)
+        {
+            WorkWaitersManager.distributeOrders();
+        }
+
+        model.saveToFile();
+    }
+
+    public void goOnVacation(String login) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
         model.getEmployee(login).setEmployeeStatus(EmployeeStatus.ON_VACATION);
+        model.saveToFile();
     }
 
-    public void returnFromVacation(String login) throws UserNotFoundException
+    public void returnFromVacation(String login) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
         model.getEmployee(login).setEmployeeStatus(EmployeeStatus.WORKING);
+        model.saveToFile();
     }
 
-    public void retireEmployee(String login) throws UserNotFoundException
+    public void retireEmployee(String login) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(login);
 
@@ -551,20 +611,23 @@ public class Controller
                 order.setEmployeeLogin(null);
             }
         }
+
+        model.saveToFile();
     }
 
     public void assignOrder(String employeeLogin, BigInteger orderId)
-            throws ObjectNotFoundException, UserNotFoundException
+            throws ObjectNotFoundException, UserNotFoundException, IOException
     {
         checkOrderExists(orderId);
         checkEmployeeExists(employeeLogin);
 
         Order order = model.getOrder(orderId);
         order.setEmployeeLogin(employeeLogin);
+        model.saveToFile();
     }
 
     public void processOrder(String employeeLogin, BigInteger orderId)
-            throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException
+            throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException, IOException
     {
         checkOrderExists(orderId);
         checkEmployeeExists(employeeLogin);
@@ -573,12 +636,15 @@ public class Controller
         startOrder(orderId);
     }
 
-    public void usassignOrder(BigInteger orderId) throws ObjectNotFoundException
+    public void usassignOrder(BigInteger orderId) throws ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 
         Order order = model.getOrder(orderId);
         order.setEmployeeLogin(null);
+
+        WorkWaitersManager.distributeOrders();
+        model.saveToFile();
     }
 
     private void checkOrderExists(final BigInteger orderId) throws ObjectNotFoundException

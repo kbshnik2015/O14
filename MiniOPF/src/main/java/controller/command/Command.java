@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.Controller;
-import controller.WorkWaiters;
 import controller.exceptions.IllegalLoginOrPasswordException;
 import controller.exceptions.IllegalTransitionException;
 import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
 import controller.exceptions.WrongCommandArgumentsException;
+import controller.managers.WorkWaitersManager;
 import lombok.ToString;
 import model.Model;
 import model.entities.Customer;
@@ -30,7 +30,7 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, IllegalLoginOrPasswordException, WrongCommandArgumentsException
+                        throws IllegalLoginOrPasswordException, WrongCommandArgumentsException, IOException
                 {
                     Controller controller = new Controller();
                     String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
@@ -793,7 +793,7 @@ public enum Command
 
                     controller.completeOrder(orderId);
 
-                    return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was complited.";
+                    return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was completed.";
                 }
             },
 
@@ -1129,10 +1129,9 @@ public enum Command
                 public String execute(String[] args) throws IOException, UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    WorkWaiters workWaiters = new WorkWaiters();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    workWaiters.subscribe(controller.getModel(), login);
+                    controller.setEmployeeWaitingStatus(login, true);
 
                     Employee employee = controller.getModel().getEmployee(login);
 
@@ -1147,10 +1146,9 @@ public enum Command
                 public String execute(String[] args) throws IOException, UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    WorkWaiters workWaiters = new WorkWaiters();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    workWaiters.unsubscribe(controller.getModel(), login);
+                    controller.setEmployeeWaitingStatus(login, false);
 
                     Employee employee = controller.getModel().getEmployee(login);
 
@@ -1162,12 +1160,9 @@ public enum Command
     distribute_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args)
                 {
-                    Controller controller = new Controller();
-                    WorkWaiters workWaiters = new WorkWaiters();
-
-                    workWaiters.distributeOrders(controller.getModel());
+                    WorkWaitersManager.distributeOrders();
 
                     return "Free orders were distributed between employees waiting for work.";
                 }

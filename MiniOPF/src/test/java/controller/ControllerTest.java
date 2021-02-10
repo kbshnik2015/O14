@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class ControllerTest
     }
 
     @Test
-    public void createCustomer() throws IllegalLoginOrPasswordException
+    public void createCustomer() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -53,7 +54,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createCustomer_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException
+    public void createCustomer_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -68,7 +69,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createCustomer_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException
+    public void createCustomer_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -82,7 +83,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createCustomer_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException
+    public void createCustomer_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -96,7 +97,7 @@ public class ControllerTest
     }
 
     @Test
-    public void updateCustomer() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void updateCustomer() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -115,7 +116,7 @@ public class ControllerTest
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void updateCustomer_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void updateCustomer_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -129,7 +130,7 @@ public class ControllerTest
     }
 
     @Test
-    public void deleteCustomer() throws IllegalLoginOrPasswordException
+    public void deleteCustomer() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -145,7 +146,7 @@ public class ControllerTest
     }
 
     @Test
-    public void getCustomerByLogin() throws IllegalLoginOrPasswordException
+    public void getCustomerByLogin() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -167,7 +168,7 @@ public class ControllerTest
     }
 
     @Test
-    public void createEmployee() throws IllegalLoginOrPasswordException
+    public void createEmployee() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -182,7 +183,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createEmployee_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException
+    public void createEmployee_WITH_EXISTED_LOGIN() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -197,7 +198,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createEmployee_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException
+    public void createEmployee_LOGIN_IS_NULL() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -210,7 +211,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void createEmployee_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException
+    public void createEmployee_PASSWORD_IS_NULL() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -221,7 +222,7 @@ public class ControllerTest
     }
 
     @Test
-    public void updateEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void updateEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -239,7 +240,7 @@ public class ControllerTest
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void updateEmployee_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void updateEmployee_NOT_FOUND() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -252,7 +253,7 @@ public class ControllerTest
     }
 
     @Test
-    public void deleteEmployee() throws IllegalLoginOrPasswordException
+    public void deleteEmployee() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -267,7 +268,7 @@ public class ControllerTest
     }
 
     @Test
-    public void getEmployeeByLogin() throws IllegalLoginOrPasswordException
+    public void getEmployeeByLogin() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -282,7 +283,7 @@ public class ControllerTest
     }
 
     @Test
-    public void createDistrict() throws ObjectNotFoundException
+    public void createDistrict() throws ObjectNotFoundException, IOException
     {
         controller.getModel().createDistrict("Samara", null);
         BigInteger districtSamaraId = BigInteger.valueOf(1);
@@ -297,7 +298,7 @@ public class ControllerTest
     }
 
     @Test(expected = ObjectNotFoundException.class)
-    public void createDistrict_PARENT_NOT_EXISTS() throws ObjectNotFoundException
+    public void createDistrict_PARENT_NOT_EXISTS() throws ObjectNotFoundException, IOException
     {
         BigInteger notExistParentId = BigInteger.valueOf(666);
 
@@ -305,7 +306,7 @@ public class ControllerTest
     }
 
     @Test
-    public void createDistrict_PARENT_IS_NULL() throws ObjectNotFoundException
+    public void createDistrict_PARENT_IS_NULL() throws ObjectNotFoundException, IOException
     {
         BigInteger expectedId = BigInteger.valueOf(1);
 
@@ -318,7 +319,7 @@ public class ControllerTest
     }
 
     @Test
-    public void updateDistrict() throws ObjectNotFoundException
+    public void updateDistrict() throws ObjectNotFoundException, IOException
     {
         controller.getModel().createDistrict("Samara", null);
         BigInteger districtSamaraId = BigInteger.valueOf(1);
@@ -335,7 +336,7 @@ public class ControllerTest
     }
 
     @Test
-    public void createSpecification() throws ObjectNotFoundException
+    public void createSpecification() throws ObjectNotFoundException, IOException
     {
         controller.getModel().createDistrict("Samara", null);
         BigInteger districtSamaraId = BigInteger.valueOf(1);
@@ -354,7 +355,7 @@ public class ControllerTest
     }
 
     @Test
-    public void updateSpecification() throws ObjectNotFoundException
+    public void updateSpecification() throws ObjectNotFoundException, IOException
     {
         controller.getModel().createDistrict("Samara", null);
         BigInteger districtSamaraId = BigInteger.valueOf(1);
@@ -368,21 +369,21 @@ public class ControllerTest
         Specification expected = new Specification("Spec name", 200, null, true, districtIds);
         expected.setId(expectedId);
         Specification actual = controller.createSpecification("Spec name", 100, null, false, null);
-        controller.updateSpecification(expectedId,"Spec name", 200, null, true, districtIds);
+        controller.updateSpecification(expectedId, "Spec name", 200, null, true, districtIds);
 
         Assert.assertEquals(expected, actual);
     }
 
     @Test(expected = ObjectNotFoundException.class)
-    public void updateSpecification_NOT_EXISTS() throws ObjectNotFoundException
+    public void updateSpecification_NOT_EXISTS() throws ObjectNotFoundException, IOException
     {
         BigInteger notExistSpecId = BigInteger.valueOf(666);
 
-        controller.updateSpecification(notExistSpecId, "Spec name",  200, null, true, null);
+        controller.updateSpecification(notExistSpecId, "Spec name", 200, null, true, null);
     }
 
     @Test
-    public void login_CUSTOMER() throws IllegalLoginOrPasswordException
+    public void login_CUSTOMER() throws IllegalLoginOrPasswordException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -398,7 +399,7 @@ public class ControllerTest
     }
 
     @Test
-    public void login_EMPLOYEE() throws IllegalLoginOrPasswordException
+    public void login_EMPLOYEE() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -413,7 +414,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void login_WRONG_LOGIN() throws IllegalLoginOrPasswordException
+    public void login_WRONG_LOGIN() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -434,7 +435,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void login_EMPLOYEE_WRONG_PASSWORD() throws IllegalLoginOrPasswordException
+    public void login_EMPLOYEE_WRONG_PASSWORD() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -455,7 +456,7 @@ public class ControllerTest
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
-    public void login_CUSTOMER_WRONG_PASSWORD() throws IllegalLoginOrPasswordException
+    public void login_CUSTOMER_WRONG_PASSWORD() throws IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -477,7 +478,7 @@ public class ControllerTest
     @Test
     public void startOrder()
             throws IllegalTransitionException, ObjectNotFoundException, IllegalLoginOrPasswordException,
-            UserNotFoundException
+            UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -497,7 +498,7 @@ public class ControllerTest
 
     @Test(expected = ObjectNotFoundException.class)
     public void startOrder_ORDER_NOT_EXIST()
-            throws IllegalTransitionException, ObjectNotFoundException
+            throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         BigInteger orderId = BigInteger.valueOf(666);
 
@@ -506,7 +507,7 @@ public class ControllerTest
 
     @Test(expected = IllegalTransitionException.class)
     public void startOrder_ILLEGAL_TRANSITION()
-            throws IllegalTransitionException, ObjectNotFoundException
+            throws IllegalTransitionException, ObjectNotFoundException, IOException
     {
         Order order = new Order(null, null, null, null, OrderAim.NEW, OrderStatus.CANCELLED);
         controller.getModel().createOrder(order);
@@ -518,7 +519,7 @@ public class ControllerTest
     @Test
     public void suspendOrder()
             throws IllegalTransitionException, ObjectNotFoundException, IllegalLoginOrPasswordException,
-            UserNotFoundException
+            UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -538,7 +539,7 @@ public class ControllerTest
 
     @Test
     public void restoreOrder() throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -558,7 +559,7 @@ public class ControllerTest
 
     @Test
     public void cancelOrder() throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -577,7 +578,7 @@ public class ControllerTest
     @Test(expected = IllegalTransitionException.class)
     public void cancelOrder_ILLEGAL_TRANSITION()
             throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -596,7 +597,7 @@ public class ControllerTest
     @Test
     public void completeOrder_NEW_ORDER()
             throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
         controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
@@ -683,7 +684,7 @@ public class ControllerTest
 
 
     @Test
-    public void changeBalanceOn_UP() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void changeBalanceOn_UP() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -699,7 +700,7 @@ public class ControllerTest
     }
 
     @Test
-    public void changeBalanceOn_DOWN() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void changeBalanceOn_DOWN() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String firstName1 = "Customer1firstName";
         String lastName1 = "Customer1lastName";
@@ -715,7 +716,7 @@ public class ControllerTest
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void changeBalanceOn_NOT_EXISTED_CUSTOMER() throws UserNotFoundException
+    public void changeBalanceOn_NOT_EXISTED_CUSTOMER() throws UserNotFoundException, IOException
     {
         controller.changeBalanceOn("login1USERRANDOM", (float) -50);
     }
@@ -766,7 +767,39 @@ public class ControllerTest
     }
 
     @Test
-    public void goOnVacation() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void setEmployeeWaitingStatus_TRUE()
+            throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
+    {
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee employee = controller.createEmployee(null, null, empLogin, empPassword, empStatus);
+        employee.setWaitingForOrders(false);
+
+        controller.setEmployeeWaitingStatus(empLogin, true);
+
+        Assert.assertTrue(employee.isWaitingForOrders());
+    }
+
+    @Test
+    public void setEmployeeWaitingStatus_FALSE()
+            throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
+    {
+        String empLogin = "Employee1login";
+        String empPassword = "Employee1Password";
+        EmployeeStatus empStatus = EmployeeStatus.WORKING;
+
+        Employee employee = controller.createEmployee(null, null, empLogin, empPassword, empStatus);
+        employee.setWaitingForOrders(true);
+
+        controller.setEmployeeWaitingStatus(empLogin, false);
+
+        Assert.assertFalse(employee.isWaitingForOrders());
+    }
+
+    @Test
+    public void goOnVacation() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -783,13 +816,13 @@ public class ControllerTest
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void goOnVacation_NOT_EXISTED_EMPLOYEE() throws UserNotFoundException
+    public void goOnVacation_NOT_EXISTED_EMPLOYEE() throws UserNotFoundException, IOException
     {
         controller.goOnVacation("RandomEmpLogin");
     }
 
     @Test
-    public void returnFromVacation() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void returnFromVacation() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -806,7 +839,7 @@ public class ControllerTest
     }
 
     @Test
-    public void retireEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void retireEmployee() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -823,7 +856,8 @@ public class ControllerTest
     }
 
     @Test
-    public void retireEmployee_ORDERS_EXISTS() throws IllegalLoginOrPasswordException, UserNotFoundException
+    public void retireEmployee_ORDERS_EXISTS()
+            throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -846,7 +880,8 @@ public class ControllerTest
     }
 
     @Test
-    public void assignOrder() throws UserNotFoundException, ObjectNotFoundException, IllegalLoginOrPasswordException
+    public void assignOrder()
+            throws UserNotFoundException, ObjectNotFoundException, IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -869,7 +904,7 @@ public class ControllerTest
 
     @Test
     public void processOrder() throws UserNotFoundException, IllegalTransitionException, ObjectNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -892,7 +927,7 @@ public class ControllerTest
 
     @Test
     public void usassignOrder() throws UserNotFoundException, ObjectNotFoundException,
-            IllegalLoginOrPasswordException
+            IllegalLoginOrPasswordException, IOException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
