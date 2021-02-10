@@ -4,6 +4,8 @@ import controller.Controller;
 import controller.exceptions.IllegalLoginOrPasswordException;
 import model.entities.AbstractUser;
 import model.entities.Customer;
+import model.enums.EmployeeStatus;
+
 import java.util.Scanner;
 
 public class Main
@@ -12,7 +14,8 @@ public class Main
     {
 
         Controller controller = new Controller();
-        controller.createCustomer("Nikita","Kozlov","agent_K", "1","Gostinaya 5",0);
+        controller.createEmployee("Nikita", "S","S","1", EmployeeStatus.WORKING);
+        controller.createCustomer("Nikita","Kozlov","K", "1","Gostinaya 5",0);
         controller.createSpecification("internet100", 100, "blablabla", false, null);
         controller.createSpecification("internet200", 200, "blablabla", false, null);
         controller.createSpecification("internet300", 300, "blablabla", false, null);

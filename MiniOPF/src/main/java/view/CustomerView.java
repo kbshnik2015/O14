@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
-
+// todo: add more spaces between 1-7 and 8-0
+// todo: customer info in each page header (and a lot of enters between pages 5-10 pieces)
 public class CustomerView
 {
 
