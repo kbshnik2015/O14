@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.SneakyThrows;
 import model.Model;
 import model.entities.Employee;
 import model.entities.Order;
@@ -12,8 +13,10 @@ import model.entities.Order;
 @Data
 public class WorkWaitersManager
 {
+    @SneakyThrows
     public static void distributeOrdersBackground()
     {
+        //noinspection InfiniteLoopStatement
         while (true)
         {
             try
@@ -28,20 +31,13 @@ public class WorkWaitersManager
         }
     }
 
-    public static void distributeOrders()
+    public static void distributeOrders() throws IOException
     {
-        try
+        List<Employee> freeEmployees = getEmployeesWaitingForOrders();
+        for (int i = 0; i < freeEmployees.size() && getFreeOrder() != null; i++)
         {
-            List<Employee> freeEmployees = getEmployeesWaitingForOrders();
-            for (int i = 0; i < freeEmployees.size() && getFreeOrder() != null; i++)
-            {
-                getFreeOrder().setEmployeeLogin(freeEmployees.get(i).getLogin());
-                freeEmployees.get(i).setWaitingForOrders(false);
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            getFreeOrder().setEmployeeLogin(freeEmployees.get(i).getLogin());
+            freeEmployees.get(i).setWaitingForOrders(false);
         }
     }
 

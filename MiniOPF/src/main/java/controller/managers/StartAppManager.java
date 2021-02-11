@@ -10,8 +10,7 @@ public class StartAppManager
     {
         Model.getInstance();
 
-        Thread workWaitersThread = new Thread(
-                () -> WorkWaitersManager.distributeOrdersBackground());
+        Thread workWaitersThread = new Thread(WorkWaitersManager::distributeOrdersBackground);
         workWaitersThread.setDaemon(true);
         PayDayManager payDayManager = new PayDayManager();
         payDayManager.setDaemon(true);
