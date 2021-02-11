@@ -1160,7 +1160,7 @@ public enum Command
     distribute_orders
             {
                 @Override
-                public String execute(String[] args)
+                public String execute(String[] args) throws IOException
                 {
                     WorkWaitersManager.distributeOrders();
 
