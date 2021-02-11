@@ -7,6 +7,7 @@
     <groupId>MiniOPF</groupId>
     <artifactId>MiniOPF</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <!--<packaging>war</packaging>-->
 
     <profiles>
         <profile>
@@ -15,14 +16,12 @@
                 <maven.compiler.target>1.8</maven.compiler.target>
                 <maven.compiler.source>1.8</maven.compiler.source>
             </properties>
-           <!--<properties>-->
-                <!--<maven.compiler.target>10</maven.compiler.target>-->
-                <!--<maven.compiler.source>10</maven.compiler.source>-->
-            <!--</properties>-->
         </profile>
     </profiles>
 
     <build>
+        <!--<finalName>${project.artifactId}</finalName>-->
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +43,25 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.tomcat.maven</groupId>-->
+                <!--<artifactId>tomcat7-maven-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<configuration>-->
+                    <!--<url>http://localhost:8089/</url>-->
+                    <!--<server>TomcatServer</server>-->
+                    <!--<path>/${project.build.finalName}</path>-->
+                    <!--<update>true</update>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
+
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>src/main/resources</directory>-->
+            <!--</resource>-->
+        <!--</resources>-->
     </build>
 
     <dependencies>
@@ -69,7 +86,32 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
+
+
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<uniqueVersion>false</uniqueVersion>-->
+            <!--<id>corp1</id>-->
+            <!--<name>Corporate Repository</name>-->
+            <!--<url>file:///C/Никитино/Программы/apache-tomcat-8.5.46/webapps/MiniOPF_war</url>-->
+            <!--<layout>default</layout>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
 
 
 </project>
