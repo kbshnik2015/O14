@@ -24,7 +24,7 @@ public class LoginView
             user = controller.login(login,password);
         } catch (IllegalLoginOrPasswordException e)
         {
-            System.out.println("Wrong login or password.");
+            System.out.println("\nWrong login or password.\n");
             start();
         }
 
