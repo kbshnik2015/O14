@@ -15,9 +15,9 @@ public class LoginView
         Controller controller = new Controller();
         AbstractUser user = null;
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter login :");
+        System.out.print("Enter login:");
         String login = scanner.nextLine();
-        System.out.print("Enter password :");
+        System.out.print("\nEnter password: ");
         String password = scanner.nextLine();
         try
         {
