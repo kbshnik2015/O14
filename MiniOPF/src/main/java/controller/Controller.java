@@ -515,6 +515,32 @@ public class Controller
                 .collect(Collectors.toList());
     }
 
+    public  List<Specification> getCustomerSpecifications(final Customer customer)
+            throws IOException, UserNotFoundException
+    {
+        List<Specification> customerSpecifications = getCustomerServices(customer.getLogin())
+                .stream()
+                .map(x -> model.getSpecification(x.getSpecificationId()))
+                .collect(Collectors.toList());
+
+        customerSpecifications.addAll(getCustomerOrders(customer.getLogin())
+                .stream()
+                .map(x -> model.getSpecification(x.getSpecId()))
+                .collect(Collectors.toList()));
+
+        List<Specification> specifications = filterSpecsFromCustomerOnes(customerSpecifications);
+
+        return specifications;
+    }
+
+    private List<Specification> filterSpecsFromCustomerOnes(final List<Specification> customerSpecifications)
+    {
+        List<Specification> specifications = model.getSpecifications().values().stream()
+                .filter(x -> !customerSpecifications.contains(x))
+                .collect(Collectors.toList());
+        return specifications;
+    }
+
     public Collection<Order> getEmployeeOrders(String login) throws UserNotFoundException
     {
         checkEmployeeExists(login);

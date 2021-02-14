@@ -2,6 +2,7 @@ package view;
 
 import controller.Controller;
 import controller.exceptions.IllegalLoginOrPasswordException;
+import controller.managers.StartAppManager;
 import model.entities.AbstractUser;
 import model.entities.Customer;
 import model.entities.Employee;
@@ -22,12 +23,11 @@ public class LoginView
         try
         {
             user = controller.login(login,password);
-        } catch (IllegalLoginOrPasswordException e)
-        {
+        } catch (IllegalLoginOrPasswordException e) {
             System.out.println("\nWrong login or password.\n");
             start();
         }
-
+        StartAppManager.startApp();
         if (user instanceof Customer){
             CustomerView.start((Customer) user);
         }

@@ -13,7 +13,6 @@ import model.enums.ServiceStatus;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 
 public class CustomerView
@@ -168,20 +167,7 @@ public class CustomerView
         Map<String, Callable<Void>> commands = new HashMap<>();
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Specification to show info about:\n";
-
-        List<Specification> customerSpecifications =
-                 controller.getCustomerServices(customer.getLogin())
-                        .stream()
-                        .map(x -> model.getSpecification(x.getSpecificationId()))
-                        .collect(Collectors.toList());
-        customerSpecifications.addAll(controller.getCustomerOrders(customer.getLogin())
-                .stream()
-                .map(x -> model.getSpecification(x.getSpecId()))
-                .collect(Collectors.toList()));
-
-        List<Specification> specifications = model.getSpecifications().values().stream()
-                .filter(x -> !customerSpecifications.contains(x))
-                .collect(Collectors.toList());
+        List<Specification> specifications = controller.getCustomerSpecifications(customer);
 
         for (Specification specification : specifications)
         {
@@ -192,6 +178,8 @@ public class CustomerView
         }
         new CustomerCommandsPaginator(header, commands).run();
     }
+
+
 
     private static void showConcreteSpecification(Specification specification, Customer customer) throws Exception
     {
@@ -211,7 +199,6 @@ public class CustomerView
         {
             controller.createNewOrder(customer.getLogin(), specification.getId());
             System.out.println("Order by connecting successfully created.");
-            input = 0;
         }
         else if (input != 0)
         {
@@ -362,12 +349,12 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createRestoreOrder(customer.getLogin(), service.getId());//Resume suspended services
+                        controller.createRestoreOrder(customer.getLogin(), service.getId());
                         break;
                     }
                     case 2:
                     {
-                        controller.createDisconnectOrder(customer.getLogin(), service.getId());//Disconnect
+                        controller.createDisconnectOrder(customer.getLogin(), service.getId());
                         break;
                     }
                     case 0:
@@ -386,13 +373,12 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createSuspendOrder(customer.getLogin(), service.getId());//Suspended
+                        controller.createSuspendOrder(customer.getLogin(), service.getId());
                         break;
                     }
                     case 2:
                     {
-                        controller.createDisconnectOrder(customer.getLogin(), service.getId());//Disconnect
-                        break;
+                        controller.createDisconnectOrder(customer.getLogin(), service.getId());
                     }
                     case 0:
                     {
@@ -410,7 +396,7 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createRestoreOrder(customer.getLogin(), service.getId());//Connect - правильно ли ???
+                        controller.createRestoreOrder(customer.getLogin(), service.getId());
                         break;
                     }
                     case 0:

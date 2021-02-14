@@ -1,7 +1,5 @@
 package model.entities;
 
-import java.math.BigInteger;
-
 import lombok.Data;
 
 @Data
