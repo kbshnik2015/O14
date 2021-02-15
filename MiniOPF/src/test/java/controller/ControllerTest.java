@@ -25,6 +25,7 @@ import model.enums.OrderAim;
 import model.enums.OrderStatus;
 import model.enums.ServiceStatus;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class ControllerTest
 {
 
@@ -945,7 +946,7 @@ public class ControllerTest
 
         controller.assignOrder(empLogin, orderId);
 
-        controller.usassignOrder(orderId);
+        controller.unassignOrder(orderId);
 
         Assert.assertNull(order.getEmployeeLogin());
     }

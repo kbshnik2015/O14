@@ -1,7 +1,6 @@
 package model.entities;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,8 @@ public class District
 
     private BigInteger parentId;
 
-    public District(String name, BigInteger parentId){
+    public District(String name, BigInteger parentId)
+    {
         this.name = name;
         this.parentId = parentId;
     }

@@ -13,10 +13,10 @@ import model.entities.Order;
 @Data
 public class WorkWaitersManager
 {
+    @SuppressWarnings("InfiniteLoopStatement")
     @SneakyThrows
     public static void distributeOrdersBackground()
     {
-        //noinspection InfiniteLoopStatement
         while (true)
         {
             try

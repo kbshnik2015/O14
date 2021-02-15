@@ -13,7 +13,6 @@ import controller.exceptions.UserNotFoundException;
 import controller.exceptions.WrongCommandArgumentsException;
 import controller.managers.WorkWaitersManager;
 import lombok.ToString;
-import model.Model;
 import model.entities.Customer;
 import model.entities.District;
 import model.entities.Employee;
@@ -586,9 +585,9 @@ public enum Command
                                         " (id: " + district.getParentId() + ") ");
                     }
                     result = result.concat(" \n\tChildren: ");
-                    if (controller.getDistrictChildrens(district.getId()) != null)
+                    if (controller.getDistrictChildren(district.getId()) != null)
                     {
-                        for (District children : controller.getDistrictChildrens(district.getId()))
+                        for (District children : controller.getDistrictChildren(district.getId()))
                         {
                             result = result.concat(children.getName() + " (id: " + children.getId() + "), ");
                         }
@@ -1107,7 +1106,7 @@ public enum Command
                 }
             },
 
-    usassign_order
+    unassign_order
             {
                 @Override
                 public String execute(String[] args)
@@ -1116,10 +1115,10 @@ public enum Command
                     Controller controller = new Controller();
                     BigInteger orderId = Command.parseToBigInteger(args[1]);
 
-                    controller.usassignOrder(orderId);
+                    controller.unassignOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
-                            ") was usassigned from employee.";
+                            ") was unassigned from employee.";
                 }
             },
 
@@ -1174,17 +1173,6 @@ public enum Command
                 public String execute(String[] args)
                 {
                     return "\n \n \n \n \n \n \n \n \n \n";
-                }
-            },
-
-    exit
-            {
-                @Override
-                public String execute(String[] args) throws IOException
-                {
-                    Model.getInstance().saveToFile();
-                    System.exit(0);
-                    return "";
                 }
             },
 

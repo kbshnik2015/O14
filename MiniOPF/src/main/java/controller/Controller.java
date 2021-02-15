@@ -247,9 +247,9 @@ public class Controller
     {
         checkDistrictExists(id);
 
-        if (getDistrictChildrens(id) != null)
+        if (getDistrictChildren(id) != null)
         {
-            for (District district : getDistrictChildrens(id))
+            for (District district : getDistrictChildren(id))
             {
                 model.deleteDistrict(model.getDistrict(district.getId()));
             }
@@ -264,9 +264,9 @@ public class Controller
     {
         checkDistrictExists(id);
 
-        if (getDistrictChildrens(id) != null)
+        if (getDistrictChildren(id) != null)
         {
-            for (District district : getDistrictChildrens(id))
+            for (District district : getDistrictChildren(id))
             {
                 if (isLeaveChildrenInHierarchy)
                 {
@@ -483,7 +483,7 @@ public class Controller
         return null;
     }
 
-    public List<District> getDistrictChildrens(BigInteger id)
+    public List<District> getDistrictChildren(BigInteger id)
     {
         List<District> list = new ArrayList<>();
         for (District district : model.getDistricts().values())
@@ -636,7 +636,7 @@ public class Controller
         startOrder(orderId);
     }
 
-    public void usassignOrder(BigInteger orderId) throws ObjectNotFoundException, IOException
+    public void unassignOrder(BigInteger orderId) throws ObjectNotFoundException, IOException
     {
         checkOrderExists(orderId);
 

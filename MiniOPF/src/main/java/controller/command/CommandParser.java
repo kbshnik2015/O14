@@ -22,6 +22,7 @@ public class CommandParser
         }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public static String parse(String commandLine)
     {
         String result;
@@ -242,7 +243,7 @@ public class CommandParser
                     break;
                 case "USASSIGNORDER":
                     checkArgumentsLength(words, 2);
-                    result = Command.usassign_order.execute(words);
+                    result = Command.unassign_order.execute(words);
                     break;
                 case "SUBSCRIBE":
                     checkArgumentsLength(words, 2);
@@ -260,10 +261,6 @@ public class CommandParser
                     checkArgumentsLength(words, 1);
                     result = Command.clear.execute(words);
                     break;
-                case "EXIT":
-                    checkArgumentsLength(words, 1);
-                    result = Command.exit.execute(words);
-                    break;
                 case "666":
                     result = ANSI_RED + Command.easter_egg_666.execute(words) + ANSI_RESET;
                     break;
@@ -271,12 +268,7 @@ public class CommandParser
                     throw new UnknownCommandException("Command " + words[0] + " doesn't exist!");
             }
         }
-        catch (IllegalLoginOrPasswordException | IllegalTransitionException | ObjectNotFoundException |
-                UnknownCommandException | UserNotFoundException | WrongCommandArgumentsException e)
-        {
-            result = ANSI_RED + e.getMessage() + ANSI_RESET;
-        }
-        catch (Exception e)
+        catch (UnknownCommandException | Exception e)
         {
             result = ANSI_RED + e.getMessage() + ANSI_RESET;
         }

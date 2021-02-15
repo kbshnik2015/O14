@@ -1,8 +1,5 @@
 package model.entities;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +19,8 @@ public class Employee extends AbstractUser
     @Getter
     private boolean isWaitingForOrders;
 
-    public Employee (String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus){
+    public Employee(String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus)
+    {
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;

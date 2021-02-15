@@ -22,10 +22,10 @@ public class Service
 
     private String customerLogin;
 
-    public Service(Date payDay, BigInteger spec, ServiceStatus servStatus, String customerLogin){
+    public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, String customerLogin){
         this.payDay = payDay;
         this.specificationId = spec;
-        this.serviceStatus = servStatus;
+        this.serviceStatus = serviceStatus;
         this.customerLogin = customerLogin;
     }
 }
