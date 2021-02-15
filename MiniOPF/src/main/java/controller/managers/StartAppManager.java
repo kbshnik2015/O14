@@ -6,7 +6,7 @@ import model.Model;
 
 public class StartAppManager
 {
-    public void startApp() throws IOException
+    public static void startApp() throws IOException
     {
         Model.getInstance();
 
