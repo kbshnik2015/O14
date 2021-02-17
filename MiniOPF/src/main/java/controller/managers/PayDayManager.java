@@ -37,12 +37,12 @@ public class PayDayManager extends Thread
                 if (isPayDayComeForActiveService ||
                         ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus()))
                 {
-                    Customer customer = model.getCustomer(service.getCustomerLogin());
+                    Customer customer = model.getCustomer(service.getCustomerId());
                     Specification serviceSpec = model.getSpecification(service.getSpecificationId());
 
                     if (customer.getBalance() >= serviceSpec.getPrice())
                     {
-                        controller.changeBalanceOn(customer.getLogin(), serviceSpec.getPrice() * (-1));
+                        controller.changeBalanceOn(customer.getId(), serviceSpec.getPrice() * (-1));
                         service.setServiceStatus(ServiceStatus.ACTIVE);
                         service.setPayDay(new Date(System.currentTimeMillis() + MONTH_IN_MILLI_SEC));
                     }

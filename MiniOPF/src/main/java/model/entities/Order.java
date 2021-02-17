@@ -14,9 +14,9 @@ public class Order
 
     private BigInteger id;
 
-    private String customerLogin;
+    private BigInteger customerId;
 
-    private String employeeLogin;
+    private BigInteger employeeId;
 
     private BigInteger specId;
 
@@ -28,11 +28,24 @@ public class Order
 
     private String address;
 
-    public Order(String customerLogin, String employeeLogin, BigInteger specId, BigInteger serviceId, OrderAim orderAim,
-            OrderStatus orderStatus)
+    public Order(BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId, OrderAim orderAim,
+                 OrderStatus orderStatus)
     {
-        this.customerLogin = customerLogin;
-        this.employeeLogin = employeeLogin;
+        this.customerId = customerId;
+        this.employeeId = employeeId;
+        this.specId = specId;
+        this.serviceId = serviceId;
+        this.orderAim = orderAim;
+        this.orderStatus = orderStatus != null ? orderStatus : OrderStatus.ENTERING;
+        this.orderAim = orderAim != null ? orderAim : OrderAim.NEW;
+    }
+
+    public Order(BigInteger id,BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId, OrderAim orderAim,
+                 OrderStatus orderStatus)
+    {
+        this.id = id;
+        this.customerId = customerId;
+        this.employeeId = employeeId;
         this.specId = specId;
         this.serviceId = serviceId;
         this.orderAim = orderAim;

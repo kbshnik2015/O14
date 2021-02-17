@@ -23,4 +23,11 @@ public class District
         this.parentId = parentId;
     }
 
+    public District(BigInteger id,String name, BigInteger parentId)
+    {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+    }
+
 }

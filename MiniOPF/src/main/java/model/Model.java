@@ -38,11 +38,11 @@ public class Model
 
     @Setter
     @Getter
-    private Map<String, Customer> customers;
+    private Map<BigInteger, Customer> customers;
 
     @Setter
     @Getter
-    private Map<String, Employee> employees;
+    private Map<BigInteger, Employee> employees;
 
     @Setter
     @Getter
@@ -102,19 +102,19 @@ public class Model
         {
             customers = new HashMap<>();
         }
-        customers.put(customer.getLogin(), customer);
+        customers.put(customer.getId(), customer);
         return customer;
     }
 
     public void updateCustomer(Customer customer)
     {
-        customers.put(customer.getLogin(), customer);
+        customers.put(customer.getId(), customer);
     }
 
-    public void updateCustomer(String firstName, String lastName, String login, String password, String address,
+    public void updateCustomer(BigInteger id,String firstName, String lastName, String login, String password, String address,
             float balance)
     {
-        Customer customer = getCustomer(login);
+        Customer customer = getCustomer(id);
         if (customer != null)
         {
             if (firstName != null)
@@ -137,17 +137,21 @@ public class Model
             {
                 customer.setBalance(balance);
             }
+            if (login != null)
+            {
+                customer.setLogin(login);
+            }
         }
     }
 
     public void deleteCustomer(Customer customer)
     {
-        customers.remove(customer.getLogin());
+        customers.remove(customer.getId());
     }
 
-    public Customer getCustomer(String login)
+    public Customer getCustomer(BigInteger id)
     {
-        return customers.get(login);
+        return customers.get(id);
     }
 
     public Employee createEmployee(Employee employee)
@@ -156,19 +160,19 @@ public class Model
         {
             employees = new HashMap<>();
         }
-        employees.put(employee.getLogin(), employee);
+        employees.put(employee.getId(), employee);
         return employee;
     }
 
     public void updateEmployee(Employee employee)
     {
-        employees.put(employee.getLogin(), employee);
+        employees.put(employee.getId(), employee);
     }
 
-    public void updateEmployee(String firstName, String lastName, String login, String password,
+    public void updateEmployee(BigInteger id,String firstName, String lastName, String login, String password,
             EmployeeStatus employeeStatus)
     {
-        Employee employee = getEmployee(login);
+        Employee employee = getEmployee(id);
         if (employee != null)
         {
             if (firstName != null)
@@ -187,17 +191,21 @@ public class Model
             {
                 employee.setEmployeeStatus(employeeStatus);
             }
+            if (login != null)
+            {
+                employee.setLogin(login);
+            }
         }
     }
 
     public void deleteEmployee(Employee employee)
     {
-        employees.remove(employee.getLogin());
+        employees.remove(employee.getId());
     }
 
-    public Employee getEmployee(String login)
+    public Employee getEmployee(BigInteger id)
     {
-        return employees.get(login);
+        return employees.get(id);
     }
 
     public District createDistrict(District district)
@@ -381,19 +389,19 @@ public class Model
         orders.put(order.getId(), order);
     }
 
-    public void updateOrder(BigInteger id, String customerLogin, String employeeLogin, OrderAim orderAim,
+    public void updateOrder(BigInteger orderId, BigInteger customerId, BigInteger employeeId, OrderAim orderAim,
             OrderStatus orderStatus, String address)
     {
-        Order order = getOrder(id);
+        Order order = getOrder(orderId);
         if (order != null)
         {
-            if (customerLogin != null && getCustomers().containsKey(customerLogin))
+            if (customerId != null && getCustomers().containsKey(customerId))
             {
-                order.setCustomerLogin(customerLogin);
+                order.setCustomerId(customerId);
             }
-            if (employeeLogin != null && getEmployees().containsKey(employeeLogin))
+            if (employeeId != null && getEmployees().containsKey(employeeId))
             {
-                order.setEmployeeLogin(employeeLogin);
+                order.setEmployeeId(employeeId);
             }
             if (orderAim != null)
             {

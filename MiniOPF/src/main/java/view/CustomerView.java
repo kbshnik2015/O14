@@ -130,7 +130,7 @@ public class CustomerView
                     {
                         if (newPassword.equals(newPassword2))
                         {
-                            controller.updateCustomer(null, null, customer.getLogin(), newPassword, null, -1);
+                            controller.updateCustomer(customer.getId(), null, null, null, newPassword, null,-1);
                             System.out.println("\nPassword changed successful\n");
                         }
                         else
@@ -157,7 +157,7 @@ public class CustomerView
         System.out.print("Enter the replenishment amount: ");
 
         float topUp = scanner.nextFloat();
-        controller.changeBalanceOn(customer.getLogin(), topUp);
+        controller.changeBalanceOn(customer.getId(), topUp);
     }
 
     private static void showSpecifications(Customer customer) throws Exception
@@ -197,7 +197,7 @@ public class CustomerView
         int input = scanner.nextInt();
         if (input == 1)
         {
-            controller.createNewOrder(customer.getLogin(), specification.getId());
+            controller.createNewOrder(customer.getId(), specification.getId());
             System.out.println("Order by connecting successfully created.");
         }
         else if (input != 0)
@@ -210,7 +210,7 @@ public class CustomerView
     {
         Map<String, Callable<Void>> commands = new HashMap<>();
         Controller controller = new Controller();
-        List<Order> orders = new ArrayList<>(controller.getCustomerOrders(customer.getLogin()));
+        List<Order> orders = new ArrayList<>(controller.getCustomerOrders(customer.getId()));
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Order to show info about:\n";
 
@@ -291,7 +291,7 @@ public class CustomerView
     {
         Map<String, Callable<Void>> commands = new HashMap<>();
         Controller controller = new Controller();
-        List<Service> services = (List<Service>) controller.getCustomerServices(customer.getLogin());
+        List<Service> services = (List<Service>) controller.getCustomerServices(customer.getId());
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Service to show info about:\n";
 
@@ -349,12 +349,12 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createRestoreOrder(customer.getLogin(), service.getId());
+                        controller.createRestoreOrder(customer.getId(), service.getId());
                         break;
                     }
                     case 2:
                     {
-                        controller.createDisconnectOrder(customer.getLogin(), service.getId());
+                        controller.createDisconnectOrder(customer.getId(), service.getId());
                         break;
                     }
                     case 0:
@@ -373,12 +373,12 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createSuspendOrder(customer.getLogin(), service.getId());
+                        controller.createSuspendOrder(customer.getId(), service.getId());
                         break;
                     }
                     case 2:
                     {
-                        controller.createDisconnectOrder(customer.getLogin(), service.getId());
+                        controller.createDisconnectOrder(customer.getId(), service.getId());
                     }
                     case 0:
                     {
@@ -396,7 +396,7 @@ public class CustomerView
                 {
                     case 1:
                     {
-                        controller.createRestoreOrder(customer.getLogin(), service.getId());
+                        controller.createRestoreOrder(customer.getId(), service.getId());
                         break;
                     }
                     case 0:

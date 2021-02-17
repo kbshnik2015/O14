@@ -70,8 +70,7 @@ public enum Command
     update_customer
             {
                 @Override
-                public String execute(String[] args)
-                        throws IOException, UserNotFoundException, WrongCommandArgumentsException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
@@ -81,8 +80,8 @@ public enum Command
                     String address = !args[5].equalsIgnoreCase("null") ? args[5] : null;
                     Float balance = Command.parseToFloat(args[6]);
 
-                    Customer customer = controller.getModel().getCustomer(login);
-                    controller.updateCustomer(firstName, lastName, login, password, address, balance);
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    controller.updateCustomer(customer.getId(),firstName, lastName, login, password, address, balance);
 
                     return "Customer was updated: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + customer.getLogin() + ").";
@@ -92,8 +91,7 @@ public enum Command
     update_employee
             {
                 @Override
-                public String execute(String[] args)
-                        throws WrongCommandArgumentsException, UserNotFoundException, IOException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
@@ -102,8 +100,8 @@ public enum Command
                     String password = !args[4].equalsIgnoreCase("null") ? args[4] : null;
                     EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
 
-                    Employee employee = controller.getModel().getEmployee(login);
-                    controller.updateEmployee(firstName, lastName, login, password, employeeStatus);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.updateEmployee(employee.getId(),firstName, lastName, login, password, employeeStatus);
 
                     return "Employee was updated: " + employee.getFirstName() + " " + employee.getLastName() +
                             " (login: " + employee.getLogin() + ").";
@@ -192,12 +190,12 @@ public enum Command
     delete_customer_cascade
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-
-                    controller.deleteCustomerCascade(login);
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    controller.deleteCustomerCascade(customer.getId());
 
                     return "Customer (login: " + login + ") was cascade deleted.";
                 }
@@ -206,12 +204,12 @@ public enum Command
     delete_employee_cascade
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-
-                    controller.deleteEmployeeCascade(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.deleteEmployeeCascade(employee.getId());
 
                     return "Employee (login: " + login + ") was cascade deleted.";
                 }
@@ -220,12 +218,12 @@ public enum Command
     delete_employee
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-
-                    controller.deleteEmployee(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.deleteEmployee(employee.getId());
 
                     return "Employee (login: " + login + ") was deleted.";
                 }
@@ -328,7 +326,7 @@ public enum Command
                     for (Customer customer : controller.getModel().getCustomers().values())
                     {
                         result = result.concat("\t" + customer.getLogin() + ": " + customer.getFirstName() + " " +
-                                customer.getLastName() + "\n");
+                                customer.getLastName() + "("+customer.getId()+")\n");
                     }
 
                     return result;
@@ -346,7 +344,7 @@ public enum Command
                     for (Employee employee : controller.getModel().getEmployees().values())
                     {
                         result = result.concat("\t" + employee.getLogin() + ": " + employee.getFirstName() + " " +
-                                employee.getLastName() + ", status: " + employee.getEmployeeStatus() + "\n");
+                                employee.getLastName() + ", status: " + employee.getEmployeeStatus() + "("+employee.getId()+")\n");
                     }
 
                     return result;
@@ -382,11 +380,11 @@ public enum Command
                     String result = "Orders: \n";
                     for (Order order : controller.getModel().getOrders().values())
                     {
-                        Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                        Customer customer = controller.getModel().getCustomer(order.getCustomerId());
                         result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() +
                                 ", status: " + order.getOrderStatus() +
                                 ", Customer: " + customer.getFirstName() + " " + customer.getLastName() +
-                                " (login: " + order.getCustomerLogin() +
+                                " (login: " + order.getCustomerId() +
                                 "), specification id: " + order.getSpecId() + "\n");
                     }
 
@@ -421,9 +419,9 @@ public enum Command
                     String result = "Services: \n";
                     for (Service service : controller.getModel().getServices().values())
                     {
-                        Customer customer = controller.getModel().getCustomer(service.getCustomerLogin());
+                        Customer customer = controller.getModel().getCustomer(service.getCustomerId());
                         result = result.concat("\t" + service.getId() + ": " + customer.getFirstName() + " " +
-                                customer.getLastName() + " (login: " + service.getCustomerLogin() +
+                                customer.getLastName() + " (login: " + service.getCustomerId() +
                                 "), specification: " +
                                 controller.getModel().getSpecification(service.getSpecificationId()).getName() +
                                 " (id: " + service.getSpecificationId() + "), status: " + service.getServiceStatus() +
@@ -437,38 +435,40 @@ public enum Command
     get_customer_info
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    Customer customer = controller.getModel().getCustomer(login);
+                    Customer customer = (Customer) controller.getUserByLogin(login);
 
                     return "Customer: " + customer.getLogin() + "\n"
                             + "\tFirst name: " + customer.getFirstName() + "\n"
                             + "\tLast name: " + customer.getLastName() + "\n"
                             + "\tPassword: " + customer.getPassword() + "\n"
                             + "\tAddress: " + customer.getAddress() + "\n"
-                            + "\tBalance: " + customer.getBalance() + "\n";
+                            + "\tBalance: " + customer.getBalance() + "\n"
+                            + "\t(" + customer.getId() + ")\n";
                 }
             },
 
     get_employee_info
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    Employee employee = controller.getModel().getEmployee(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
 
                     return "Employee: " + employee.getLogin() + "\n"
                             + "\tFirst name: " + employee.getFirstName() + "\n"
                             + "\tLast name: " + employee.getLastName() + "\n"
                             + "\tPassword: " + employee.getPassword() + "\n"
                             + "\tStatus: " + employee.getEmployeeStatus() + "\n"
-                            + "\tWaiting for orders: " + employee.isWaitingForOrders() + "\n";
+                            + "\tWaiting for orders: " + employee.isWaitingForOrders() + "\n"
+                            + "\t(" + employee.getId() + ")\n";
                 }
             },
 
@@ -482,15 +482,15 @@ public enum Command
 
                     Order order = controller.getModel().getOrder(id);
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerId());
 
                     String result = "Order: " + order.getId() + "\tCustomer: " + customer.getFirstName() + " " +
-                            customer.getLastName() + " (login: " + order.getCustomerLogin() + ")" + "\n\tEmployee: ";
-                    if (order.getEmployeeLogin() != null)
+                            customer.getLastName() + " (login: " + order.getCustomerId() + ")" + "\n\tEmployee: ";
+                    if (order.getEmployeeId() != null)
                     {
-                        Employee employee = controller.getModel().getEmployee(order.getEmployeeLogin());
+                        Employee employee = controller.getModel().getEmployee(order.getEmployeeId());
                         result = result.concat(employee.getFirstName() + " " + employee.getLastName() +
-                                " (login: " + order.getEmployeeLogin() + ")");
+                                " (login: " + order.getEmployeeId() + ")");
                     }
                     result = result.concat("\n\tAim: " + order.getOrderAim() +
                             "\n\tStatus: " + order.getOrderStatus() +
@@ -522,11 +522,11 @@ public enum Command
 
                     Service service = controller.getModel().getService(id);
                     Specification specification = controller.getModel().getSpecification(service.getSpecificationId());
-                    Customer customer = controller.getModel().getCustomer(service.getCustomerLogin());
+                    Customer customer = controller.getModel().getCustomer(service.getCustomerId());
 
                     return "Service: " + service.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + service.getCustomerLogin() + ")" + "\n"
+                            " (login: " + service.getCustomerId() + ")" + "\n"
                             + "\tSpecification: id: " + service.getSpecificationId() + ", name: " +
                             specification.getName() + ", price:" + specification.getPrice() +
                             ", description: " + specification.getDescription() +
@@ -604,22 +604,20 @@ public enum Command
     create_new_order
             {
                 @Override
-                public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, UserNotFoundException,
-                        ObjectNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger specId = Command.parseToBigInteger(args[2]);
-
-                    Order order = controller.createNewOrder(customerLogin, specId);
+                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Order order = controller.createNewOrder(customer.getId(), specId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+
 
                     return "New order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + order.getCustomerLogin() + ")" + "\n"
+                            " (login: " + order.getCustomerId() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
@@ -637,16 +635,16 @@ public enum Command
                     Controller controller = new Controller();
                     String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-
-                    Order order = controller.createSuspendOrder(customerLogin, serviceId);
+                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Order order = controller.createSuspendOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    customer = controller.getModel().getCustomer(order.getCustomerId());
                     Service service = controller.getModel().getService(order.getServiceId());
 
                     return "Suspend order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + order.getCustomerLogin() + ")" + "\n"
+                            " (login: " + order.getCustomerId() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
@@ -666,16 +664,15 @@ public enum Command
                     Controller controller = new Controller();
                     String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-
-                    Order order = controller.createRestoreOrder(customerLogin, serviceId);
+                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Order order = controller.createRestoreOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
                     Service service = controller.getModel().getService(order.getServiceId());
 
                     return "Restore order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + order.getCustomerLogin() + ")" + "\n"
+                            " (login: " + order.getCustomerId() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
@@ -695,16 +692,15 @@ public enum Command
                     Controller controller = new Controller();
                     String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-
-                    Order order = controller.createDisconnectOrder(customerLogin, serviceId);
+                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Order order = controller.createDisconnectOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
                     Service service = controller.getModel().getService(order.getServiceId());
 
                     return "Disconnect order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + order.getCustomerLogin() + ")" + "\n"
+                            " (login: " + order.getCustomerId() + ")" + "\n"
                             + "\tAim: " + order.getOrderAim() + "\n"
                             + "\tStatus: " + order.getOrderStatus() + "\n"
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
@@ -799,16 +795,13 @@ public enum Command
     change_balance_on
             {
                 @Override
-                public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     float amountOfMoney = Command.parseToFloat(args[2]);
-
-                    controller.changeBalanceOn(login, amountOfMoney);
-
-                    Customer customer = controller.getModel().getCustomer(login);
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    controller.changeBalanceOn(customer.getId(), amountOfMoney);
 
                     return "Balance of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + customer.getLogin() + ") was changed by " + amountOfMoney;
@@ -825,10 +818,10 @@ public enum Command
                     String result = "Free orders: \n";
                     for (Order order : controller.getFreeOrders())
                     {
-                        Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                        Customer customer = controller.getModel().getCustomer(order.getCustomerId());
                         result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
                                 order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
-                                customer.getLastName() + " (login: " + order.getCustomerLogin() +
+                                customer.getLastName() + " (login: " + order.getCustomerId() +
                                 "), specification id: " + order.getSpecId() + "\n");
                     }
 
@@ -844,11 +837,11 @@ public enum Command
                     Controller controller = new Controller();
                     Order order = controller.getFreeOrder();
 
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                    Customer customer = controller.getModel().getCustomer(order.getCustomerId());
 
                     return "Free order: \n(id: " + order.getId() + ") " + order.getOrderAim() + ", status: " +
                             order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
-                            customer.getLastName() + " (login: " + order.getCustomerLogin() +
+                            customer.getLastName() + " (login: " + order.getCustomerId() +
                             "), specification id: " + order.getSpecId() + "\n";
                 }
             },
@@ -856,14 +849,13 @@ public enum Command
     get_customer_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    List<Order> orders = (List<Order>) controller.getCustomerOrders(customer.getId());
 
-                    List<Order> orders = (List<Order>) controller.getCustomerOrders(login);
-
-                    Customer customer = controller.getModel().getCustomer(login);
                     String result = "Orders of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + login + "):\n";
                     if (orders != null)
@@ -882,14 +874,13 @@ public enum Command
     get_customer_services
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    List<Service> services = (List<Service>) controller.getCustomerServices(customer.getId());
 
-                    List<Service> services = (List<Service>) controller.getCustomerServices(login);
-
-                    Customer customer = controller.getModel().getCustomer(login);
                     String result = "Services of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + login + "):\n";
                     if (services != null)
@@ -909,24 +900,24 @@ public enum Command
     get_employee_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    List<Order> orders = (List<Order>) controller.getEmployeeOrders(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    List<Order> orders = (List<Order>) controller.getEmployeeOrders(employee.getId());
 
-                    Employee employee = controller.getModel().getEmployee(login);
                     String result = "Orders of employee " + employee.getFirstName() + " " + employee.getLastName() +
                             " (login: " + login + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
                         {
-                            Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                            Customer customer = controller.getModel().getCustomer(order.getCustomerId());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
                                     customer.getFirstName() + " " + customer.getLastName() +
-                                    " (login: " + order.getCustomerLogin() + "), status: " +
+                                    " (login: " + order.getCustomerId() + "), status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
                         }
                     }
@@ -938,14 +929,13 @@ public enum Command
     get_customer_connected_services
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    List<Service> services = (List<Service>) controller.getCustomerConnectedServices(customer.getId());
 
-                    List<Service> services = (List<Service>) controller.getCustomerConnectedServices(login);
-
-                    Customer customer = controller.getModel().getCustomer(login);
                     String result = "Connected services of customer " + customer.getFirstName() + " " +
                             customer.getLastName() + " (login: " + login + ")\n";
                     if (services != null)
@@ -965,14 +955,13 @@ public enum Command
     get_customer_not_finished_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    List<Order> orders = (List<Order>) controller.getCustomerNotFinishedOrders(customer.getId());
 
-                    List<Order> orders = (List<Order>) controller.getCustomerNotFinishedOrders(login);
-
-                    Customer customer = controller.getModel().getCustomer(login);
                     String result = "Not finished orders of customer " + customer.getFirstName() + " " +
                             customer.getLastName() + " (login: " + login + "):\n";
                     if (orders != null)
@@ -1001,10 +990,10 @@ public enum Command
                     {
                         for (Order order : orders)
                         {
-                            Customer customer = controller.getModel().getCustomer(order.getCustomerLogin());
+                            Customer customer = controller.getModel().getCustomer(order.getCustomerId());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
                                     customer.getFirstName() + " " + customer.getLastName() +
-                                    " (login: " + order.getCustomerLogin() + "), status: " +
+                                    " (login: " + order.getCustomerId() + "), status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
                         }
                     }
@@ -1016,14 +1005,14 @@ public enum Command
     go_on_vacation
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    Employee employee = (Employee) controller.getUserByLogin(login);
 
-                    controller.goOnVacation(login);
+                    controller.goOnVacation(employee.getId());
 
-                    Employee employee = controller.getModel().getEmployee(login);
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
                             " (login: " + employee.getLogin() + ") went to vacation.";
@@ -1033,14 +1022,12 @@ public enum Command
     return_from_vacation
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-
-                    controller.returnFromVacation(login);
-
-                    Employee employee = controller.getModel().getEmployee(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.returnFromVacation(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
                             " (login: " + employee.getLogin() + ") was returned from vacation.";
@@ -1050,14 +1037,12 @@ public enum Command
     retire_employee
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-
-                    controller.retireEmployee(login);
-
-                    Employee employee = controller.getModel().getEmployee(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.retireEmployee(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
                             " (login: " + employee.getLogin() + ") was retired.";
@@ -1067,17 +1052,13 @@ public enum Command
     assign_order
             {
                 @Override
-                public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, UserNotFoundException,
-                        ObjectNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger orderId = Command.parseToBigInteger(args[2]);
-
-                    controller.assignOrder(login, orderId);
-
-                    Employee employee = controller.getModel().getEmployee(login);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.assignOrder(employee.getId(), orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
                             ") was assigned to employee " + employee.getFirstName() + " " +
@@ -1088,17 +1069,14 @@ public enum Command
     process_order
             {
                 @Override
-                public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, UserNotFoundException,
-                        ObjectNotFoundException, IllegalTransitionException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
                     BigInteger orderId = Command.parseToBigInteger(args[2]);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.processOrder(employee.getId(), orderId);
 
-                    controller.processOrder(login, orderId);
-
-                    Employee employee = controller.getModel().getEmployee(login);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
                             ") was started by employee " + employee.getFirstName() + " " +
@@ -1125,14 +1103,14 @@ public enum Command
     subscribe
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    controller.setEmployeeWaitingStatus(login, true);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.setEmployeeWaitingStatus(employee.getId(), true);
 
-                    Employee employee = controller.getModel().getEmployee(login);
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
                             employee.getLogin() + ") was subscribed for getting free orders.";
@@ -1142,14 +1120,14 @@ public enum Command
     unsubscribe
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
                     String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
 
-                    controller.setEmployeeWaitingStatus(login, false);
+                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    controller.setEmployeeWaitingStatus(employee.getId(), false);
 
-                    Employee employee = controller.getModel().getEmployee(login);
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
                             employee.getLogin() + ") was unsubscribed from work waiters.";

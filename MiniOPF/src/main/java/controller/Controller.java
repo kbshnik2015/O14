@@ -41,15 +41,11 @@ public class Controller
         model = Model.getInstance();
     }
 
-    public AbstractUser login(String login, String password) throws IllegalLoginOrPasswordException
+    public AbstractUser login(String login, String password) throws Exception
     {
-        AbstractUser user = model.getCustomer(login);
+        AbstractUser user = getUserByLogin(login);
 
-        if (user == null)
-        {
-            user = model.getEmployee(login);
-        }
-        if (user == null || !password.equals(user.getPassword()))
+        if (password.equals(user.getPassword()))
         {
             throw new IllegalLoginOrPasswordException("Wrong login or password!");
         }
@@ -91,31 +87,34 @@ public class Controller
         {
             throw new IllegalLoginOrPasswordException("Password can't be nullable!");
         }
-        if (model.getCustomers().containsKey(login))
-        {
-            throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+        for (Customer customer : model.getCustomers().values()){
+            if (customer.getLogin().equals(login)){
+                throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+            }
         }
-        if (model.getEmployees().containsKey(login))
-        {
-            throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+
+        for (Employee employee : model.getEmployees().values()){
+            if (employee.getLogin().equals(login)){
+                throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+            }
         }
     }
 
-    public void updateCustomer(String firstName, String lastName, String login, String password, String address,
+    public void updateCustomer(BigInteger id,String firstName, String lastName, String login, String password, String address,
             float balance) throws UserNotFoundException, IOException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
-        model.updateCustomer(firstName, lastName, login, password, address, balance);
+        model.updateCustomer(id, firstName, lastName, login, password, address, balance);
         model.saveToFile();
     }
 
-    public void updateEmployee(String firstName, String lastName, String login, String password,
+    public void updateEmployee(BigInteger id,String firstName, String lastName, String login, String password,
             EmployeeStatus employeeStatus) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        model.updateEmployee(firstName, lastName, login, password, employeeStatus);
+        model.updateEmployee(id,firstName, lastName, login, password, employeeStatus);
         model.saveToFile();
     }
 
@@ -182,43 +181,43 @@ public class Controller
         model.saveToFile();
     }
 
-    public void deleteCustomerCascade(String login) throws UserNotFoundException, IOException
+    public void deleteCustomerCascade(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
-        for (Service service : getCustomerServices(login))
+        for (Service service : getCustomerServices(id))
         {
             model.deleteService(service);
         }
-        for (Order order : getCustomerOrders(login))
+        for (Order order : getCustomerOrders(id))
         {
             model.deleteOrder(order);
         }
-        model.deleteCustomer(model.getCustomer(login));
+        model.deleteCustomer(model.getCustomer(id));
         model.saveToFile();
     }
 
-    public void deleteEmployeeCascade(String login) throws UserNotFoundException, IOException
+    public void deleteEmployeeCascade(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        for (Order order : getEmployeeOrders(login))
+        for (Order order : getEmployeeOrders(id))
         {
             model.deleteOrder(order);
         }
-        model.deleteEmployee(model.getEmployee(login));
+        model.deleteEmployee(model.getEmployee(id));
         model.saveToFile();
     }
 
-    public void deleteEmployee(String login) throws UserNotFoundException, IOException
+    public void deleteEmployee(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        for (Order order : getEmployeeOrders(login))
+        for (Order order : getEmployeeOrders(id))
         {
-            order.setEmployeeLogin(null);
+            order.setEmployeeId(null);
         }
-        model.deleteEmployee(model.getEmployee(login));
+        model.deleteEmployee(model.getEmployee(id));
         model.saveToFile();
     }
 
@@ -283,13 +282,13 @@ public class Controller
         model.saveToFile();
     }
 
-    public Order createNewOrder(String customerLogin, BigInteger specId)
+    public Order createNewOrder(BigInteger customerId, BigInteger specId)
             throws UserNotFoundException, ObjectNotFoundException, IOException
     {
-        checkCustomerExists(customerLogin);
+        checkCustomerExists(customerId);
         checkSpecificationExists(specId);
 
-        Order order = new Order(customerLogin, null, specId, null, OrderAim.NEW, null);
+        Order order = new Order(customerId, null, specId, null, OrderAim.NEW, null);
         order = model.createOrder(order);
         WorkWaitersManager.distributeOrders();
         model.saveToFile();
@@ -297,15 +296,15 @@ public class Controller
         return order;
     }
 
-    public Order createSuspendOrder(String customerLogin, BigInteger serviceId)
+    public Order createSuspendOrder(BigInteger customerId, BigInteger serviceId)
             throws Exception
     {
-        checkCustomerExists(customerLogin);
+        checkCustomerExists(customerId);
         checkServiceExists(serviceId);
-        checkServiceBelongsToCustomer(customerLogin, serviceId);
+        checkServiceBelongsToCustomer(customerId, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null,
+        Order order = new Order(customerId, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.SUSPEND, null);
         order = model.createOrder(order);
@@ -315,14 +314,14 @@ public class Controller
         return order;
     }
 
-    public Order createRestoreOrder(String customerLogin, BigInteger serviceId) throws Exception
+    public Order createRestoreOrder(BigInteger customerId, BigInteger serviceId) throws Exception
     {
-        checkCustomerExists(customerLogin);
+        checkCustomerExists(customerId);
         checkServiceExists(serviceId);
-        checkServiceBelongsToCustomer(customerLogin, serviceId);
+        checkServiceBelongsToCustomer(customerId, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null,
+        Order order = new Order(customerId, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.RESTORE, null);
         order = model.createOrder(order);
@@ -332,14 +331,14 @@ public class Controller
         return order;
     }
 
-    public Order createDisconnectOrder(String customerLogin, BigInteger serviceId) throws Exception
+    public Order createDisconnectOrder(BigInteger customerId, BigInteger serviceId) throws Exception
     {
-        checkCustomerExists(customerLogin);
+        checkCustomerExists(customerId);
         checkServiceExists(serviceId);
-        checkServiceBelongsToCustomer(customerLogin, serviceId);
+        checkServiceBelongsToCustomer(customerId, serviceId);
         checkSpecificationExists(model.getSpecification(model.getService(serviceId).getSpecificationId()).getId());
 
-        Order order = new Order(customerLogin, null,
+        Order order = new Order(customerId, null,
                 model.getSpecification(model.getService(serviceId).getSpecificationId()).getId(), serviceId,
                 OrderAim.DISCONNECT, null);
         order = model.createOrder(order);
@@ -397,7 +396,7 @@ public class Controller
             checkSpecificationExists(order.getSpecId());
 
             Service service =
-                    new Service(payDayPlusMonth, order.getSpecId(), ServiceStatus.ACTIVE, order.getCustomerLogin());
+                    new Service(payDayPlusMonth, order.getSpecId(), ServiceStatus.ACTIVE, order.getCustomerId());
             order.setServiceId(model.createService(service).getId());
         }
         else
@@ -447,11 +446,11 @@ public class Controller
         }
     }
 
-    public void changeBalanceOn(String login, float amountOfMoney) throws UserNotFoundException, IOException
+    public void changeBalanceOn(BigInteger customerId, float amountOfMoney) throws UserNotFoundException, IOException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(customerId);
 
-        Customer customer = model.getCustomer(login);
+        Customer customer = model.getCustomer(customerId);
         customer.setBalance(customer.getBalance() + amountOfMoney);
         model.saveToFile();
     }
@@ -461,7 +460,7 @@ public class Controller
         List<Order> list = new ArrayList<>();
         for (Order ord : model.getOrders().values())
         {
-            if (ord.getEmployeeLogin() == null && !OrderStatus.COMPLETED.equals(ord.getOrderStatus()))
+            if (ord.getEmployeeId() == null && !OrderStatus.COMPLETED.equals(ord.getOrderStatus()))
             {
                 list.add(ord);
             }
@@ -474,7 +473,7 @@ public class Controller
     {
         for (Order ord : model.getOrders().values())
         {
-            if (ord.getEmployeeLogin() == null && !OrderStatus.COMPLETED.equals(ord.getOrderStatus()))
+            if (ord.getEmployeeId() == null && !OrderStatus.COMPLETED.equals(ord.getOrderStatus()))
             {
                 return ord;
             }
@@ -497,33 +496,33 @@ public class Controller
         return list;
     }
 
-    public Collection<Order> getCustomerOrders(String login) throws UserNotFoundException
+    public Collection<Order> getCustomerOrders(BigInteger id) throws UserNotFoundException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
         return model.getOrders().values().stream()
-                .filter(order -> login.equals(order.getCustomerLogin()))
+                .filter(order -> id.equals(order.getCustomerId()))
                 .collect(Collectors.toList());
     }
 
-    public Collection<Service> getCustomerServices(String login) throws UserNotFoundException
+    public Collection<Service> getCustomerServices(BigInteger id) throws UserNotFoundException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
         return model.getServices().values().stream()
-                .filter(service -> login.equals(service.getCustomerLogin()))
+                .filter(service -> id.equals(service.getCustomerId()))
                 .collect(Collectors.toList());
     }
 
     public  List<Specification> getCustomerSpecifications(final Customer customer)
             throws IOException, UserNotFoundException
     {
-        List<Specification> customerSpecifications = getCustomerServices(customer.getLogin())
+        List<Specification> customerSpecifications = getCustomerServices(customer.getId())
                 .stream()
                 .map(x -> model.getSpecification(x.getSpecificationId()))
                 .collect(Collectors.toList());
 
-        customerSpecifications.addAll(getCustomerOrders(customer.getLogin())
+        customerSpecifications.addAll(getCustomerOrders(customer.getId())
                 .stream()
                 .map(x -> model.getSpecification(x.getSpecId()))
                 .collect(Collectors.toList()));
@@ -541,30 +540,30 @@ public class Controller
         return specifications;
     }
 
-    public Collection<Order> getEmployeeOrders(String login) throws UserNotFoundException
+    public Collection<Order> getEmployeeOrders(BigInteger id) throws UserNotFoundException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
         return model.getOrders().values().stream()
-                .filter(order -> login.equals(order.getEmployeeLogin()))
+                .filter(order -> id.equals(order.getEmployeeId()))
                 .collect(Collectors.toList());
     }
 
-    public Collection<Service> getCustomerConnectedServices(String login) throws UserNotFoundException
+    public Collection<Service> getCustomerConnectedServices(BigInteger id) throws UserNotFoundException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
-        return getCustomerServices(login)
+        return getCustomerServices(id)
                 .stream()
                 .filter(service -> ServiceStatus.DISCONNECTED != service.getServiceStatus())
                 .collect(Collectors.toList());
     }
 
-    public Collection<Order> getCustomerNotFinishedOrders(String login) throws UserNotFoundException
+    public Collection<Order> getCustomerNotFinishedOrders(BigInteger id) throws UserNotFoundException
     {
-        checkCustomerExists(login);
+        checkCustomerExists(id);
 
-        return getCustomerOrders(login)
+        return getCustomerOrders(id)
                 .stream()
                 .filter(order -> OrderStatus.COMPLETED != order.getOrderStatus())
                 .collect(Collectors.toList());
@@ -587,18 +586,18 @@ public class Controller
         {
             if (EmployeeStatus.ON_VACATION.equals(employee.getEmployeeStatus()))
             {
-                orders.addAll(getEmployeeOrders(employee.getLogin()));
+                orders.addAll(getEmployeeOrders(employee.getId()));
             }
         }
 
         return orders;
     }
 
-    public void setEmployeeWaitingStatus(String login, boolean isWaiting) throws UserNotFoundException, IOException
+    public void setEmployeeWaitingStatus(BigInteger id, boolean isWaiting) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        model.getEmployee(login).setWaitingForOrders(isWaiting);
+        model.getEmployee(id).setWaitingForOrders(isWaiting);
 
         if (isWaiting)
         {
@@ -608,57 +607,57 @@ public class Controller
         model.saveToFile();
     }
 
-    public void goOnVacation(String login) throws UserNotFoundException, IOException
+    public void goOnVacation(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.ON_VACATION);
+        model.getEmployee(id).setEmployeeStatus(EmployeeStatus.ON_VACATION);
         model.saveToFile();
     }
 
-    public void returnFromVacation(String login) throws UserNotFoundException, IOException
+    public void returnFromVacation(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.WORKING);
+        model.getEmployee(id).setEmployeeStatus(EmployeeStatus.WORKING);
         model.saveToFile();
     }
 
-    public void retireEmployee(String login) throws UserNotFoundException, IOException
+    public void retireEmployee(BigInteger id) throws UserNotFoundException, IOException
     {
-        checkEmployeeExists(login);
+        checkEmployeeExists(id);
 
-        model.getEmployee(login).setEmployeeStatus(EmployeeStatus.RETIRED);
-        ArrayList<Order> orders = (ArrayList<Order>) getEmployeeOrders(login);
+        model.getEmployee(id).setEmployeeStatus(EmployeeStatus.RETIRED);
+        ArrayList<Order> orders = (ArrayList<Order>) getEmployeeOrders(id);
         if (orders != null)
         {
             for (Order order : orders)
             {
-                order.setEmployeeLogin(null);
+                order.setEmployeeId(null);
             }
         }
 
         model.saveToFile();
     }
 
-    public void assignOrder(String employeeLogin, BigInteger orderId)
+    public void assignOrder(BigInteger employeeId, BigInteger orderId)
             throws ObjectNotFoundException, UserNotFoundException, IOException
     {
         checkOrderExists(orderId);
-        checkEmployeeExists(employeeLogin);
+        checkEmployeeExists(employeeId);
 
         Order order = model.getOrder(orderId);
-        order.setEmployeeLogin(employeeLogin);
+        order.setEmployeeId(employeeId);
         model.saveToFile();
     }
 
-    public void processOrder(String employeeLogin, BigInteger orderId)
+    public void processOrder(BigInteger employeeId, BigInteger orderId)
             throws IllegalTransitionException, ObjectNotFoundException, UserNotFoundException, IOException
     {
         checkOrderExists(orderId);
-        checkEmployeeExists(employeeLogin);
+        checkEmployeeExists(employeeId);
 
-        assignOrder(employeeLogin, orderId);
+        assignOrder(employeeId, orderId);
         startOrder(orderId);
     }
 
@@ -667,7 +666,7 @@ public class Controller
         checkOrderExists(orderId);
 
         Order order = model.getOrder(orderId);
-        order.setEmployeeLogin(null);
+        order.setEmployeeId(null);
 
         WorkWaitersManager.distributeOrders();
         model.saveToFile();
@@ -697,19 +696,19 @@ public class Controller
         }
     }
 
-    private void checkEmployeeExists(final String login) throws UserNotFoundException
+    private void checkEmployeeExists(final BigInteger id) throws UserNotFoundException
     {
-        if (!model.getEmployees().containsKey(login))
+        if (!model.getEmployees().containsKey(id))
         {
-            throw new UserNotFoundException("Employee (login: " + login + ") doesn't exist!");
+            throw new UserNotFoundException("Employee (login: " + id + ") doesn't exist!");
         }
     }
 
-    private void checkCustomerExists(final String login) throws UserNotFoundException
+    private void checkCustomerExists(final BigInteger id) throws UserNotFoundException
     {
-        if (!model.getCustomers().containsKey(login))
+        if (!model.getCustomers().containsKey(id))
         {
-            throw new UserNotFoundException("Customer (login: " + login + ") doesn't exist!");
+            throw new UserNotFoundException("Customer (login: " + id + ") doesn't exist!");
         }
     }
 
@@ -721,11 +720,26 @@ public class Controller
         }
     }
 
-    private void checkServiceBelongsToCustomer(String customerLogin, BigInteger serviceId) throws Exception
+    private void checkServiceBelongsToCustomer(BigInteger customerId, BigInteger serviceId) throws Exception
     {
-        if (!customerLogin.equals(model.getService(serviceId).getCustomerLogin()))
+        if (customerId!=model.getService(serviceId).getCustomerId())
         {
             throw new Exception("Service doesn't belong to customer!");
         }
+    }
+
+    public AbstractUser getUserByLogin(String login) throws Exception
+    {
+        for(Customer customer : model.getCustomers().values()){
+            if(login.equals(customer.getLogin())){
+                return (AbstractUser) customer;
+            }
+        }
+        for(Employee employee : model.getEmployees().values()){
+            if(login.equals(employee.getLogin())){
+                return (AbstractUser) employee;
+            }
+        }
+        throw new Exception("User (login: " + login + ") doesn't exist!");
     }
 }

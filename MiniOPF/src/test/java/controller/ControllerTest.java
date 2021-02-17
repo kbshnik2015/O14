@@ -900,7 +900,7 @@ public class ControllerTest
 
         controller.assignOrder(empLogin, orderId);
 
-        Assert.assertEquals(empLogin, order.getEmployeeLogin());
+        Assert.assertEquals(empLogin, order.getEmployeeId());
     }
 
     @Test
@@ -922,7 +922,7 @@ public class ControllerTest
                 empStatus);
 
         controller.processOrder(empLogin, orderId);
-        Assert.assertEquals(empLogin, order.getEmployeeLogin());
+        Assert.assertEquals(empLogin, order.getEmployeeId());
         Assert.assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
     }
 
@@ -948,7 +948,7 @@ public class ControllerTest
 
         controller.unassignOrder(orderId);
 
-        Assert.assertNull(order.getEmployeeLogin());
+        Assert.assertNull(order.getEmployeeId());
     }
 
 }

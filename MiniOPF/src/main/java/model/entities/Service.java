@@ -20,12 +20,20 @@ public class Service
 
     private ServiceStatus serviceStatus;
 
-    private String customerLogin;
+    private BigInteger customerId;
 
-    public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, String customerLogin){
+    public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId){
         this.payDay = payDay;
         this.specificationId = spec;
         this.serviceStatus = serviceStatus;
-        this.customerLogin = customerLogin;
+        this.customerId = customerId;
+    }
+
+    public Service(BigInteger id,Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId){
+        this.id = id;
+        this.payDay = payDay;
+        this.specificationId = spec;
+        this.serviceStatus = serviceStatus;
+        this.customerId = customerId;
     }
 }

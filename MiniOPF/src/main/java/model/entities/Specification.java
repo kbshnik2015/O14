@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class Specification
 {
 
-    private BigInteger Id;
+    private BigInteger id;
 
     private String name;
 
@@ -27,6 +27,17 @@ public class Specification
     public Specification(String name, float price, String description, boolean isAddressDepended,
             ArrayList<BigInteger> districtsIds)
     {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.isAddressDepended = isAddressDepended;
+        this.districtsIds = districtsIds;
+    }
+
+    public Specification(BigInteger id,String name, float price, String description, boolean isAddressDepended,
+                         ArrayList<BigInteger> districtsIds)
+    {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;

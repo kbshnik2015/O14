@@ -2,9 +2,13 @@ package model.entities;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public abstract class AbstractUser
 {
+
+    BigInteger id;
 
     protected String firstName;
 

@@ -36,7 +36,7 @@ public class WorkWaitersManager
         List<Employee> freeEmployees = getEmployeesWaitingForOrders();
         for (int i = 0; i < freeEmployees.size() && getFreeOrder() != null; i++)
         {
-            getFreeOrder().setEmployeeLogin(freeEmployees.get(i).getLogin());
+            getFreeOrder().setEmployeeId(freeEmployees.get(i).getId());
             freeEmployees.get(i).setWaitingForOrders(false);
         }
     }
@@ -60,7 +60,7 @@ public class WorkWaitersManager
         Model model = Model.getInstance();
         for (Order order : model.getOrders().values())
         {
-            if (order.getEmployeeLogin() == null)
+            if (order.getEmployeeId() == null)
             {
                 return order;
             }
