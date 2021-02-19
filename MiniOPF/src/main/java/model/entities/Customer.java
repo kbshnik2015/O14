@@ -42,7 +42,6 @@ public class Customer extends AbstractUser
         this.password = password;
         this.address = address;
         this.balance = balance;
-        this.id = Model.getInstance().generateNextId();
     }
 
 }

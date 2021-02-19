@@ -31,7 +31,7 @@ public class Employee extends AbstractUser
         this.isWaitingForOrders = false;
     }
 
-    public Employee(BigInteger id,String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus)
+    public Employee(BigInteger id,String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus, boolean isWaitingForOrders)
     {
         this.id = id;
         this.firstName = firstName;
@@ -39,6 +39,6 @@ public class Employee extends AbstractUser
         this.login = login;
         this.password = password;
         this.employeeStatus = employeeStatus;
-        this.isWaitingForOrders = false;
+        this.isWaitingForOrders = isWaitingForOrders;
     }
 }
