@@ -9,7 +9,7 @@ import model.enums.ServiceStatus;
 
 @Data
 @NoArgsConstructor
-public class Service
+public class Service implements Entity
 {
 
     private BigInteger id;
@@ -22,14 +22,16 @@ public class Service
 
     private BigInteger customerId;
 
-    public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId){
+    public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId)
+    {
         this.payDay = payDay;
         this.specificationId = spec;
         this.serviceStatus = serviceStatus;
         this.customerId = customerId;
     }
 
-    public Service(BigInteger id,Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId){
+    public Service(BigInteger id, Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId)
+    {
         this.id = id;
         this.payDay = payDay;
         this.specificationId = spec;

@@ -1,11 +1,11 @@
 package model.entities;
 
-import lombok.Data;
-
 import java.math.BigInteger;
 
+import lombok.Data;
+
 @Data
-public abstract class AbstractUser
+public abstract class AbstractUser implements Entity
 {
 
     BigInteger id;

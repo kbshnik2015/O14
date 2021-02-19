@@ -9,7 +9,7 @@ import model.enums.OrderStatus;
 
 @Data
 @NoArgsConstructor
-public class Order
+public class Order implements Entity
 {
 
     private BigInteger id;
@@ -28,8 +28,8 @@ public class Order
 
     private String address;
 
-    public Order(BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId, OrderAim orderAim,
-                 OrderStatus orderStatus)
+    public Order(BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId,
+            OrderAim orderAim, OrderStatus orderStatus)
     {
         this.customerId = customerId;
         this.employeeId = employeeId;
@@ -40,8 +40,8 @@ public class Order
         this.orderAim = orderAim != null ? orderAim : OrderAim.NEW;
     }
 
-    public Order(BigInteger id,BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId, OrderAim orderAim,
-                 OrderStatus orderStatus,String address )
+    public Order(BigInteger id, BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId,
+            OrderAim orderAim, OrderStatus orderStatus, String address)
     {
         this.id = id;
         this.customerId = customerId;
@@ -49,8 +49,8 @@ public class Order
         this.specId = specId;
         this.serviceId = serviceId;
         this.orderStatus = orderStatus;
-        this.orderAim = orderAim ;
-        this.address =address;
+        this.orderAim = orderAim;
+        this.address = address;
     }
 
 }

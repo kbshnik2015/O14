@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Specification
+public class Specification implements Entity
 {
 
     private BigInteger id;
@@ -34,8 +34,8 @@ public class Specification
         this.districtsIds = districtsIds;
     }
 
-    public Specification(BigInteger id,String name, float price, String description, boolean isAddressDepended,
-                         ArrayList<BigInteger> districtsIds)
+    public Specification(BigInteger id, String name, float price, String description, boolean isAddressDepended,
+            ArrayList<BigInteger> districtsIds)
     {
         this.id = id;
         this.name = name;

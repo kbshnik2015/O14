@@ -1,13 +1,13 @@
 package model.entities;
 
+import java.math.BigInteger;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import model.enums.EmployeeStatus;
-
-import java.math.BigInteger;
 
 @Data
 @NoArgsConstructor
@@ -31,7 +31,8 @@ public class Employee extends AbstractUser
         this.isWaitingForOrders = false;
     }
 
-    public Employee(BigInteger id,String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus, boolean isWaitingForOrders)
+    public Employee(BigInteger id, String firstName, String lastName, String login, String password,
+            EmployeeStatus employeeStatus, boolean isWaitingForOrders)
     {
         this.id = id;
         this.firstName = firstName;

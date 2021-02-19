@@ -1,13 +1,11 @@
 package model.entities;
 
+import java.math.BigInteger;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import model.Model;
-
-import java.io.IOException;
-import java.math.BigInteger;
 
 @Data
 @NoArgsConstructor
@@ -20,8 +18,7 @@ public class Customer extends AbstractUser
 
     private float balance;
 
-    public Customer (String firstName, String lastName, String login, String password, String address, float balance) throws
-            IOException
+    public Customer(String firstName, String lastName, String login, String password, String address, float balance)
     {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,11 +26,10 @@ public class Customer extends AbstractUser
         this.password = password;
         this.address = address;
         this.balance = balance;
-        this.id = Model.getInstance().generateNextId();
     }
 
-    public Customer (BigInteger id,String firstName, String lastName, String login, String password, String address, float balance) throws
-            IOException
+    public Customer(BigInteger id, String firstName, String lastName, String login, String password, String address,
+            float balance)
     {
         this.id = id;
         this.firstName = firstName;

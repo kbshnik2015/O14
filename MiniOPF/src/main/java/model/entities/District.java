@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class District
+public class District implements Entity
 {
 
     private BigInteger id;
@@ -23,7 +23,7 @@ public class District
         this.parentId = parentId;
     }
 
-    public District(BigInteger id,String name, BigInteger parentId)
+    public District(BigInteger id, String name, BigInteger parentId)
     {
         this.id = id;
         this.name = name;
