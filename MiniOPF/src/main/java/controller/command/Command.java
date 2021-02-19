@@ -13,6 +13,7 @@ import controller.exceptions.UserNotFoundException;
 import controller.exceptions.WrongCommandArgumentsException;
 import controller.managers.WorkWaitersManager;
 import lombok.ToString;
+import model.Model;
 import model.entities.Customer;
 import model.entities.District;
 import model.entities.Employee;
@@ -32,19 +33,21 @@ public enum Command
                         throws IllegalLoginOrPasswordException, WrongCommandArgumentsException, IOException
                 {
                     Controller controller = new Controller();
-                    String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    String lastName = !args[2].equalsIgnoreCase("null") ? args[2] : null;
-                    String login = !args[3].equalsIgnoreCase("null") ? args[3] : null;
-                    String password = !args[4].equalsIgnoreCase("null") ? args[4] : null;
-                    String address = !args[5].equalsIgnoreCase("null") ? args[5] : null;
-                    Float balance = parseToFloat(args[6]);
+                    String firstName = getValueInSting(args, 1);
+                    String lastName = getValueInSting(args, 2);
+                    String login = getValueInSting(args, 3);
+                    String password = getValueInSting(args, 4);
+                    String address = getValueInSting(args, 5);
+                    Float balance = getValueInFloat(args,6);
 
                     Customer customer = controller
                             .createCustomer(firstName, lastName, login, password, address, balance);
 
                     return "Customer was created: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + customer.getLogin() + ").";
+                            " (id: " + customer.getId() + ").";
                 }
+
+
             },
 
     create_employee
@@ -54,16 +57,16 @@ public enum Command
                         throws IOException, WrongCommandArgumentsException, IllegalLoginOrPasswordException
                 {
                     Controller controller = new Controller();
-                    String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    String lastName = !args[2].equalsIgnoreCase("null") ? args[2] : null;
-                    String login = !args[3].equalsIgnoreCase("null") ? args[3] : null;
-                    String password = !args[4].equalsIgnoreCase("null") ? args[4] : null;
+                    String firstName = getValueInSting(args, 1);
+                    String lastName = getValueInSting(args, 2);
+                    String login = getValueInSting(args, 3);
+                    String password = getValueInSting(args, 4);
                     EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
 
                     Employee employee = controller.createEmployee(firstName, lastName, login, password, employeeStatus);
 
                     return "Employee was created: " + employee.getFirstName() + " " + employee.getLastName() +
-                            " (login: " + employee.getLogin() + ").";
+                            " (id: " + employee.getId() + ").";
                 }
             },
 
@@ -73,19 +76,21 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    String lastName = !args[2].equalsIgnoreCase("null") ? args[2] : null;
-                    String login = !args[3].equalsIgnoreCase("null") ? args[3] : null;
-                    String password = !args[4].equalsIgnoreCase("null") ? args[4] : null;
-                    String address = !args[5].equalsIgnoreCase("null") ? args[5] : null;
-                    Float balance = Command.parseToFloat(args[6]);
+                    BigInteger id = getValueInBigInteger(args,1);
+                    String firstName = getValueInSting(args, 2);
+                    String lastName = getValueInSting(args, 3);
+                    String login = getValueInSting(args, 4);
+                    String password = getValueInSting(args, 5);
+                    String address = getValueInSting(args, 6);
 
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    Float balance = Command.parseToFloat(args[6]);
+                    Customer customer = Model.getInstance().getCustomer(id);
                     controller.updateCustomer(customer.getId(),firstName, lastName, login, password, address, balance);
 
                     return "Customer was updated: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + customer.getLogin() + ").";
                 }
+
             },
 
     update_employee
@@ -94,18 +99,21 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String firstName = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    String lastName = !args[2].equalsIgnoreCase("null") ? args[2] : null;
-                    String login = !args[3].equalsIgnoreCase("null") ? args[3] : null;
-                    String password = !args[4].equalsIgnoreCase("null") ? args[4] : null;
+                    BigInteger id = getValueInBigInteger(args,1);
+                    String firstName = getValueInSting(args, 2);
+                    String lastName = getValueInSting(args, 3);
+                    String login = getValueInSting(args, 4);
+                    String password = getValueInSting(args, 5);
                     EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
 
-                    Employee employee = (Employee) controller.getUserByLogin(login);
-                    controller.updateEmployee(employee.getId(),firstName, lastName, login, password, employeeStatus);
+                    Employee employee = Model.getInstance().getEmployee(id);
+
+                    controller.updateEmployee(id,firstName, lastName, login, password, employeeStatus);
 
                     return "Employee was updated: " + employee.getFirstName() + " " + employee.getLastName() +
-                            " (login: " + employee.getLogin() + ").";
+                            " (id: " + employee.getId() + ").";
                 }
+
             },
 
     create_district
@@ -115,7 +123,7 @@ public enum Command
                         throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
-                    String name = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    String name = getValueInSting(args, 1);
                     BigInteger parentId = parseToBigInteger(args[2]);
 
                     District district = controller.createDistrict(name, parentId);
@@ -132,7 +140,7 @@ public enum Command
                 {
                     Controller controller = new Controller();
                     BigInteger districtId = parseToBigInteger(args[1]);
-                    String name = !args[2].equalsIgnoreCase("null") ? args[2] : null;
+                    String name = getValueInSting(args, 2);
                     BigInteger parentId = parseToBigInteger(args[3]);
 
                     District district = controller.getModel().getDistrict(districtId);
@@ -149,9 +157,9 @@ public enum Command
                         throws WrongCommandArgumentsException, IOException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
-                    String name = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    String name = getValueInSting(args, 1);
                     float price = Command.parseToFloat(args[2]);
-                    String description = !args[3].equalsIgnoreCase("null") ? args[3] : null;
+                    String description = getValueInSting(args, 3);
                     boolean isAddressDepended = Command.parseToBoolean(args[4]);
                     ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[5]);
 
@@ -172,9 +180,9 @@ public enum Command
                 {
                     Controller controller = new Controller();
                     BigInteger specId = Command.parseToBigInteger(args[1]);
-                    String name = !args[2].equalsIgnoreCase("null") ? args[2] : null;
+                    String name = getValueInSting(args, 2);
                     float price = Command.parseToFloat(args[3]);
-                    String description = !args[4].equalsIgnoreCase("null") ? args[4] : null;
+                    String description = getValueInSting(args, 4);
                     boolean isAddressDepended = Command.parseToBoolean(args[5]);
                     ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[6]);
 
@@ -193,11 +201,11 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Customer customer = Model.getInstance().getCustomer(id);
                     controller.deleteCustomerCascade(customer.getId());
 
-                    return "Customer (login: " + login + ") was cascade deleted.";
+                    return "Customer (id: " + id + ") was cascade deleted.";
                 }
             },
 
@@ -207,11 +215,11 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.deleteEmployeeCascade(employee.getId());
 
-                    return "Employee (login: " + login + ") was cascade deleted.";
+                    return "Employee (id: " + id + ") was cascade deleted.";
                 }
             },
 
@@ -221,11 +229,11 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.deleteEmployee(employee.getId());
 
-                    return "Employee (login: " + login + ") was deleted.";
+                    return "Employee (id: " + id + ") was deleted.";
                 }
             },
 
@@ -438,9 +446,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    Customer customer = Model.getInstance().getCustomer(id);
 
                     return "Customer: " + customer.getLogin() + "\n"
                             + "\tFirst name: " + customer.getFirstName() + "\n"
@@ -458,9 +466,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
 
                     return "Employee: " + employee.getLogin() + "\n"
                             + "\tFirst name: " + employee.getFirstName() + "\n"
@@ -607,9 +615,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger customerId = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger specId = Command.parseToBigInteger(args[2]);
-                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Customer customer = Model.getInstance().getCustomer(customerId);
                     Order order = controller.createNewOrder(customer.getId(), specId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
@@ -633,9 +641,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Customer customer = Model.getInstance().getCustomer(id);
                     Order order = controller.createSuspendOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
@@ -662,9 +670,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger customerId = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Customer customer = Model.getInstance().getCustomer(customerId);
                     Order order = controller.createRestoreOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
@@ -690,9 +698,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String customerLogin = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger customerId = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = (Customer) controller.getUserByLogin(customerLogin);
+                    Customer customer = Model.getInstance().getCustomer(customerId);
                     Order order = controller.createDisconnectOrder(customer.getId(), serviceId);
 
                     Specification specification = controller.getModel().getSpecification(order.getSpecId());
@@ -798,9 +806,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     float amountOfMoney = Command.parseToFloat(args[2]);
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    Customer customer = Model.getInstance().getCustomer(id);
                     controller.changeBalanceOn(customer.getId(), amountOfMoney);
 
                     return "Balance of customer " + customer.getFirstName() + " " + customer.getLastName() +
@@ -852,12 +860,12 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Customer customer = Model.getInstance().getCustomer(id);
                     List<Order> orders = (List<Order>) controller.getCustomerOrders(customer.getId());
 
                     String result = "Orders of customer " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + login + "):\n";
+                            " (id: " + id + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
@@ -877,12 +885,12 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Customer customer = Model.getInstance().getCustomer(id);
                     List<Service> services = (List<Service>) controller.getCustomerServices(customer.getId());
 
                     String result = "Services of customer " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + login + "):\n";
+                            " (id: " + id + "):\n";
                     if (services != null)
                     {
                         for (Service service : services)
@@ -903,13 +911,13 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
                     List<Order> orders = (List<Order>) controller.getEmployeeOrders(employee.getId());
 
                     String result = "Orders of employee " + employee.getFirstName() + " " + employee.getLastName() +
-                            " (login: " + login + "):\n";
+                            " (id: " + id + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
@@ -932,12 +940,12 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Customer customer = Model.getInstance().getCustomer(id);
                     List<Service> services = (List<Service>) controller.getCustomerConnectedServices(customer.getId());
 
                     String result = "Connected services of customer " + customer.getFirstName() + " " +
-                            customer.getLastName() + " (login: " + login + ")\n";
+                            customer.getLastName() + " (id: " + id + ")\n";
                     if (services != null)
                     {
                         for (Service service : services)
@@ -958,12 +966,12 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Customer customer = (Customer) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Customer customer = Model.getInstance().getCustomer(id);
                     List<Order> orders = (List<Order>) controller.getCustomerNotFinishedOrders(customer.getId());
 
                     String result = "Not finished orders of customer " + customer.getFirstName() + " " +
-                            customer.getLastName() + " (login: " + login + "):\n";
+                            customer.getLastName() + " (id: " + id + "):\n";
                     if (orders != null)
                     {
                         for (Order order : orders)
@@ -1008,8 +1016,8 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Employee employee = Model.getInstance().getEmployee(id);
 
                     controller.goOnVacation(employee.getId());
 
@@ -1025,8 +1033,8 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.returnFromVacation(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
@@ -1040,8 +1048,8 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.retireEmployee(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
@@ -1055,9 +1063,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger orderId = Command.parseToBigInteger(args[2]);
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.assignOrder(employee.getId(), orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
@@ -1072,9 +1080,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
                     BigInteger orderId = Command.parseToBigInteger(args[2]);
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.processOrder(employee.getId(), orderId);
 
 
@@ -1106,9 +1114,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.setEmployeeWaitingStatus(employee.getId(), true);
 
 
@@ -1123,9 +1131,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    String login = !args[1].equalsIgnoreCase("null") ? args[1] : null;
+                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = (Employee) controller.getUserByLogin(login);
+                    Employee employee = Model.getInstance().getEmployee(id);
                     controller.setEmployeeWaitingStatus(employee.getId(), false);
 
 
@@ -1181,6 +1189,8 @@ public enum Command
                             "                                                        ";
                 }
             };
+
+
 
     private static EmployeeStatus parseToEmployeeStatus(final String arg) throws WrongCommandArgumentsException
     {
@@ -1270,6 +1280,20 @@ public enum Command
                 throw new WrongCommandArgumentsException("Command argument " + arg + " isn't a boolean");
         }
         return bool;
+    }
+    private static String getValueInSting(String[] args, int i)
+    {
+        return !args[i].equalsIgnoreCase("null") ? args[i] : null;
+    }
+
+    private static Float getValueInFloat(String[] args, int i) throws WrongCommandArgumentsException
+    {
+        return parseToFloat(args[i]);
+    }
+
+    private static BigInteger getValueInBigInteger(String[] args, int i) throws WrongCommandArgumentsException
+    {
+        return !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[i]) : null;
     }
 
     public abstract String execute(String[] args) throws Exception;
