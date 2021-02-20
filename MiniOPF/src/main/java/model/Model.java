@@ -102,7 +102,9 @@ public class Model
         {
             customers = new HashMap<>();
         }
+        customer.setId(generateNextId());
         customers.put(customer.getId(), customer);
+
         return customer;
     }
 
@@ -160,6 +162,7 @@ public class Model
         {
             employees = new HashMap<>();
         }
+        employee.setId(generateNextId());
         employees.put(employee.getId(), employee);
         return employee;
     }
