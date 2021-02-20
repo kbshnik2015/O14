@@ -60,6 +60,8 @@ public class Model
     @Getter
     private Map<BigInteger, Service> services;
 
+    private static transient String sourceFile = "model.json";
+
     private Model()
     {
         this.orders = new HashMap<>();
@@ -113,7 +115,7 @@ public class Model
         customers.put(customer.getId(), customer);
     }
 
-    public void updateCustomer(BigInteger id,String firstName, String lastName, String login, String password, String address,
+    public void updateCustomer(BigInteger id,String firstName, String lastName, String password, String address,
             float balance)
     {
         Customer customer = getCustomer(id);
@@ -138,10 +140,6 @@ public class Model
             if (balance >= 0)
             {
                 customer.setBalance(balance);
-            }
-            if (login != null)
-            {
-                customer.setLogin(login);
             }
         }
     }
@@ -172,7 +170,7 @@ public class Model
         employees.put(employee.getId(), employee);
     }
 
-    public void updateEmployee(BigInteger id,String firstName, String lastName, String login, String password,
+    public void updateEmployee(BigInteger id,String firstName, String lastName, String password,
             EmployeeStatus employeeStatus)
     {
         Employee employee = getEmployee(id);
@@ -193,10 +191,6 @@ public class Model
             if (employeeStatus != null)
             {
                 employee.setEmployeeStatus(employeeStatus);
-            }
-            if (login != null)
-            {
-                employee.setLogin(login);
             }
         }
     }
@@ -435,7 +429,7 @@ public class Model
     public void saveToFile() throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try (FileWriter writer = new FileWriter("test.json", false))
+        try (FileWriter writer = new FileWriter(sourceFile, false))
         {
             mapper.writeValue(writer, instance);
         }
@@ -453,7 +447,7 @@ public class Model
     public static void loadFromFile() throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
-        try (FileReader reader = new FileReader("test.json"))
+        try (FileReader reader = new FileReader(sourceFile))
         {
             instance = mapper.readValue(reader, Model.class);
         }
@@ -466,6 +460,7 @@ public class Model
         {
             instance = mapper.readValue(reader, Model.class);
         }
+        sourceFile = filepath;
     }
 
 }

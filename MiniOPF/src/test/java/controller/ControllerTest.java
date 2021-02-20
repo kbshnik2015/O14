@@ -29,12 +29,19 @@ import model.enums.ServiceStatus;
 public class ControllerTest
 {
 
-    private Controller controller;
+    private Controller controller = new Controller();
+    {
+        //noinspection AccessStaticViaInstance
+        controller.getModel().loadFromFile("test.json");
+    }
+
+    public ControllerTest() throws IOException
+    {
+    }
 
     @Before
-    public void setUp() throws Exception
+    public void setUp()
     {
-        controller = new Controller();
         controller.getModel().clear();
     }
 
@@ -50,6 +57,7 @@ public class ControllerTest
 
         Customer expected = new Customer(firstName1, lastName1, login1, password1, address1, balance1);
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        expected.setId(actual.getId());
 
         Assert.assertEquals(expected, actual);
     }
@@ -109,8 +117,9 @@ public class ControllerTest
 
         Customer expected = new Customer(firstName1, lastName1, login1, password1, address1, balance1);
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+        expected.setId(actual.getId());
 
-        controller.updateCustomer("newFirstName", null, login1, null, null, -1);
+        controller.updateCustomer(actual.getId(), "newFirstName", null, null, null, -1);
         expected.setFirstName("newFirstName");
 
         Assert.assertEquals(expected, actual);
@@ -125,9 +134,10 @@ public class ControllerTest
         String password1 = "Customer1password";
         String address1 = "Customer1address";
         float balance1 = 100;
+        BigInteger randomId = BigInteger.valueOf(666);
 
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.updateCustomer("newFirstName", null, "randomlogin", null, null, -1);
+        controller.updateCustomer(randomId, "newFirstName", null, null, null, -1);
     }
 
     @Test
@@ -143,7 +153,7 @@ public class ControllerTest
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         controller.getModel().deleteCustomer(actual);
 
-        Assert.assertNull(controller.getModel().getCustomers().get(login1));
+        Assert.assertNull(controller.getModel().getCustomers().get(actual.getId()));
     }
 
     @Test
@@ -157,7 +167,7 @@ public class ControllerTest
         float balance1 = 100;
 
         Customer expected = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        Customer actual = controller.getModel().getCustomer(login1);
+        Customer actual = controller.getModel().getCustomer(expected.getId());
 
         Assert.assertEquals(expected, actual);
     }
@@ -165,7 +175,9 @@ public class ControllerTest
     @Test
     public void getCustomerByLogin_NOT_FOUND()
     {
-        Customer actual = controller.getModel().getCustomer("RandomCustomerLogin");
+        BigInteger randomId = BigInteger.valueOf(666);
+
+        Customer actual = controller.getModel().getCustomer(randomId);
     }
 
     @Test
@@ -179,6 +191,7 @@ public class ControllerTest
 
         Employee expected = new Employee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
+        expected.setId(actual.getId());
 
         Assert.assertEquals(expected, actual);
     }
@@ -234,7 +247,8 @@ public class ControllerTest
         Employee expected = new Employee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
 
-        controller.updateEmployee("newFirstName", null, empLogin, null, null);
+        controller.updateEmployee(actual.getId(), "newFirstName", null, null, null);
+        expected.setId(actual.getId());
         expected.setFirstName("newFirstName");
 
         Assert.assertEquals(expected, actual);
@@ -248,9 +262,10 @@ public class ControllerTest
         String empLogin = "Employee1login";
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
+        BigInteger randomId = BigInteger.valueOf(666);
 
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        controller.updateEmployee("newFirstName", null, "nullLogin", null, null);
+        controller.updateEmployee(randomId, "newFirstName", null, null, null);
     }
 
     @Test
@@ -265,7 +280,7 @@ public class ControllerTest
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
         controller.getModel().deleteEmployee(actual);
 
-        Assert.assertNull(controller.getModel().getCustomers().get(empLogin));
+        Assert.assertNull(controller.getModel().getCustomers().get(actual.getId()));
     }
 
     @Test
@@ -278,7 +293,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
 
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        Employee expected = controller.getModel().getEmployee(empLogin);
+        Employee expected = controller.getModel().getEmployee(actual.getId());
 
         Assert.assertEquals(expected, actual);
     }
@@ -482,11 +497,11 @@ public class ControllerTest
             UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
 
@@ -523,11 +538,11 @@ public class ControllerTest
             UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
 
@@ -543,11 +558,11 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
 
@@ -563,11 +578,11 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
 
@@ -582,11 +597,11 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
 
@@ -601,11 +616,11 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
 
         Order order = controller.getModel().getOrder(orderId);
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
@@ -621,13 +636,13 @@ public class ControllerTest
     public void completeOrder_DISCONNECT_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
+        BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
-                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
-        controller.createDisconnectOrder(cust1_login, service.getId());
-        BigInteger orderId = BigInteger.valueOf(3);
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, customer.getId()));
+        controller.createDisconnectOrder(customer.getId(), service.getId());
+        BigInteger orderId = BigInteger.valueOf(4);
 
         Order order = controller.getModel().getOrder(orderId);
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
@@ -643,13 +658,13 @@ public class ControllerTest
     public void completeOrder_SUSPEND_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
+        BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
-                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
-        controller.createSuspendOrder(cust1_login, service.getId());
-        BigInteger orderId = BigInteger.valueOf(3);
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, customer.getId()));
+        controller.createSuspendOrder(customer.getId(), service.getId());
+        BigInteger orderId = BigInteger.valueOf(4);
 
         Order order = controller.getModel().getOrder(orderId);
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
@@ -665,13 +680,13 @@ public class ControllerTest
     public void completeOrder_RESTORE_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
+        BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
-                .createService(new Service(new Date(), specId, ServiceStatus.DISCONNECTED, cust1_login));
-        controller.createRestoreOrder(cust1_login, service.getId());
-        BigInteger orderId = BigInteger.valueOf(3);
+                .createService(new Service(new Date(), specId, ServiceStatus.DISCONNECTED, customer.getId()));
+        controller.createRestoreOrder(customer.getId(), service.getId());
+        BigInteger orderId = BigInteger.valueOf(4);
 
         Order order = controller.getModel().getOrder(orderId);
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
@@ -695,7 +710,7 @@ public class ControllerTest
         float balance1 = 200;
 
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.changeBalanceOn(login1, (float) 50);
+        controller.changeBalanceOn(actual.getId(), (float) 50);
 
         Assert.assertEquals(balance1 + 50, actual.getBalance(), 0);
     }
@@ -711,7 +726,7 @@ public class ControllerTest
         float balance1 = 200;
 
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.changeBalanceOn(login1, (float) -50);
+        controller.changeBalanceOn(actual.getId(), (float) -50);
 
         Assert.assertEquals(balance1 - 50, actual.getBalance(), 0);
     }
@@ -719,7 +734,9 @@ public class ControllerTest
     @Test(expected = UserNotFoundException.class)
     public void changeBalanceOn_NOT_EXISTED_CUSTOMER() throws UserNotFoundException, IOException
     {
-        controller.changeBalanceOn("login1USERRANDOM", (float) -50);
+        BigInteger randomId = BigInteger.valueOf(666);
+
+        controller.changeBalanceOn(randomId, (float) -50);
     }
 
     @Test
@@ -741,25 +758,25 @@ public class ControllerTest
     public void createSuspendOrder_SERVICE_NOT_BELONGS_TO_CUSTOMER() throws Exception
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
-                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, cust1_login));
+                .createService(new Service(new Date(), specId, ServiceStatus.ACTIVE, customer.getId()));
         String newLogin = "newLogin";
-        controller.createCustomer(null, null, newLogin, "pass", null, 0);
+        Customer otherCustomer = controller.createCustomer(null, null, newLogin, "pass", null, 0);
 
-        controller.createSuspendOrder(newLogin, service.getId());
+        controller.createSuspendOrder(otherCustomer.getId(), service.getId());
     }
 
     @Test(expected = Exception.class)
     public void createSuspendOrder_SERVICE_NOT_EXISTS() throws Exception
     {
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         BigInteger randomId = BigInteger.valueOf(666);
 
-        Order suspendOrder = controller.createSuspendOrder(cust1_login, randomId);
+        Order suspendOrder = controller.createSuspendOrder(customer.getId(), randomId);
     }
 
     @Test
@@ -778,7 +795,7 @@ public class ControllerTest
         Employee employee = controller.createEmployee(null, null, empLogin, empPassword, empStatus);
         employee.setWaitingForOrders(false);
 
-        controller.setEmployeeWaitingStatus(empLogin, true);
+        controller.setEmployeeWaitingStatus(employee.getId(), true);
 
         Assert.assertTrue(employee.isWaitingForOrders());
     }
@@ -794,7 +811,7 @@ public class ControllerTest
         Employee employee = controller.createEmployee(null, null, empLogin, empPassword, empStatus);
         employee.setWaitingForOrders(true);
 
-        controller.setEmployeeWaitingStatus(empLogin, false);
+        controller.setEmployeeWaitingStatus(employee.getId(), false);
 
         Assert.assertFalse(employee.isWaitingForOrders());
     }
@@ -811,7 +828,7 @@ public class ControllerTest
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
 
-        controller.goOnVacation(empLogin);
+        controller.goOnVacation(actual.getId());
 
         Assert.assertEquals(EmployeeStatus.ON_VACATION, actual.getEmployeeStatus());
     }
@@ -819,7 +836,9 @@ public class ControllerTest
     @Test(expected = UserNotFoundException.class)
     public void goOnVacation_NOT_EXISTED_EMPLOYEE() throws UserNotFoundException, IOException
     {
-        controller.goOnVacation("RandomEmpLogin");
+        BigInteger randomId = BigInteger.valueOf(666);
+
+        controller.goOnVacation(randomId);
     }
 
     @Test
@@ -834,7 +853,7 @@ public class ControllerTest
                 controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, EmployeeStatus
                         .ON_VACATION);
 
-        controller.returnFromVacation(empLogin);
+        controller.returnFromVacation(actual.getId());
 
         Assert.assertEquals(EmployeeStatus.WORKING, actual.getEmployeeStatus());
     }
@@ -851,7 +870,7 @@ public class ControllerTest
         Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
 
-        controller.retireEmployee(empLogin);
+        controller.retireEmployee(employee.getId());
 
         Assert.assertEquals(EmployeeStatus.RETIRED, employee.getEmployeeStatus());
     }
@@ -868,13 +887,13 @@ public class ControllerTest
 
         Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
-        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
-        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
-        controller.getModel().createOrder(new Order(null, empLogin, null, null, null, null));
+        controller.getModel().createOrder(new Order(null, employee.getId(), null, null, null, null));
+        controller.getModel().createOrder(new Order(null, employee.getId(), null, null, null, null));
+        controller.getModel().createOrder(new Order(null, employee.getId(), null, null, null, null));
 
-        controller.retireEmployee(empLogin);
+        controller.retireEmployee(employee.getId());
 
-        if (controller.getEmployeeOrders(empLogin).size() != 0)
+        if (controller.getEmployeeOrders(employee.getId()).size() != 0)
         {
             Assert.fail("Orders of retired employee keep existing!!!");
         }
@@ -890,17 +909,17 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        Order order = controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        Order order = controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
         Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
 
-        controller.assignOrder(empLogin, orderId);
+        controller.assignOrder(employee.getId(), orderId);
 
-        Assert.assertEquals(empLogin, order.getEmployeeId());
+        Assert.assertEquals(employee.getId(), order.getEmployeeId());
     }
 
     @Test
@@ -913,16 +932,16 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        Order order = controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        Order order = controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
         Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
 
-        controller.processOrder(empLogin, orderId);
-        Assert.assertEquals(empLogin, order.getEmployeeId());
+        controller.processOrder(employee.getId(), orderId);
+        Assert.assertEquals(employee.getId(), order.getEmployeeId());
         Assert.assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
     }
 
@@ -936,15 +955,15 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
-        BigInteger specId = BigInteger.valueOf(1);
-        Order order = controller.createNewOrder(cust1_login, specId);
-        BigInteger orderId = BigInteger.valueOf(2);
+        BigInteger specId = BigInteger.valueOf(2);
+        Order order = controller.createNewOrder(customer.getId(), specId);
+        BigInteger orderId = BigInteger.valueOf(3);
         Employee employee = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword,
                 empStatus);
 
-        controller.assignOrder(empLogin, orderId);
+        controller.assignOrder(employee.getId(), orderId);
 
         controller.unassignOrder(orderId);
 

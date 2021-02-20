@@ -130,7 +130,7 @@ public class CustomerView
                     {
                         if (newPassword.equals(newPassword2))
                         {
-                            controller.updateCustomer(customer.getId(), null, null, null, newPassword, null,-1);
+                            controller.updateCustomer(customer.getId(), null, null, null, newPassword, -1);
                             System.out.println("\nPassword changed successful\n");
                         }
                         else

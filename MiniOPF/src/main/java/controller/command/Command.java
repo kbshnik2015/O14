@@ -79,13 +79,12 @@ public enum Command
                     BigInteger id = getValueInBigInteger(args, 1);
                     String firstName = getValueInSting(args, 2);
                     String lastName = getValueInSting(args, 3);
-                    String login = getValueInSting(args, 4);
-                    String password = getValueInSting(args, 5);
-                    String address = getValueInSting(args, 6);
-
+                    String password = getValueInSting(args, 4);
+                    String address = getValueInSting(args, 5);
                     Float balance = Command.parseToFloat(args[6]);
+
                     Customer customer = Model.getInstance().getCustomer(id);
-                    controller.updateCustomer(customer.getId(), firstName, lastName, login, password, address, balance);
+                    controller.updateCustomer(customer.getId(), firstName, lastName, password, address, balance);
 
                     return "Customer was updated: " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + customer.getLogin() + ").";
@@ -102,13 +101,12 @@ public enum Command
                     BigInteger id = getValueInBigInteger(args, 1);
                     String firstName = getValueInSting(args, 2);
                     String lastName = getValueInSting(args, 3);
-                    String login = getValueInSting(args, 4);
-                    String password = getValueInSting(args, 5);
+                    String password = getValueInSting(args, 4);
                     EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
 
                     Employee employee = Model.getInstance().getEmployee(id);
 
-                    controller.updateEmployee(id, firstName, lastName, login, password, employeeStatus);
+                    controller.updateEmployee(id, firstName, lastName, password, employeeStatus);
 
                     return "Employee was updated: " + employee.getFirstName() + " " + employee.getLastName() +
                             " (id: " + employee.getId() + ").";

@@ -2,6 +2,7 @@ package model.entities;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class Specification implements Entity
 
     private boolean isAddressDepended;
 
-    private ArrayList<BigInteger> districtsIds;
+    private List<BigInteger> districtsIds;
 
 
     public Specification(String name, float price, String description, boolean isAddressDepended,
@@ -35,7 +36,7 @@ public class Specification implements Entity
     }
 
     public Specification(BigInteger id, String name, float price, String description, boolean isAddressDepended,
-            ArrayList<BigInteger> districtsIds)
+            List<BigInteger> districtsIds)
     {
         this.id = id;
         this.name = name;

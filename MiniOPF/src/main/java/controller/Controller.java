@@ -41,16 +41,32 @@ public class Controller
         model = Model.getInstance();
     }
 
-    public AbstractUser login(String login, String password) throws Exception
+    public AbstractUser getUserByLogin(String login) throws IllegalLoginOrPasswordException
+    {
+        for(Customer customer : model.getCustomers().values()){
+            if(login.equals(customer.getLogin())){
+                return customer;
+            }
+        }
+        for(Employee employee : model.getEmployees().values()){
+            if(login.equals(employee.getLogin())){
+                return employee;
+            }
+        }
+
+        throw new IllegalLoginOrPasswordException("User (login: " + login + ") doesn't exist!");
+    }
+
+    public AbstractUser login(String login, String password) throws IllegalLoginOrPasswordException
     {
         AbstractUser user = getUserByLogin(login);
 
         if (password.equals(user.getPassword()))
         {
-            throw new IllegalLoginOrPasswordException("Wrong login or password!");
+            return user;
         }
 
-        return user;
+        throw new IllegalLoginOrPasswordException("Wrong login or password!");
     }
 
     public Customer createCustomer(String firstName, String lastName, String login, String password, String address,
@@ -100,21 +116,21 @@ public class Controller
         }
     }
 
-    public void updateCustomer(BigInteger id,String firstName, String lastName, String login, String password, String address,
+    public void updateCustomer(BigInteger id,String firstName, String lastName, String password, String address,
             float balance) throws UserNotFoundException, IOException
     {
         checkCustomerExists(id);
 
-        model.updateCustomer(id, firstName, lastName, login, password, address, balance);
+        model.updateCustomer(id, firstName, lastName, password, address, balance);
         model.saveToFile();
     }
 
-    public void updateEmployee(BigInteger id,String firstName, String lastName, String login, String password,
+    public void updateEmployee(BigInteger id,String firstName, String lastName, String password,
             EmployeeStatus employeeStatus) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(id);
 
-        model.updateEmployee(id,firstName, lastName, login, password, employeeStatus);
+        model.updateEmployee(id,firstName, lastName, password, employeeStatus);
         model.saveToFile();
     }
 
@@ -515,7 +531,7 @@ public class Controller
     }
 
     public  List<Specification> getCustomerSpecifications(final Customer customer)
-            throws IOException, UserNotFoundException
+            throws UserNotFoundException
     {
         List<Specification> customerSpecifications = getCustomerServices(customer.getId())
                 .stream()
@@ -527,17 +543,14 @@ public class Controller
                 .map(x -> model.getSpecification(x.getSpecId()))
                 .collect(Collectors.toList()));
 
-        List<Specification> specifications = filterSpecsFromCustomerOnes(customerSpecifications);
-
-        return specifications;
+        return filterSpecsFromCustomerOnes(customerSpecifications);
     }
 
     private List<Specification> filterSpecsFromCustomerOnes(final List<Specification> customerSpecifications)
     {
-        List<Specification> specifications = model.getSpecifications().values().stream()
+        return model.getSpecifications().values().stream()
                 .filter(x -> !customerSpecifications.contains(x))
                 .collect(Collectors.toList());
-        return specifications;
     }
 
     public Collection<Order> getEmployeeOrders(BigInteger id) throws UserNotFoundException
@@ -722,24 +735,10 @@ public class Controller
 
     private void checkServiceBelongsToCustomer(BigInteger customerId, BigInteger serviceId) throws Exception
     {
-        if (customerId!=model.getService(serviceId).getCustomerId())
+        if (!customerId.equals(model.getService(serviceId).getCustomerId()))
         {
             throw new Exception("Service doesn't belong to customer!");
         }
     }
 
-    public AbstractUser getUserByLogin(String login) throws Exception
-    {
-        for(Customer customer : model.getCustomers().values()){
-            if(login.equals(customer.getLogin())){
-                return (AbstractUser) customer;
-            }
-        }
-        for(Employee employee : model.getEmployees().values()){
-            if(login.equals(employee.getLogin())){
-                return (AbstractUser) employee;
-            }
-        }
-        throw new Exception("User (login: " + login + ") doesn't exist!");
-    }
 }

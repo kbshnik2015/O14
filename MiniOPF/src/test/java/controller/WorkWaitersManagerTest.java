@@ -41,12 +41,12 @@ public class WorkWaitersManagerTest
         Employee expected2 = controller.createEmployee(null, null, empLogin1, empPassword1, EmployeeStatus.WORKING);
         Employee expected3 = controller.createEmployee(null, null, empLogin2, empPassword2, EmployeeStatus.WORKING);
 
-        controller.getModel().createOrder(new Order(login1, empLogin1, null, null, null, null));
-        controller.getModel().createOrder(new Order(login1, null, null, null, null, null));
-        controller.getModel().createOrder(new Order(login1, null, null, null, null, null));
+        controller.getModel().createOrder(new Order(expected1.getId(), expected2.getId(), null, null, null, null));
+        controller.getModel().createOrder(new Order(expected1.getId(), null, null, null, null, null));
+        controller.getModel().createOrder(new Order(expected1.getId(), null, null, null, null, null));
 
-        controller.setEmployeeWaitingStatus(empLogin1, true);
-        controller.setEmployeeWaitingStatus(empLogin2, true);
+        controller.setEmployeeWaitingStatus(expected2.getId(), true);
+        controller.setEmployeeWaitingStatus(expected3.getId(), true);
 
         WorkWaitersManager.distributeOrders();
 
