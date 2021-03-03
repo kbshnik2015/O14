@@ -26,7 +26,7 @@ import model.enums.OrderStatus;
 import model.enums.ServiceStatus;
 
 @Data
-public class Model
+public class Model implements ModelInterface
 {
 
     @Setter
@@ -46,19 +46,19 @@ public class Model
 
     @Setter
     @Getter
-    private Map<BigInteger, Specification> specifications;
-
-    @Setter
-    @Getter
-    private Map<BigInteger, Order> orders;
-
-    @Setter
-    @Getter
     private Map<BigInteger, District> districts;
 
     @Setter
     @Getter
+    private Map<BigInteger, Specification> specifications;
+
+    @Setter
+    @Getter
     private Map<BigInteger, Service> services;
+
+    @Setter
+    @Getter
+    private Map<BigInteger, Order> orders;
 
     private static transient String sourceFile = "model.json";
 
@@ -98,6 +98,7 @@ public class Model
         return nextId;
     }
 
+    @Override
     public Customer createCustomer(Customer customer)
     {
         if (customers == null)
@@ -110,12 +111,13 @@ public class Model
         return customer;
     }
 
+    @Override
     public void updateCustomer(Customer customer)
     {
         customers.put(customer.getId(), customer);
     }
 
-    public void updateCustomer(BigInteger id,String firstName, String lastName, String password, String address,
+    public void updateCustomer(BigInteger id, String firstName, String lastName, String password, String address,
             float balance)
     {
         Customer customer = getCustomer(id);
@@ -144,16 +146,19 @@ public class Model
         }
     }
 
+    @Override
     public void deleteCustomer(Customer customer)
     {
         customers.remove(customer.getId());
     }
 
+    @Override
     public Customer getCustomer(BigInteger id)
     {
         return customers.get(id);
     }
 
+    @Override
     public Employee createEmployee(Employee employee)
     {
         if (employees == null)
@@ -165,12 +170,13 @@ public class Model
         return employee;
     }
 
+    @Override
     public void updateEmployee(Employee employee)
     {
         employees.put(employee.getId(), employee);
     }
 
-    public void updateEmployee(BigInteger id,String firstName, String lastName, String password,
+    public void updateEmployee(BigInteger id, String firstName, String lastName, String password,
             EmployeeStatus employeeStatus)
     {
         Employee employee = getEmployee(id);
@@ -195,16 +201,19 @@ public class Model
         }
     }
 
+    @Override
     public void deleteEmployee(Employee employee)
     {
         employees.remove(employee.getId());
     }
 
+    @Override
     public Employee getEmployee(BigInteger id)
     {
         return employees.get(id);
     }
 
+    @Override
     public District createDistrict(District district)
     {
         if (districts == null)
@@ -222,6 +231,7 @@ public class Model
         return createDistrict(district);
     }
 
+    @Override
     public void updateDistrict(District district)
     {
         districts.put(district.getId(), district);
@@ -243,16 +253,19 @@ public class Model
         }
     }
 
+    @Override
     public void deleteDistrict(District district)
     {
         districts.remove(district.getId());
     }
 
+    @Override
     public District getDistrict(BigInteger Id)
     {
         return districts.get(Id);
     }
 
+    @Override
     public Specification createSpecification(Specification specification)
     {
         if (specifications == null)
@@ -273,6 +286,7 @@ public class Model
     }
 
 
+    @Override
     public void updateSpecification(Specification specification)
     {
         specifications.put(specification.getId(), specification);
@@ -309,16 +323,19 @@ public class Model
         }
     }
 
+    @Override
     public void deleteSpecification(Specification specification)
     {
         specifications.remove(specification.getId());
     }
 
+    @Override
     public Specification getSpecification(BigInteger Id)
     {
         return specifications.get(Id);
     }
 
+    @Override
     public Service createService(Service service)
     {
         if (services == null)
@@ -330,6 +347,7 @@ public class Model
         return service;
     }
 
+    @Override
     public void updateService(Service service)
     {
         services.put(service.getId(), service);
@@ -355,6 +373,7 @@ public class Model
         }
     }
 
+    @Override
     public void deleteService(Service service)
     {
         services.remove(service.getId());
@@ -365,11 +384,13 @@ public class Model
         services.remove(id);
     }
 
+    @Override
     public Service getService(BigInteger Id)
     {
         return services.get(Id);
     }
 
+    @Override
     public Order createOrder(Order order)
     {
         if (orders == null)
@@ -381,6 +402,7 @@ public class Model
         return order;
     }
 
+    @Override
     public void updateOrder(Order order)
     {
         orders.put(order.getId(), order);
@@ -415,16 +437,17 @@ public class Model
         }
     }
 
+    @Override
     public void deleteOrder(Order order)
     {
         orders.remove(order.getId());
     }
 
+    @Override
     public Order getOrder(BigInteger Id)
     {
         return orders.get(Id);
     }
-
 
     public void saveToFile() throws IOException
     {
