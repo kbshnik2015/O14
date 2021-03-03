@@ -33,7 +33,7 @@ create table service_status
 
 create table customers
 (
-  id_customer BIGINT primary key not null,
+  id BIGINT primary key not null,
   first_name varchar(20),
   last_name varchar(30),
   login varchar(20) unique not null,
@@ -44,7 +44,7 @@ create table customers
 
 create table employees
 (
-  id_employee BIGINT primary key not null,
+  id BIGINT primary key not null,
   first_name varchar(20),
   last_name varchar(30),
   login varchar(20) unique not null,
@@ -55,44 +55,43 @@ create table employees
 
 create table districts
 (
-  id_district bigint primary key not null,
+  id bigint primary key not null,
   name varchar(20) not null,
-  id_parent bigint references districts (id_district) on delete cascade default null
+  id_parent bigint references districts (id) on delete cascade default null
 );
 
 create table specifications
 (
-  id_specification bigint primary key not null,
+  id bigint primary key not null,
   name varchar(30) not null,
   price real not null,
   description varchar(100),
-  is_address_depended boolean,
-  unique (name, price, description, is_address_depended)
+  is_address_depended boolean
 );
 
 create table specifications_to_districts
 (
-  specification_id bigint references specifications (id_specification) on delete cascade,
-  district_id bigint references districts (id_district) on delete cascade,
+  specification_id bigint references specifications (id) on delete cascade,
+  district_id bigint references districts (id) on delete cascade,
   unique (specification_id, district_id)
 );
 
 create table services
 (
-  id_service bigint primary key not null,
+  id bigint primary key not null,
   pay_day date,
-  specification_id bigint references specifications (id_specification) on delete cascade,
+  specification_id bigint references specifications (id) on delete cascade,
   status varchar(20) references service_status (name) on delete restrict,
-  customer_id bigint references customers (id_customer) on delete cascade
+  customer_id bigint references customers (id) on delete cascade
 );
 
 create table orders
 (
-  id_order bigint primary key not null,
-  customer_id bigint references customers (id_customer) on delete cascade,
-  employee_id bigint references employees (id_employee) default null,
-  specification_id bigint references specifications (id_specification) on delete cascade,
-  service_id bigint references services (id_service) default null,
+  id bigint primary key not null,
+  customer_id bigint references customers (id) on delete cascade,
+  employee_id bigint references employees (id) default null,
+  specification_id bigint references specifications (id) on delete cascade,
+  service_id bigint references services (id) default null,
   aim varchar(20) references order_aim (name) on delete restrict,
   status varchar(20) references order_status (name) on delete restrict,
   address varchar (50)
