@@ -1,6 +1,9 @@
 package controller.managers;
 
 
+import java.util.Collection;
+import java.util.Date;
+
 import controller.Controller;
 import lombok.SneakyThrows;
 import model.Model;
@@ -9,24 +12,20 @@ import model.entities.Service;
 import model.entities.Specification;
 import model.enums.ServiceStatus;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-@SuppressWarnings ("FieldCanBeLocal")
+@SuppressWarnings("FieldCanBeLocal")
 public class PayDayManager extends Thread
 {
     private final int ONE_MINUTE_IN_MILLI_SEC = 60000;
     private final long MONTH_IN_MILLI_SEC = 2592000000L;
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @SneakyThrows
     @Override
     public void run()
     {
         Model model = Model.getInstance();
         Controller controller = new Controller();
-        List<Service> services = new ArrayList<>(model.getServices()
-                .values());
+        Collection<Service> services = model.getServices().values();
         while (true)
         {
             Date currentDate = new Date();
@@ -61,7 +60,8 @@ public class PayDayManager extends Thread
         try
         {
             sleep(ONE_MINUTE_IN_MILLI_SEC);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             //We don't need a notification about an interruption of this daemon thread
         }
