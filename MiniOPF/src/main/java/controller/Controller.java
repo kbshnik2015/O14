@@ -43,13 +43,17 @@ public class Controller
 
     public AbstractUser getUserByLogin(String login) throws IllegalLoginOrPasswordException
     {
-        for(Customer customer : model.getCustomers().values()){
-            if(login.equals(customer.getLogin())){
+        for (Customer customer : model.getCustomers().values())
+        {
+            if (login.equals(customer.getLogin()))
+            {
                 return customer;
             }
         }
-        for(Employee employee : model.getEmployees().values()){
-            if(login.equals(employee.getLogin())){
+        for (Employee employee : model.getEmployees().values())
+        {
+            if (login.equals(employee.getLogin()))
+            {
                 return employee;
             }
         }
@@ -103,20 +107,24 @@ public class Controller
         {
             throw new IllegalLoginOrPasswordException("Password can't be nullable!");
         }
-        for (Customer customer : model.getCustomers().values()){
-            if (customer.getLogin().equals(login)){
+        for (Customer customer : model.getCustomers().values())
+        {
+            if (customer.getLogin().equals(login))
+            {
                 throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
             }
         }
 
-        for (Employee employee : model.getEmployees().values()){
-            if (employee.getLogin().equals(login)){
+        for (Employee employee : model.getEmployees().values())
+        {
+            if (employee.getLogin().equals(login))
+            {
                 throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
             }
         }
     }
 
-    public void updateCustomer(BigInteger id,String firstName, String lastName, String password, String address,
+    public void updateCustomer(BigInteger id, String firstName, String lastName, String password, String address,
             float balance) throws UserNotFoundException, IOException
     {
         checkCustomerExists(id);
@@ -125,12 +133,12 @@ public class Controller
         model.saveToFile();
     }
 
-    public void updateEmployee(BigInteger id,String firstName, String lastName, String password,
+    public void updateEmployee(BigInteger id, String firstName, String lastName, String password,
             EmployeeStatus employeeStatus) throws UserNotFoundException, IOException
     {
         checkEmployeeExists(id);
 
-        model.updateEmployee(id,firstName, lastName, password, employeeStatus);
+        model.updateEmployee(id, firstName, lastName, password, employeeStatus);
         model.saveToFile();
     }
 
@@ -299,12 +307,17 @@ public class Controller
     }
 
     public Order createNewOrder(BigInteger customerId, BigInteger specId)
-            throws UserNotFoundException, ObjectNotFoundException, IOException
+            throws UserNotFoundException, ObjectNotFoundException, IOException, IllegalTransitionException
     {
         checkCustomerExists(customerId);
         checkSpecificationExists(specId);
+        if (model.getCustomer(customerId).getBalance() < model.getSpecification(specId).getPrice())
+        {
+            throw new IllegalTransitionException("Customer (id: " + customerId + ") doesn't have enough money");
+        }
 
         Order order = new Order(customerId, null, specId, null, OrderAim.NEW, null);
+        changeBalanceOn(customerId, model.getSpecification(specId).getPrice() * (-1));
         order = model.createOrder(order);
         WorkWaitersManager.distributeOrders();
         model.saveToFile();
@@ -385,7 +398,8 @@ public class Controller
         moveOrderFromTo(orderId, OrderStatus.SUSPENDED, OrderStatus.IN_PROGRESS);
     }
 
-    public void cancelOrder(BigInteger orderId) throws IllegalTransitionException, ObjectNotFoundException, IOException
+    public void cancelOrder(BigInteger orderId)
+            throws IllegalTransitionException, ObjectNotFoundException, IOException, UserNotFoundException
     {
         checkOrderExists(orderId);
 
@@ -393,6 +407,10 @@ public class Controller
         if (order.getOrderStatus() == OrderStatus.COMPLETED)
         {
             throw new IllegalTransitionException("Completed order (id: " + orderId + ") can't be cancelled!");
+        }
+        else if (order.getOrderAim() == OrderAim.NEW)
+        {
+            changeBalanceOn(order.getCustomerId(), model.getSpecification(order.getSpecId()).getPrice());
         }
         order.setOrderStatus(OrderStatus.CANCELLED);
         model.saveToFile();
@@ -431,7 +449,7 @@ public class Controller
             }
             else if (OrderAim.RESTORE.equals(order.getOrderAim()))
             {
-                service.setPayDay(payDayPlusMonth);
+                service.setPayDay(new Date());
                 service.setServiceStatus(ServiceStatus.ACTIVE);
             }
         }
@@ -530,7 +548,7 @@ public class Controller
                 .collect(Collectors.toList());
     }
 
-    public  List<Specification> getCustomerSpecifications(final Customer customer)
+    public List<Specification> getCustomerSpecifications(final Customer customer)
             throws UserNotFoundException
     {
         List<Specification> customerSpecifications = getCustomerServices(customer.getId())
@@ -713,7 +731,7 @@ public class Controller
     {
         if (!model.getEmployees().containsKey(id))
         {
-            throw new UserNotFoundException("Employee (login: " + id + ") doesn't exist!");
+            throw new UserNotFoundException("Employee (id: " + id + ") doesn't exist!");
         }
     }
 
@@ -721,7 +739,7 @@ public class Controller
     {
         if (!model.getCustomers().containsKey(id))
         {
-            throw new UserNotFoundException("Customer (login: " + id + ") doesn't exist!");
+            throw new UserNotFoundException("Customer (id: " + id + ") doesn't exist!");
         }
     }
 
