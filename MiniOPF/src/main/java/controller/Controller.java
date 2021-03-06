@@ -211,13 +211,13 @@ public class Controller
 
         for (Service service : getCustomerServices(id))
         {
-            model.deleteService(service);
+            model.deleteService(service.getId());
         }
         for (Order order : getCustomerOrders(id))
         {
-            model.deleteOrder(order);
+            model.deleteOrder(order.getId());
         }
-        model.deleteCustomer(model.getCustomer(id));
+        model.deleteCustomer(id);
         model.saveToFile();
     }
 
@@ -227,9 +227,9 @@ public class Controller
 
         for (Order order : getEmployeeOrders(id))
         {
-            model.deleteOrder(order);
+            model.deleteOrder(order.getId());
         }
-        model.deleteEmployee(model.getEmployee(id));
+        model.deleteEmployee(id);
         model.saveToFile();
     }
 
@@ -241,7 +241,7 @@ public class Controller
         {
             order.setEmployeeId(null);
         }
-        model.deleteEmployee(model.getEmployee(id));
+        model.deleteEmployee(id);
         model.saveToFile();
     }
 
@@ -249,8 +249,11 @@ public class Controller
     {
         checkOrderExists(id);
 
-        model.deleteService(model.getService(model.getOrder(id).getServiceId()));
-        model.deleteOrder(model.getOrder(id));
+        if (model.getOrder(id).getServiceId() != null)
+        {
+            model.deleteService(model.getOrder(id).getServiceId());
+        }
+        model.deleteOrder(id);
         model.saveToFile();
     }
 
@@ -260,9 +263,9 @@ public class Controller
 
         for (Service service : getSpecificationServices(id))
         {
-            model.deleteService(service);
+            model.deleteService(service.getId());
         }
-        model.deleteSpecification(model.getSpecification(id));
+        model.deleteSpecification(id);
         model.saveToFile();
     }
 
@@ -274,11 +277,11 @@ public class Controller
         {
             for (District district : getDistrictChildren(id))
             {
-                model.deleteDistrict(model.getDistrict(district.getId()));
+                model.deleteDistrict(district.getId());
             }
         }
 
-        model.deleteDistrict(model.getDistrict(id));
+        model.deleteDistrict(id);
         model.saveToFile();
     }
 
@@ -302,7 +305,7 @@ public class Controller
             }
         }
 
-        model.deleteDistrict(model.getDistrict(id));
+        model.deleteDistrict(id);
         model.saveToFile();
     }
 

@@ -135,10 +135,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteCustomer(final Customer customer) throws SQLException, DataNotFoundWarning
+    public void deleteCustomer(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        customerDAO.delete(customer
-        );
+        customerDAO.delete(id);
     }
 
     @Override
@@ -161,9 +160,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteEmployee(final Employee employee) throws SQLException, DataNotFoundWarning
+    public void deleteEmployee(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        employeeDAO.delete(employee);
+        employeeDAO.delete(id);
     }
 
     @Override
@@ -186,9 +185,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteDistrict(final District district) throws SQLException, DataNotFoundWarning
+    public void deleteDistrict(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        districtDAO.delete(district);
+        districtDAO.delete(id);
     }
 
     @Override
@@ -212,9 +211,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteSpecification(final Specification specification) throws SQLException, DataNotFoundWarning
+    public void deleteSpecification(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        specificationDAO.delete(specification);
+        specificationDAO.delete(id);
     }
 
     @Override
@@ -237,9 +236,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteService(final Service service) throws SQLException, DataNotFoundWarning
+    public void deleteService(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        serviceDAO.delete(service);
+        serviceDAO.delete(id);
     }
 
     @Override
@@ -262,9 +261,9 @@ public class ModelDB implements ModelInterface
     }
 
     @Override
-    public void deleteOrder(final Order order) throws SQLException, DataNotFoundWarning
+    public void deleteOrder(final BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        orderDAO.delete(order);
+        orderDAO.delete(id);
     }
 
     @Override

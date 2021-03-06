@@ -147,9 +147,9 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteCustomer(Customer customer)
+    public void deleteCustomer(BigInteger id)
     {
-        customers.remove(customer.getId());
+        customers.remove(id);
     }
 
     @Override
@@ -202,9 +202,9 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteEmployee(Employee employee)
+    public void deleteEmployee(BigInteger id)
     {
-        employees.remove(employee.getId());
+        employees.remove(id);
     }
 
     @Override
@@ -254,9 +254,9 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteDistrict(District district)
+    public void deleteDistrict(BigInteger id)
     {
-        districts.remove(district.getId());
+        districts.remove(id);
     }
 
     @Override
@@ -324,9 +324,9 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteSpecification(Specification specification)
+    public void deleteSpecification(BigInteger id)
     {
-        specifications.remove(specification.getId());
+        specifications.remove(id);
     }
 
     @Override
@@ -374,11 +374,6 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteService(Service service)
-    {
-        services.remove(service.getId());
-    }
-
     public void deleteService(BigInteger id)
     {
         services.remove(id);
@@ -438,9 +433,9 @@ public class Model implements ModelInterface
     }
 
     @Override
-    public void deleteOrder(Order order)
+    public void deleteOrder(BigInteger id)
     {
-        orders.remove(order.getId());
+        orders.remove(id);
     }
 
     @Override

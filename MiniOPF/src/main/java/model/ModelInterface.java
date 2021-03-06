@@ -32,7 +32,7 @@ public interface ModelInterface
 
     void updateCustomer(Customer customer) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteCustomer(Customer customer) throws SQLException, DataNotFoundWarning;
+    void deleteCustomer(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     Customer getCustomer(BigInteger id) throws SQLException;
 
@@ -40,7 +40,7 @@ public interface ModelInterface
 
     void updateEmployee(Employee employee) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteEmployee(Employee employee) throws SQLException, DataNotFoundWarning;
+    void deleteEmployee(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     Employee getEmployee(BigInteger id) throws SQLException;
 
@@ -48,7 +48,7 @@ public interface ModelInterface
 
     void updateDistrict(District district) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteDistrict(District district) throws SQLException, DataNotFoundWarning;
+    void deleteDistrict(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     District getDistrict(BigInteger Id) throws SQLException;
 
@@ -56,7 +56,7 @@ public interface ModelInterface
 
     void updateSpecification(Specification specification) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteSpecification(Specification specification) throws SQLException, DataNotFoundWarning;
+    void deleteSpecification(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     Specification getSpecification(BigInteger Id) throws SQLException;
 
@@ -64,7 +64,7 @@ public interface ModelInterface
 
     void updateService(Service service) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteService(Service service) throws SQLException, DataNotFoundWarning;
+    void deleteService(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     Service getService(BigInteger Id) throws SQLException;
 
@@ -72,7 +72,7 @@ public interface ModelInterface
 
     void updateOrder(Order order) throws SQLException, DataNotUpdatedWarning;
 
-    void deleteOrder(Order order) throws SQLException, DataNotFoundWarning;
+    void deleteOrder(BigInteger id) throws SQLException, DataNotFoundWarning;
 
     Order getOrder(BigInteger Id) throws SQLException;
 }

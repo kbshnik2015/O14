@@ -14,12 +14,11 @@ import model.entities.Employee;
 import model.entities.Order;
 import model.enums.EmployeeStatus;
 
-import static model.Model.loadFromFile;
-
 public class WorkWaitersManagerTest
 {
 
     private Controller controller = new Controller();
+
     {
         //noinspection AccessStaticViaInstance
         controller.getModel().loadFromFile("test.json");

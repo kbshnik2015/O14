@@ -151,7 +151,7 @@ public class ControllerTest
         float balance1 = 100;
 
         Customer actual = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
-        controller.getModel().deleteCustomer(actual);
+        controller.getModel().deleteCustomer(actual.getId());
 
         Assert.assertNull(controller.getModel().getCustomers().get(actual.getId()));
     }
@@ -278,7 +278,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
 
         Employee actual = controller.createEmployee(empFirstName, empLastName, empLogin, empPassword, empStatus);
-        controller.getModel().deleteEmployee(actual);
+        controller.getModel().deleteEmployee(actual.getId());
 
         Assert.assertNull(controller.getModel().getCustomers().get(actual.getId()));
     }
@@ -497,7 +497,7 @@ public class ControllerTest
             UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -538,7 +538,7 @@ public class ControllerTest
             UserNotFoundException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -558,7 +558,7 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -578,7 +578,7 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -597,7 +597,7 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -616,7 +616,7 @@ public class ControllerTest
             IllegalLoginOrPasswordException, IOException
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -636,7 +636,7 @@ public class ControllerTest
     public void completeOrder_DISCONNECT_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
@@ -658,7 +658,7 @@ public class ControllerTest
     public void completeOrder_SUSPEND_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
@@ -680,7 +680,7 @@ public class ControllerTest
     public void completeOrder_RESTORE_ORDER() throws Exception
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Service service = controller.getModel()
@@ -758,7 +758,7 @@ public class ControllerTest
     public void createSuspendOrder_SERVICE_NOT_BELONGS_TO_CUSTOMER() throws Exception
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(1);
         Service service = controller.getModel()
@@ -773,7 +773,7 @@ public class ControllerTest
     public void createSuspendOrder_SERVICE_NOT_EXISTS() throws Exception
     {
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         BigInteger randomId = BigInteger.valueOf(666);
 
         Order suspendOrder = controller.createSuspendOrder(customer.getId(), randomId);
@@ -901,7 +901,8 @@ public class ControllerTest
 
     @Test
     public void assignOrder()
-            throws UserNotFoundException, ObjectNotFoundException, IllegalLoginOrPasswordException, IOException
+            throws UserNotFoundException, ObjectNotFoundException, IllegalLoginOrPasswordException, IOException,
+            IllegalTransitionException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -909,7 +910,7 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Order order = controller.createNewOrder(customer.getId(), specId);
@@ -932,7 +933,7 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Order order = controller.createNewOrder(customer.getId(), specId);
@@ -947,7 +948,7 @@ public class ControllerTest
 
     @Test
     public void usassignOrder() throws UserNotFoundException, ObjectNotFoundException,
-            IllegalLoginOrPasswordException, IOException
+            IllegalLoginOrPasswordException, IOException, IllegalTransitionException
     {
         String empFirstName = "Employee1firstName";
         String empLastName = "Employee1lastName";
@@ -955,7 +956,7 @@ public class ControllerTest
         String empPassword = "Employee1Password";
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
-        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 0);
+        Customer customer = controller.createCustomer(null, null, cust1_login, "cust1_pass", null, 500);
         controller.createSpecification("Spec name", 100, "Internet100", false, null);
         BigInteger specId = BigInteger.valueOf(2);
         Order order = controller.createNewOrder(customer.getId(), specId);

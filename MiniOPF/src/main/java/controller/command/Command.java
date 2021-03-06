@@ -22,6 +22,7 @@ import model.entities.Service;
 import model.entities.Specification;
 import model.enums.EmployeeStatus;
 
+@SuppressWarnings("SameParameterValue")
 @ToString
 public enum Command
 {
@@ -775,7 +776,7 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException
+                        ObjectNotFoundException, UserNotFoundException
                 {
                     Controller controller = new Controller();
                     BigInteger orderId = Command.parseToBigInteger(args[1]);
