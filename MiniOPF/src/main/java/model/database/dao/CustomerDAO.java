@@ -9,24 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.database.exceptions.DataNotCreatedWarning;
-import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.entities.Customer;
 
 public class CustomerDAO extends AbstractDAO<Customer>
 {
-    private static final String SELECT_ALL_CUSTOMERS = "SELECT * FROM customers ORDER BY id_customer";
-    private static final String SELECT_CUSTOMER_BY_ID = "SELECT * FROM customers WHERE id_customer =?";
-    private static final String DELETE_CUSTOMER = "DELETE FROM customers WHERE id_customer = ?;";
-    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (nextval('CustomerSeq'), ?, ?, ?, ?, " +
+    private static final String SELECT_ALL_CUSTOMERS = "SELECT * FROM customers ORDER BY id";
+    private static final String SELECT_CUSTOMER_BY_ID = "SELECT * FROM customers WHERE id =?";
+    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (nextval('idSeq'), ?, ?, ?, ?, " +
             "?, ?)";
     private static final String UPDATE_CUSTOMER = "UPDATE customers SET first_name =?, last_name =?, password =?, " +
-            "address =?, balance =? WHERE id_customer = ?;";
+            "address =?, balance =? WHERE id =?;";
 
     public CustomerDAO(final Connection connection)
     {
-        super(connection);
-        this.tableName = "customers";
+        super(connection, "customers");
     }
 
     @Override
@@ -39,14 +36,15 @@ public class CustomerDAO extends AbstractDAO<Customer>
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_customer = parseToBigInteger(resultSet.getLong("id_customer"));
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String login = resultSet.getString("login");
-                String password = resultSet.getString("password");
-                String address = resultSet.getString("address");
-                float balance = resultSet.getFloat("balance");
-                customers.add(new Customer(id_customer, firstName, lastName, login, password, address, balance));
+                Customer customer = new Customer();
+                customer.setId(parseToBigInteger(resultSet.getLong("id")));
+                customer.setFirstName(resultSet.getString("first_name"));
+                customer.setLastName(resultSet.getString("last_name"));
+                customer.setLogin(resultSet.getString("login"));
+                customer.setPassword(resultSet.getString("password"));
+                customer.setAddress(resultSet.getString("address"));
+                customer.setBalance(resultSet.getFloat("balance"));
+                customers.add(customer);
             }
         }
         return customers;
@@ -55,7 +53,7 @@ public class CustomerDAO extends AbstractDAO<Customer>
     @Override
     public Customer findById(final BigInteger id) throws SQLException
     {
-        Customer customer = null;
+        Customer customer = new Customer();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_CUSTOMER_BY_ID))
         {
@@ -63,75 +61,17 @@ public class CustomerDAO extends AbstractDAO<Customer>
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_customer = parseToBigInteger(resultSet.getLong("id_customer"));
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String login = resultSet.getString("login");
-                String password = resultSet.getString("password");
-                String address = resultSet.getString("address");
-                float balance = resultSet.getFloat("balance");
-                customer = new Customer(id_customer, firstName, lastName, login, password, address, balance);
+                customer.setId(parseToBigInteger(resultSet.getLong("id")));
+                customer.setFirstName(resultSet.getString("first_name"));
+                customer.setLastName(resultSet.getString("last_name"));
+                customer.setLogin(resultSet.getString("login"));
+                customer.setPassword(resultSet.getString("password"));
+                customer.setAddress(resultSet.getString("address"));
+                customer.setBalance(resultSet.getFloat("balance"));
             }
         }
 
         return customer;
-    }
-
-    @Override
-    public void delete(final BigInteger id) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_CUSTOMER))
-        {
-            preparedStatement.setLong(1, parseToLong(id));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final Customer entity) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_CUSTOMER))
-        {
-            preparedStatement.setLong(1, parseToLong(entity.getId()));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final List<BigInteger> ids) throws SQLException, DataNotFoundWarning
-    {
-        List<BigInteger> notDeletedIds = new ArrayList<>();
-        for (BigInteger id : ids)
-        {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_CUSTOMER))
-            {
-                preparedStatement.setLong(1, parseToLong(id));
-                boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-                if (isObjectNotFound)
-                {
-                    notDeletedIds.add(id);
-                }
-            }
-        }
-
-        if (notDeletedIds.size() > 0)
-        {
-            String warningMessage = "Customers with ids : ";
-            for (BigInteger id : notDeletedIds)
-            {
-                warningMessage = warningMessage.concat(id + ", ");
-            }
-            warningMessage = warningMessage.concat("weren't deleted");
-            throw new DataNotFoundWarning(warningMessage);
-        }
     }
 
     @Override

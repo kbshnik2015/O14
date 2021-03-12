@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.database.exceptions.DataNotCreatedWarning;
-import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.entities.Order;
 import model.enums.OrderAim;
@@ -17,23 +16,30 @@ import model.enums.OrderStatus;
 
 public class OrderDAO extends AbstractDAO<Order>
 {
-    private static final String SELECT_ALL_ORDERS = "SELECT * FROM orders ORDER BY id_order";
-    private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE id_order =?";
-    private static final String DELETE_ORDER = "DELETE FROM orders WHERE id_order = ?;";
-    private static final String INSERT_INTO_ORDERS = "INSERT INTO orders VALUES (nextval('ServiceSeq'), ?, ?, ?, ?, ?, ?, ?)";
-    private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE = "INSERT INTO orders (id_order, customer_id, specification_id, service_id, aim, status, address) VALUES (nextval('ServiceSeq'), ?, ?, ?, ?, ?, ?)";
-    private static final String INSERT_INTO_ORDERS_WITHOUT_SERVICE = "INSERT INTO orders (id_order, customer_id, employee_id, specification_id, aim, status, address) VALUES (nextval('ServiceSeq'), ?, ?, ?, ?, ?, ?)";
-    private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE_AND_SERVICE = "INSERT INTO orders (id_order, customer_id, specification_id, aim, status, address) VALUES (nextval('ServiceSeq'), ?, ?, ?, ?, ?)";
-    private static final String UPDATE_ORDER = "UPDATE orders SET customer_id =?, employee_id =?, specification_id =?, " +
-                    "service_id =?, aim =?, status =?, address =? WHERE id_order = ?;";
-    private static final String UPDATE_ORDER_WITHOUT_EMPLOYEE = "UPDATE orders SET customer_id =?, employee_id = default, specification_id =?, service_id =?, aim =?, status =?, address =? WHERE id_order = ?;";
-    private static final String UPDATE_ORDER_WITHOUT_SERVICE  = "UPDATE orders SET customer_id =?, employee_id =?, specification_id =?, service_id = default, aim =?, status =?, address =? WHERE id_order = ?;";
-    private static final String UPDATE_ORDER_WITHOUT_EMPLOYEE_AND_SERVICE = "UPDATE orders SET customer_id =?, employee_id = default, specification_id =?, service_id = default, aim =?, status =?, address =? WHERE id_order = ?;";
+    private static final String SELECT_ALL_ORDERS = "SELECT * FROM orders ORDER BY id";
+    private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE id =?";
+    private static final String INSERT_INTO_ORDERS = "INSERT INTO orders VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?, " +
+            "?)";
+    private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE = "INSERT INTO orders (id, customer_id, " +
+            "specification_id, service_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_INTO_ORDERS_WITHOUT_SERVICE = "INSERT INTO orders (id, customer_id, " +
+            "employee_id, specification_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE_AND_SERVICE = "INSERT INTO orders (id, " +
+            "customer_id, specification_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?)";
+    private static final String UPDATE_ORDER =
+            "UPDATE orders SET customer_id =?, employee_id =?, specification_id =?, " +
+                    "service_id =?, aim =?, status =?, address =? WHERE id = ?;";
+    private static final String UPDATE_ORDER_WITHOUT_EMPLOYEE = "UPDATE orders SET customer_id =?, employee_id = " +
+            "default, specification_id =?, service_id =?, aim =?, status =?, address =? WHERE id = ?;";
+    private static final String UPDATE_ORDER_WITHOUT_SERVICE = "UPDATE orders SET customer_id =?, employee_id =?, " +
+            "specification_id =?, service_id = default, aim =?, status =?, address =? WHERE id = ?;";
+    private static final String UPDATE_ORDER_WITHOUT_EMPLOYEE_AND_SERVICE = "UPDATE orders SET customer_id =?, " +
+            "employee_id = default, specification_id =?, service_id = default, aim =?, status =?, address =? WHERE id" +
+            " = ?;";
 
     public OrderDAO(final Connection connection)
     {
-        super(connection);
-        this.tableName = "orders";
+        super(connection, "orders");
     }
 
     private static OrderStatus parseToOrderStatus(final String arg)
@@ -91,24 +97,30 @@ public class OrderDAO extends AbstractDAO<Order>
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_order = parseToBigInteger(resultSet.getLong("id_order"));
-                BigInteger customer_id = parseToBigInteger(resultSet.getLong("customer_id"));
-                BigInteger employee_id = parseToBigInteger(resultSet.getLong("employee_id"));
-                if (BigInteger.valueOf(0).equals(employee_id))
+                Order order = new Order();
+                order.setId(parseToBigInteger(resultSet.getLong("id")));
+                order.setCustomerId(parseToBigInteger(resultSet.getLong("customer_id")));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("employee_id"))))
                 {
-                    employee_id = null;
+                    order.setEmployeeId(null);
                 }
-                BigInteger specification_id = parseToBigInteger(resultSet.getLong("specification_id"));
-                BigInteger service_id = parseToBigInteger(resultSet.getLong("service_id"));
-                if (BigInteger.valueOf(0).equals(service_id))
+                else
                 {
-                    service_id = null;
+                    order.setEmployeeId(parseToBigInteger(resultSet.getLong("employee_id")));
                 }
-                OrderAim orderAim = parseToOrderAim(resultSet.getString("aim"));
-                OrderStatus orderStatus = parseToOrderStatus(resultSet.getString("status"));
-                String address = resultSet.getString("address");
-                orders.add(new Order(id_order, customer_id, employee_id, specification_id, service_id, orderAim,
-                        orderStatus, address));
+                order.setSpecId(parseToBigInteger(resultSet.getLong("specification_id")));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("service_id"))))
+                {
+                    order.setServiceId(null);
+                }
+                else
+                {
+                    order.setServiceId(parseToBigInteger(resultSet.getLong("service_id")));
+                }
+                order.setOrderAim(parseToOrderAim(resultSet.getString("aim")));
+                order.setOrderStatus(parseToOrderStatus(resultSet.getString("status")));
+                order.setAddress(resultSet.getString("address"));
+                orders.add(order);
             }
         }
 
@@ -118,31 +130,36 @@ public class OrderDAO extends AbstractDAO<Order>
     @Override
     public Order findById(final BigInteger id) throws SQLException
     {
-        Order order = null;
+        Order order = new Order();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ORDER_BY_ID))
         {
+            preparedStatement.setLong(1, parseToLong(id));
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_order = parseToBigInteger(resultSet.getLong("id_order"));
-                BigInteger customer_id = parseToBigInteger(resultSet.getLong("customer_id"));
-                BigInteger employee_id = parseToBigInteger(resultSet.getLong("employee_id"));
-                if (BigInteger.valueOf(0).equals(employee_id))
+                order.setId(parseToBigInteger(resultSet.getLong("id")));
+                order.setCustomerId(parseToBigInteger(resultSet.getLong("customer_id")));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("employee_id"))))
                 {
-                    employee_id = null;
+                    order.setEmployeeId(null);
                 }
-                BigInteger specification_id = parseToBigInteger(resultSet.getLong("specification_id"));
-                BigInteger service_id = parseToBigInteger(resultSet.getLong("service_id"));
-                if (BigInteger.valueOf(0).equals(service_id))
+                else
                 {
-                    service_id = null;
+                    order.setEmployeeId(parseToBigInteger(resultSet.getLong("employee_id")));
                 }
-                OrderAim orderAim = parseToOrderAim(resultSet.getString("aim"));
-                OrderStatus orderStatus = parseToOrderStatus(resultSet.getString("status"));
-                String address = resultSet.getString("address");
-                order = new Order(id_order, customer_id, employee_id, specification_id, service_id, orderAim,
-                        orderStatus, address);
+                order.setSpecId(parseToBigInteger(resultSet.getLong("specification_id")));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("service_id"))))
+                {
+                    order.setServiceId(null);
+                }
+                else
+                {
+                    order.setServiceId(parseToBigInteger(resultSet.getLong("service_id")));
+                }
+                order.setOrderAim(parseToOrderAim(resultSet.getString("aim")));
+                order.setOrderStatus(parseToOrderStatus(resultSet.getString("status")));
+                order.setAddress(resultSet.getString("address"));
             }
         }
 
@@ -150,67 +167,11 @@ public class OrderDAO extends AbstractDAO<Order>
     }
 
     @Override
-    public void delete(final BigInteger id) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ORDER))
-        {
-            preparedStatement.setLong(1, parseToLong(id));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final Order entity) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ORDER))
-        {
-            preparedStatement.setLong(1, parseToLong(entity.getId()));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final List<BigInteger> ids) throws SQLException, DataNotFoundWarning
-    {
-        List<BigInteger> notDeletedIds = new ArrayList<>();
-        for (BigInteger id : ids)
-        {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ORDER))
-            {
-                preparedStatement.setLong(1, parseToLong(id));
-                boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-                if (isObjectNotFound)
-                {
-                    notDeletedIds.add(id);
-                }
-            }
-        }
-
-        if (notDeletedIds.size() > 0)
-        {
-            String warningMessage = "Orders with ids : ";
-            for (BigInteger id : notDeletedIds)
-            {
-                warningMessage = warningMessage.concat(id + ", ");
-            }
-            warningMessage = warningMessage.concat("weren't deleted");
-            throw new DataNotFoundWarning(warningMessage);
-        }
-    }
-
-    @Override
     public void create(final Order entity) throws SQLException, DataNotCreatedWarning
     {
-        boolean isObjectNotCreated = false;
-        if(entity.getEmployeeId() != null && entity.getServiceId() != null)
+        boolean isObjectNotCreated;
+
+        if (entity.getEmployeeId() != null && entity.getServiceId() != null)
         {
             try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_ORDERS))
             {
@@ -250,7 +211,8 @@ public class OrderDAO extends AbstractDAO<Order>
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }
-        else {
+        else
+        {
             try (PreparedStatement preparedStatement = connection.prepareStatement(
                     INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE_AND_SERVICE))
             {
@@ -262,6 +224,7 @@ public class OrderDAO extends AbstractDAO<Order>
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }
+
         if (isObjectNotCreated)
         {
             throw new DataNotCreatedWarning("Object wasn't created");
@@ -271,7 +234,8 @@ public class OrderDAO extends AbstractDAO<Order>
     @Override
     public void update(final Order entity) throws SQLException, DataNotUpdatedWarning
     {
-        boolean isObjectNotUpdated = false;
+        boolean isObjectNotUpdated;
+
         if (entity.getEmployeeId() != null && entity.getServiceId() != null)
         {
             try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ORDER))
@@ -317,7 +281,8 @@ public class OrderDAO extends AbstractDAO<Order>
         }
         else
         {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ORDER_WITHOUT_EMPLOYEE_AND_SERVICE))
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement(UPDATE_ORDER_WITHOUT_EMPLOYEE_AND_SERVICE))
             {
                 preparedStatement.setLong(1, parseToLong(entity.getCustomerId()));
                 preparedStatement.setLong(2, parseToLong(entity.getSpecId()));
@@ -328,6 +293,7 @@ public class OrderDAO extends AbstractDAO<Order>
                 isObjectNotUpdated = preparedStatement.executeUpdate() == 0;
             }
         }
+
         if (isObjectNotUpdated)
         {
             throw new DataNotUpdatedWarning("Object wasn't updated");

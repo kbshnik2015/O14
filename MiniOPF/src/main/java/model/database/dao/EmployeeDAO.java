@@ -9,25 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.database.exceptions.DataNotCreatedWarning;
-import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.entities.Employee;
 import model.enums.EmployeeStatus;
 
 public class EmployeeDAO extends AbstractDAO<Employee>
 {
-    private static final String SELECT_ALL_EMPLOYEES = "SELECT * FROM employees ORDER BY id_employee";
-    private static final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employees WHERE id_employee =?";
-    private static final String DELETE_EMPLOYEE = "DELETE FROM employees WHERE id_employee = ?;";
-    private static final String INSERT_INTO_EMPLOYEES = "INSERT INTO employees VALUES (nextval('EmployeeSeq'), ?, ?, ?, ?, " +
+    private static final String SELECT_ALL_EMPLOYEES = "SELECT * FROM employees ORDER BY id";
+    private static final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employees WHERE id =?";
+    private static final String INSERT_INTO_EMPLOYEES = "INSERT INTO employees VALUES (nextval('idSeq'), ?, ?, ?, ?, " +
             "?, ?)";
     private static final String UPDATE_EMPLOYEE = "UPDATE employees SET first_name =?, last_name =?, password =?, " +
-            "status =?, is_waiting =? WHERE id_employee = ?;";
+            "status =?, is_waiting =? WHERE id = ?;";
 
     public EmployeeDAO(final Connection connection)
     {
-        super(connection);
-        this.tableName = "employees";
+        super(connection, "employees");
     }
 
     private static EmployeeStatus parseToEmployeeStatus(final String arg)
@@ -58,14 +55,15 @@ public class EmployeeDAO extends AbstractDAO<Employee>
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_employee = parseToBigInteger(resultSet.getLong("id_employee"));
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String login = resultSet.getString("login");
-                String password = resultSet.getString("password");
-                EmployeeStatus status = parseToEmployeeStatus(resultSet.getString("status"));
-                boolean isWaiting = resultSet.getBoolean("is_waiting");
-                employees.add(new Employee(id_employee, firstName, lastName, login, password, status, isWaiting));
+                Employee employee = new Employee();
+                employee.setId(parseToBigInteger(resultSet.getLong("id")));
+                employee.setFirstName(resultSet.getString("first_name"));
+                employee.setLastName(resultSet.getString("last_name"));
+                employee.setLogin(resultSet.getString("login"));
+                employee.setPassword(resultSet.getString("password"));
+                employee.setEmployeeStatus(parseToEmployeeStatus(resultSet.getString("status")));
+                employee.setWaitingForOrders(resultSet.getBoolean("is_waiting"));
+                employees.add(employee);
             }
         }
 
@@ -75,84 +73,25 @@ public class EmployeeDAO extends AbstractDAO<Employee>
     @Override
     public Employee findById(final BigInteger id) throws SQLException
     {
-        Employee employee = null;
+        Employee employee = new Employee();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_EMPLOYEE_BY_ID))
         {
             preparedStatement.setLong(1, parseToLong(id));
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                BigInteger id_employee = parseToBigInteger(resultSet.getLong("id_employee"));
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String login = resultSet.getString("login");
-                String password = resultSet.getString("password");
-                EmployeeStatus status = parseToEmployeeStatus(resultSet.getString("status"));
-                boolean isWaiting = resultSet.getBoolean("is_waiting");
-                employee = new Employee(id_employee, firstName, lastName, login, password, status, isWaiting);
+                employee.setId(parseToBigInteger(resultSet.getLong("id")));
+                employee.setFirstName(resultSet.getString("first_name"));
+                employee.setLastName(resultSet.getString("last_name"));
+                employee.setLogin(resultSet.getString("login"));
+                employee.setPassword(resultSet.getString("password"));
+                employee.setEmployeeStatus(parseToEmployeeStatus(resultSet.getString("status")));
+                employee.setWaitingForOrders(resultSet.getBoolean("is_waiting"));
             }
-
         }
 
         return employee;
-    }
-
-    @Override
-    public void delete(final BigInteger id) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_EMPLOYEE))
-        {
-            preparedStatement.setLong(1, parseToLong(id));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final Employee entity) throws SQLException, DataNotFoundWarning
-    {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_EMPLOYEE))
-        {
-            preparedStatement.setLong(1, parseToLong(entity.getId()));
-            boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotFound)
-            {
-                throw new DataNotFoundWarning("Object wasn't found for deletion");
-            }
-        }
-    }
-
-    @Override
-    public void delete(final List<BigInteger> ids) throws DataNotFoundWarning, SQLException
-    {
-        List<BigInteger> notDeletedIds = new ArrayList<>();
-        for (BigInteger id : ids)
-        {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_EMPLOYEE))
-            {
-                preparedStatement.setLong(1, parseToLong(id));
-                boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
-                if (isObjectNotFound)
-                {
-                    notDeletedIds.add(id);
-                }
-            }
-        }
-
-        if (notDeletedIds.size() > 0)
-        {
-            String warningMessage = "Employees with ids : ";
-            for (BigInteger id : notDeletedIds)
-            {
-                warningMessage = warningMessage.concat(id + ", ");
-            }
-            warningMessage = warningMessage.concat("weren't deleted");
-            throw new DataNotFoundWarning(warningMessage);
-        }
     }
 
     @Override
