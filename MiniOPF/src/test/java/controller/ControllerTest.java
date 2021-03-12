@@ -28,8 +28,8 @@ import model.enums.ServiceStatus;
 @SuppressWarnings("SpellCheckingInspection")
 public class ControllerTest
 {
-
     private Controller controller = new Controller();
+
     {
         //noinspection AccessStaticViaInstance
         controller.getModel().loadFromFile("test.json");
@@ -75,6 +75,7 @@ public class ControllerTest
         Customer customer = controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
         Customer existedCustomer =
                 controller.createCustomer(firstName1, lastName1, login1, password1, address1, balance1);
+
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
