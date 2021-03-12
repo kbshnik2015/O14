@@ -62,7 +62,7 @@ create table districts
 
 create table specifications
 (
-  id bigint primary key not null,
+  id BIGINT primary key not null,
   name varchar(30) not null,
   price real not null,
   description varchar(100),
