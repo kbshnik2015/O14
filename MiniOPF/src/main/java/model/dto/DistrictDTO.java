@@ -15,4 +15,17 @@ public class DistrictDTO implements EntityDTO
     private String name;
 
     private BigInteger parentId;
+
+    public DistrictDTO(String name, BigInteger parentId)
+    {
+        this.name = name;
+        this.parentId = parentId;
+    }
+
+    public DistrictDTO(BigInteger id, String name, BigInteger parentId)
+    {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+    }
 }
