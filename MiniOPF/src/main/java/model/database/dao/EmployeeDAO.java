@@ -17,7 +17,7 @@ public class EmployeeDAO extends AbstractDAO<Employee>
 {
     private static final String SELECT_ALL_EMPLOYEES = "SELECT * FROM employees ORDER BY id";
     private static final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employees WHERE id =?";
-    private static final String INSERT_INTO_EMPLOYEES = "INSERT INTO employees VALUES (nextval('idSeq'), ?, ?, ?, ?, " +
+    private static final String INSERT_INTO_EMPLOYEES = "INSERT INTO employees VALUES (?, ?, ?, ?, ?, " +
             "?, ?)";
     private static final String UPDATE_EMPLOYEE = "UPDATE employees SET first_name =?, last_name =?, password =?, " +
             "status =?, is_waiting =? WHERE id = ?;";
@@ -99,12 +99,13 @@ public class EmployeeDAO extends AbstractDAO<Employee>
     {
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_EMPLOYEES))
         {
-            preparedStatement.setString(1, entity.getFirstName());
-            preparedStatement.setString(2, entity.getLastName());
-            preparedStatement.setString(3, entity.getLogin());
-            preparedStatement.setString(4, entity.getPassword());
-            preparedStatement.setString(5, entity.getEmployeeStatus().toString());
-            preparedStatement.setBoolean(6, entity.isWaitingForOrders());
+            preparedStatement.setLong(1, parseToLong(entity.getId()));
+            preparedStatement.setString(2, entity.getFirstName());
+            preparedStatement.setString(3, entity.getLastName());
+            preparedStatement.setString(4, entity.getLogin());
+            preparedStatement.setString(5, entity.getPassword());
+            preparedStatement.setString(6, entity.getEmployeeStatus().toString());
+            preparedStatement.setBoolean(7, entity.isWaitingForOrders());
             boolean isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             if (isObjectNotCreated)
             {

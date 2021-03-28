@@ -16,9 +16,9 @@ public class DistrictDAO extends AbstractDAO<District>
 {
     private static final String SELECT_ALL_DISTRICTS = "SELECT * FROM districts ORDER BY id";
     private static final String SELECT_DISTRICT_BY_ID = "SELECT * FROM districts WHERE id =?;";
-    private static final String INSERT_INTO_DISTRICTS = "INSERT INTO districts VALUES (nextval('idSeq'), ?, ?)";
+    private static final String INSERT_INTO_DISTRICTS = "INSERT INTO districts VALUES (?, ?, ?)";
     private static final String INSERT_INTO_DISTRICTS_WITHOUT_PARENT =
-            "INSERT INTO districts (id_district, name) VALUES (nextval('idSeq'), ?)";
+            "INSERT INTO districts (id_district, name) VALUES (?, ?)";
     private static final String UPDATE_DISTRICT = "UPDATE districts SET name =?, id_parent =? WHERE id = ?;";
     private static final String UPDATE_DISTRICT_WITHOUT_PARENT = "UPDATE districts SET name =?, id_parent = default " +
             "WHERE id = ?;";
@@ -92,8 +92,9 @@ public class DistrictDAO extends AbstractDAO<District>
         {
             try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_DISTRICTS))
             {
-                preparedStatement.setString(1, entity.getName());
-                preparedStatement.setLong(2, parseToLong(entity.getParentId()));
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setString(2, entity.getName());
+                preparedStatement.setLong(3, parseToLong(entity.getParentId()));
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }
@@ -102,7 +103,8 @@ public class DistrictDAO extends AbstractDAO<District>
             try (PreparedStatement preparedStatement = connection
                     .prepareStatement(INSERT_INTO_DISTRICTS_WITHOUT_PARENT))
             {
-                preparedStatement.setString(1, entity.getName());
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setString(2, entity.getName());
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }

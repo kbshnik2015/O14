@@ -19,7 +19,7 @@ public class ServiceDAO extends AbstractDAO<Service>
 {
     private static final String SELECT_ALL_SERVICES = "SELECT * FROM services ORDER BY id";
     private static final String SELECT_SERVICE_BY_ID = "SELECT * FROM services WHERE id =?";
-    private static final String INSERT_INTO_SERVICES = "INSERT INTO services VALUES (nextval('idSeq'), ?, ?, ?, ?)";
+    private static final String INSERT_INTO_SERVICES = "INSERT INTO services VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_SERVICE = "UPDATE services SET pay_day =?, specification_id =?, status =?, " +
             "customer_id =? WHERE id = ?;";
 
@@ -100,10 +100,11 @@ public class ServiceDAO extends AbstractDAO<Service>
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_SERVICES))
         {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            preparedStatement.setDate(1, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
-            preparedStatement.setLong(2, parseToLong(entity.getSpecificationId()));
-            preparedStatement.setString(3, entity.getServiceStatus().toString());
-            preparedStatement.setLong(4, parseToLong(entity.getCustomerId()));
+            preparedStatement.setLong(1, parseToLong(entity.getId()));
+            preparedStatement.setDate(2, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
+            preparedStatement.setLong(3, parseToLong(entity.getSpecificationId()));
+            preparedStatement.setString(4, entity.getServiceStatus().toString());
+            preparedStatement.setLong(5, parseToLong(entity.getCustomerId()));
             boolean isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             if (isObjectNotCreated)
             {

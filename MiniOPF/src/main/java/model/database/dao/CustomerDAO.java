@@ -16,7 +16,7 @@ public class CustomerDAO extends AbstractDAO<Customer>
 {
     private static final String SELECT_ALL_CUSTOMERS = "SELECT * FROM customers ORDER BY id";
     private static final String SELECT_CUSTOMER_BY_ID = "SELECT * FROM customers WHERE id =?";
-    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (nextval('idSeq'), ?, ?, ?, ?, " +
+    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (?, ?, ?, ?, ?, " +
             "?, ?)";
     private static final String UPDATE_CUSTOMER = "UPDATE customers SET first_name =?, last_name =?, password =?, " +
             "address =?, balance =? WHERE id =?;";
@@ -79,12 +79,13 @@ public class CustomerDAO extends AbstractDAO<Customer>
     {
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_CUSTOMERS))
         {
-            preparedStatement.setString(1, entity.getFirstName());
-            preparedStatement.setString(2, entity.getLastName());
-            preparedStatement.setString(3, entity.getLogin());
-            preparedStatement.setString(4, entity.getPassword());
-            preparedStatement.setString(5, entity.getAddress());
-            preparedStatement.setFloat(6, entity.getBalance());
+            preparedStatement.setLong(1, parseToLong(entity.getId()));
+            preparedStatement.setString(2, entity.getFirstName());
+            preparedStatement.setString(3, entity.getLastName());
+            preparedStatement.setString(4, entity.getLogin());
+            preparedStatement.setString(5, entity.getPassword());
+            preparedStatement.setString(6, entity.getAddress());
+            preparedStatement.setFloat(7, entity.getBalance());
             boolean isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             if (isObjectNotCreated)
             {

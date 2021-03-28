@@ -18,14 +18,14 @@ public class OrderDAO extends AbstractDAO<Order>
 {
     private static final String SELECT_ALL_ORDERS = "SELECT * FROM orders ORDER BY id";
     private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE id =?";
-    private static final String INSERT_INTO_ORDERS = "INSERT INTO orders VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?, " +
+    private static final String INSERT_INTO_ORDERS = "INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?, ?, " +
             "?)";
     private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE = "INSERT INTO orders (id, customer_id, " +
-            "specification_id, service_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?)";
+            "specification_id, service_id, aim, status, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_INTO_ORDERS_WITHOUT_SERVICE = "INSERT INTO orders (id, customer_id, " +
-            "employee_id, specification_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?, ?)";
+            "employee_id, specification_id, aim, status, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE_AND_SERVICE = "INSERT INTO orders (id, " +
-            "customer_id, specification_id, aim, status, address) VALUES (nextval('idSeq'), ?, ?, ?, ?, ?)";
+            "customer_id, specification_id, aim, status, address) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_ORDER =
             "UPDATE orders SET customer_id =?, employee_id =?, specification_id =?, " +
                     "service_id =?, aim =?, status =?, address =? WHERE id = ?;";
@@ -175,8 +175,23 @@ public class OrderDAO extends AbstractDAO<Order>
         {
             try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_ORDERS))
             {
-                preparedStatement.setLong(1, parseToLong(entity.getCustomerId()));
-                preparedStatement.setLong(2, parseToLong(entity.getEmployeeId()));
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setLong(2, parseToLong(entity.getCustomerId()));
+                preparedStatement.setLong(3, parseToLong(entity.getEmployeeId()));
+                preparedStatement.setLong(4, parseToLong(entity.getSpecId()));
+                preparedStatement.setLong(5, parseToLong(entity.getServiceId()));
+                preparedStatement.setString(6, entity.getOrderAim().toString());
+                preparedStatement.setString(7, entity.getOrderStatus().toString());
+                preparedStatement.setString(8, entity.getAddress());
+                isObjectNotCreated = preparedStatement.executeUpdate() == 0;
+            }
+        }
+        else if (entity.getEmployeeId() == null && entity.getServiceId() != null)
+        {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE))
+            {
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setLong(2, parseToLong(entity.getCustomerId()));
                 preparedStatement.setLong(3, parseToLong(entity.getSpecId()));
                 preparedStatement.setLong(4, parseToLong(entity.getServiceId()));
                 preparedStatement.setString(5, entity.getOrderAim().toString());
@@ -185,29 +200,17 @@ public class OrderDAO extends AbstractDAO<Order>
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }
-        else if (entity.getEmployeeId() == null && entity.getServiceId() != null)
-        {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE))
-            {
-                preparedStatement.setLong(1, parseToLong(entity.getCustomerId()));
-                preparedStatement.setLong(2, parseToLong(entity.getSpecId()));
-                preparedStatement.setLong(3, parseToLong(entity.getServiceId()));
-                preparedStatement.setString(4, entity.getOrderAim().toString());
-                preparedStatement.setString(5, entity.getOrderStatus().toString());
-                preparedStatement.setString(6, entity.getAddress());
-                isObjectNotCreated = preparedStatement.executeUpdate() == 0;
-            }
-        }
         else if (entity.getEmployeeId() != null && entity.getServiceId() == null)
         {
             try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_ORDERS_WITHOUT_SERVICE))
             {
-                preparedStatement.setLong(1, parseToLong(entity.getCustomerId()));
-                preparedStatement.setLong(2, parseToLong(entity.getEmployeeId()));
-                preparedStatement.setLong(3, parseToLong(entity.getSpecId()));
-                preparedStatement.setString(4, entity.getOrderAim().toString());
-                preparedStatement.setString(5, entity.getOrderStatus().toString());
-                preparedStatement.setString(6, entity.getAddress());
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setLong(2, parseToLong(entity.getCustomerId()));
+                preparedStatement.setLong(3, parseToLong(entity.getEmployeeId()));
+                preparedStatement.setLong(4, parseToLong(entity.getSpecId()));
+                preparedStatement.setString(5, entity.getOrderAim().toString());
+                preparedStatement.setString(6, entity.getOrderStatus().toString());
+                preparedStatement.setString(7, entity.getAddress());
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }
@@ -216,11 +219,12 @@ public class OrderDAO extends AbstractDAO<Order>
             try (PreparedStatement preparedStatement = connection.prepareStatement(
                     INSERT_INTO_ORDERS_WITHOUT_EMPLOYEE_AND_SERVICE))
             {
-                preparedStatement.setLong(1, parseToLong(entity.getCustomerId()));
-                preparedStatement.setLong(2, parseToLong(entity.getSpecId()));
-                preparedStatement.setString(3, entity.getOrderAim().toString());
-                preparedStatement.setString(4, entity.getOrderStatus().toString());
-                preparedStatement.setString(5, entity.getAddress());
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setLong(2, parseToLong(entity.getCustomerId()));
+                preparedStatement.setLong(3, parseToLong(entity.getSpecId()));
+                preparedStatement.setString(4, entity.getOrderAim().toString());
+                preparedStatement.setString(5, entity.getOrderStatus().toString());
+                preparedStatement.setString(6, entity.getAddress());
                 isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
         }

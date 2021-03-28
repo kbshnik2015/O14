@@ -126,8 +126,6 @@ public class SpecificationDAO extends AbstractDAO<Specification>
     @Override
     public void create(final Specification entity) throws SQLException, DataNotCreatedWarning
     {
-        entity.setId(getNextId());
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_SPECIFICATIONS))
         {
             preparedStatement.setLong(1, parseToLong(entity.getId()));
