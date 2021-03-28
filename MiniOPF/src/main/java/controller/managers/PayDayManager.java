@@ -7,9 +7,10 @@ import java.util.Date;
 import controller.Controller;
 import lombok.SneakyThrows;
 import model.Model;
-import model.entities.Customer;
-import model.entities.Service;
-import model.entities.Specification;
+import model.ModelFactory;
+import model.dto.CustomerDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
 import model.enums.ServiceStatus;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -23,21 +24,21 @@ public class PayDayManager extends Thread
     @Override
     public void run()
     {
-        Model model = Model.getInstance();
+        Model model = ModelFactory.getModel();
         Controller controller = new Controller();
-        Collection<Service> services = model.getServices().values();
+        Collection<ServiceDTO> services = model.getServices().values();
         while (true)
         {
             Date currentDate = new Date();
-            for (Service service : services)
+            for (ServiceDTO service : services)
             {
                 boolean isPayDayComeForActiveService = service.getPayDay()
                         .before(currentDate) && ServiceStatus.ACTIVE.equals(service.getServiceStatus());
                 if (isPayDayComeForActiveService ||
                         ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus()))
                 {
-                    Customer customer = model.getCustomer(service.getCustomerId());
-                    Specification serviceSpec = model.getSpecification(service.getSpecificationId());
+                    CustomerDTO customer = model.getCustomer(service.getCustomerId());
+                    SpecificationDTO serviceSpec = model.getSpecification(service.getSpecificationId());
 
                     if (customer.getBalance() >= serviceSpec.getPrice())
                     {

@@ -1,14 +1,15 @@
 package controller.managers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import controller.exceptions.ObjectNotFoundException;
 import lombok.Data;
 import lombok.SneakyThrows;
 import model.Model;
-import model.entities.Employee;
-import model.entities.Order;
+import model.ModelFactory;
+import model.dto.EmployeeDTO;
+import model.dto.OrderDTO;
 
 @Data
 public class WorkWaitersManager
@@ -31,9 +32,9 @@ public class WorkWaitersManager
         }
     }
 
-    public static void distributeOrders() throws IOException
+    public static void distributeOrders() throws ObjectNotFoundException
     {
-        List<Employee> freeEmployees = getEmployeesWaitingForOrders();
+        List<EmployeeDTO> freeEmployees = getEmployeesWaitingForOrders();
         for (int i = 0; i < freeEmployees.size() && getFreeOrder() != null; i++)
         {
             getFreeOrder().setEmployeeId(freeEmployees.get(i).getId());
@@ -41,11 +42,12 @@ public class WorkWaitersManager
         }
     }
 
-    public static List<Employee> getEmployeesWaitingForOrders() throws IOException
+    public static List<EmployeeDTO> getEmployeesWaitingForOrders()
+            throws ObjectNotFoundException
     {
-        Model model = Model.getInstance();
-        List<Employee> freeEmployees = new ArrayList<>();
-        for (Employee employee : model.getEmployees().values())
+        Model model = ModelFactory.getModel();
+        List<EmployeeDTO> freeEmployees = new ArrayList<>();
+        for (EmployeeDTO employee : model.getEmployees().values())
         {
             if (employee.isWaitingForOrders())
             {
@@ -55,10 +57,10 @@ public class WorkWaitersManager
         return freeEmployees;
     }
 
-    public static Order getFreeOrder() throws IOException
+    public static OrderDTO getFreeOrder() throws ObjectNotFoundException
     {
-        Model model = Model.getInstance();
-        for (Order order : model.getOrders().values())
+        Model model = ModelFactory.getModel();
+        for (OrderDTO order : model.getOrders().values())
         {
             if (order.getEmployeeId() == null)
             {

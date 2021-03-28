@@ -1,20 +1,22 @@
 package view;
 
+import java.util.Scanner;
+
 import controller.Controller;
 import controller.exceptions.IllegalLoginOrPasswordException;
 import controller.managers.StartAppManager;
-import model.entities.AbstractUser;
-import model.entities.Customer;
-import model.entities.Employee;
-
-import java.util.Scanner;
+import model.ModelFactory;
+import model.dto.AbstractUserDTO;
+import model.dto.CustomerDTO;
+import model.dto.EmployeeDTO;
 
 public class LoginView
 {
     public static void start() throws Exception
     {
+        ModelFactory.setCurrentModel("modeljson");
         Controller controller = new Controller();
-        AbstractUser user = null;
+        AbstractUserDTO user = null;
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter login: ");
         String login = scanner.nextLine();
@@ -22,17 +24,21 @@ public class LoginView
         String password = scanner.nextLine();
         try
         {
-            user = controller.login(login,password);
-        } catch (IllegalLoginOrPasswordException e) {
+            user = controller.login(login, password);
+        }
+        catch (IllegalLoginOrPasswordException e)
+        {
             System.out.println("\nWrong login or password.\n");
             start();
         }
         StartAppManager.startApp();
-        if (user instanceof Customer){
-            CustomerView.start((Customer) user);
+        if (user instanceof CustomerDTO)
+        {
+            CustomerView.start((CustomerDTO) user);
         }
-        else if(user instanceof Employee){
-            EmployeeView.start((Employee) user);
+        else if (user instanceof EmployeeDTO)
+        {
+            EmployeeView.start((EmployeeDTO) user);
         }
     }
 }

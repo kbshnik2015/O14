@@ -2,11 +2,7 @@ package controller.command;
 
 import java.util.regex.Pattern;
 
-import controller.exceptions.IllegalLoginOrPasswordException;
-import controller.exceptions.IllegalTransitionException;
-import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UnknownCommandException;
-import controller.exceptions.UserNotFoundException;
 import controller.exceptions.WrongCommandArgumentsException;
 
 public class CommandParser
@@ -268,7 +264,7 @@ public class CommandParser
                     throw new UnknownCommandException("Command " + words[0] + " doesn't exist!");
             }
         }
-        catch (UnknownCommandException | Exception e)
+        catch (Exception e)
         {
             result = ANSI_RED + e.getMessage() + ANSI_RESET;
         }

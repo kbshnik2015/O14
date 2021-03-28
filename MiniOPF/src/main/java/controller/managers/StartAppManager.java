@@ -1,14 +1,14 @@
 package controller.managers;
 
-import java.io.IOException;
-
+import controller.exceptions.ObjectNotFoundException;
 import model.Model;
+import model.ModelFactory;
 
 public class StartAppManager
 {
-    public static void startApp() throws IOException
+    public static void startApp() throws ObjectNotFoundException
     {
-        Model.getInstance();
+        Model model = ModelFactory.getModel();
 
         Thread workWaitersThread = new Thread(WorkWaitersManager::distributeOrdersBackground);
         workWaitersThread.setDaemon(true);

@@ -5,37 +5,48 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import controller.exceptions.IllegalLoginOrPasswordException;
+import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
 import controller.managers.WorkWaitersManager;
-import model.entities.Customer;
-import model.entities.Employee;
-import model.entities.Order;
+import model.ModelFactory;
+import model.ModelJson;
+import model.database.exceptions.DataNotCreatedWarning;
+import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
+import model.dto.EmployeeDTO;
+import model.dto.OrderDTO;
 import model.enums.EmployeeStatus;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class WorkWaitersManagerTest
 {
 
-    private Controller controller = new Controller();
+    private Controller controller;
 
     {
         //noinspection AccessStaticViaInstance
-        controller.getModel().loadFromFile("test.json");
+        ModelFactory.setCurrentModel("modeljson");
+        controller = new Controller();
+        ModelJson.loadFromFile("test.json");
     }
 
-    public WorkWaitersManagerTest() throws IOException
+    public WorkWaitersManagerTest() throws IOException, SQLException, ObjectNotFoundException
     {
     }
 
     @Before
     public void setUp()
     {
-        controller.getModel().clear();
+        ((ModelJson) controller.getModel()).clear();
     }
 
     @Test
-    public void distributeOrders() throws IllegalLoginOrPasswordException, UserNotFoundException, IOException
+    public void distributeOrders()
+            throws IllegalLoginOrPasswordException, UserNotFoundException, IOException, DataNotCreatedWarning,
+            SQLException, DataNotUpdatedWarning, ObjectNotFoundException
     {
         String empLogin1 = "Employee1login";
         String empPassword1 = "Employee1Password";
@@ -45,13 +56,16 @@ public class WorkWaitersManagerTest
         String password1 = "Customer1password";
         float balance1 = 100;
 
-        Customer expected1 = controller.createCustomer(null, null, login1, password1, null, balance1);
-        Employee expected2 = controller.createEmployee(null, null, empLogin1, empPassword1, EmployeeStatus.WORKING);
-        Employee expected3 = controller.createEmployee(null, null, empLogin2, empPassword2, EmployeeStatus.WORKING);
+        CustomerDTO expected1 = controller.getModel()
+                .createCustomer(new CustomerDTO(null, null, login1, password1, null, balance1));
+        EmployeeDTO expected2 = controller.getModel()
+                .createEmployee(new EmployeeDTO(null, null, empLogin1, empPassword1, EmployeeStatus.WORKING));
+        EmployeeDTO expected3 = controller.getModel()
+                .createEmployee(new EmployeeDTO(null, null, empLogin2, empPassword2, EmployeeStatus.WORKING));
 
-        controller.getModel().createOrder(new Order(expected1.getId(), expected2.getId(), null, null, null, null));
-        controller.getModel().createOrder(new Order(expected1.getId(), null, null, null, null, null));
-        controller.getModel().createOrder(new Order(expected1.getId(), null, null, null, null, null));
+        controller.getModel().createOrder(new OrderDTO(expected1.getId(), expected2.getId(), null, null, null, null));
+        controller.getModel().createOrder(new OrderDTO(expected1.getId(), null, null, null, null, null));
+        controller.getModel().createOrder(new OrderDTO(expected1.getId(), null, null, null, null, null));
 
         controller.setEmployeeWaitingStatus(expected2.getId(), true);
         controller.setEmployeeWaitingStatus(expected3.getId(), true);

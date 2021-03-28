@@ -1,18 +1,25 @@
 package view;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.Callable;
+
 import controller.Controller;
+import controller.exceptions.ObjectNotFoundException;
 import controller.exceptions.UserNotFoundException;
-import model.Model;
-import model.entities.Customer;
-import model.entities.Order;
-import model.entities.Service;
-import model.entities.Specification;
+import model.ModelJson;
+import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
+import model.dto.OrderDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
 import model.enums.OrderStatus;
 import model.enums.ServiceStatus;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Callable;
 
 
 public class CustomerView
@@ -21,7 +28,7 @@ public class CustomerView
     final static Scanner scanner = new Scanner(System.in);
     private static final String LINE_BREAKS = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
-    public static void start(Customer customer) throws Exception
+    public static void start(CustomerDTO customer) throws Exception
     {
         int input;
 
@@ -72,7 +79,8 @@ public class CustomerView
         } while (input != 0);
     }
 
-    public static void showAccountSettings(Customer customer) throws IOException, UserNotFoundException
+    public static void showAccountSettings(CustomerDTO customer)
+            throws IOException, UserNotFoundException, SQLException, ObjectNotFoundException, DataNotUpdatedWarning
     {
         int input;
 
@@ -106,7 +114,8 @@ public class CustomerView
         } while (input != 0);
     }
 
-    private static void changePassword(Customer customer) throws IOException, UserNotFoundException
+    private static void changePassword(CustomerDTO customer)
+            throws IOException, SQLException, ObjectNotFoundException, DataNotUpdatedWarning, UserNotFoundException
     {
         Scanner scanner = new Scanner(System.in);
         Controller controller = new Controller();
@@ -130,7 +139,8 @@ public class CustomerView
                     {
                         if (newPassword.equals(newPassword2))
                         {
-                            controller.updateCustomer(customer.getId(), null, null, null, newPassword, -1);
+                            customer.setPassword(newPassword);
+                            controller.getModel().updateCustomer(customer);
                             System.out.println("\nPassword changed successful\n");
                         }
                         else
@@ -147,7 +157,8 @@ public class CustomerView
         }
     }
 
-    private static void topUpBalance(Customer customer) throws IOException, UserNotFoundException
+    private static void topUpBalance(CustomerDTO customer)
+            throws IOException, UserNotFoundException, SQLException, ObjectNotFoundException, DataNotUpdatedWarning
     {
         Scanner scanner = new Scanner(System.in);
         Controller controller = new Controller();
@@ -160,16 +171,16 @@ public class CustomerView
         controller.changeBalanceOn(customer.getId(), topUp);
     }
 
-    private static void showSpecifications(Customer customer) throws Exception
+    private static void showSpecifications(CustomerDTO customer) throws Exception
     {
-        Model model = Model.getInstance();
+        ModelJson model = ModelJson.getInstance();
         Controller controller = new Controller();
         Map<String, Callable<Void>> commands = new HashMap<>();
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Specification to show info about:\n";
-        List<Specification> specifications = controller.getCustomerSpecifications(customer);
+        List<SpecificationDTO> specifications = controller.getCustomerSpecifications(customer);
 
-        for (Specification specification : specifications)
+        for (SpecificationDTO specification : specifications)
         {
             commands.put(getStringForView(specification), () -> {
                 showConcreteSpecification(specification, customer);
@@ -180,8 +191,7 @@ public class CustomerView
     }
 
 
-
-    private static void showConcreteSpecification(Specification specification, Customer customer) throws Exception
+    private static void showConcreteSpecification(SpecificationDTO specification, CustomerDTO customer) throws Exception
     {
         Controller controller = new Controller();
 
@@ -206,15 +216,15 @@ public class CustomerView
         }
     }
 
-    private static void showOrders(Customer customer) throws Exception
+    private static void showOrders(CustomerDTO customer) throws Exception
     {
         Map<String, Callable<Void>> commands = new HashMap<>();
         Controller controller = new Controller();
-        List<Order> orders = new ArrayList<>(controller.getCustomerOrders(customer.getId()));
+        List<OrderDTO> orders = new ArrayList<>(controller.getCustomerOrders(customer.getId()));
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Order to show info about:\n";
 
-        for (Order order : orders)
+        for (OrderDTO order : orders)
         {
             commands.put(getStringForView(order), () -> {
                 showConcreteOrder(order, customer);
@@ -225,10 +235,10 @@ public class CustomerView
         new CustomerCommandsPaginator(header, commands).run();
     }
 
-    private static void showConcreteOrder(Order order, Customer customer) throws Exception
+    private static void showConcreteOrder(OrderDTO order, CustomerDTO customer) throws Exception
     {
         int chose;
-        Model model = Model.getInstance();
+        ModelJson model = ModelJson.getInstance();
         System.out.println(LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB\n");
 
@@ -248,7 +258,7 @@ public class CustomerView
                     System.out.println(
                             LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                                     customer.getBalance() + " RUB\n");
-                    Specification specification = model.getSpecification(order.getSpecId());
+                    SpecificationDTO specification = model.getSpecification(order.getSpecId());
                     System.out.println(getStringForView(specification) + "\n");
                     System.out.println(specification.getDescription() + "\n\n");
                     System.out.print("Enter any key for back: ");
@@ -260,7 +270,7 @@ public class CustomerView
                     System.out.println(
                             LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                                     customer.getBalance() + " RUB\n");
-                    Service service = model.getService(order.getServiceId());
+                    ServiceDTO service = model.getService(order.getServiceId());
                     if (service == null)
                     {
                         System.out.println("Service information not available, please contact later" + "\n");
@@ -287,15 +297,15 @@ public class CustomerView
         } while (chose != 0);
     }
 
-    private static void showServices(Customer customer) throws Exception
+    private static void showServices(CustomerDTO customer) throws Exception
     {
         Map<String, Callable<Void>> commands = new HashMap<>();
         Controller controller = new Controller();
-        List<Service> services = (List<Service>) controller.getCustomerServices(customer.getId());
+        List<ServiceDTO> services = (List<ServiceDTO>) controller.getCustomerServices(customer.getId());
         String header = LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB" + "\n\nChoose Service to show info about:\n";
 
-        for (Service service : services)
+        for (ServiceDTO service : services)
         {
             commands.put(getStringForView(service), () -> {
                 showConcreteService(service, customer);
@@ -306,10 +316,10 @@ public class CustomerView
         new CustomerCommandsPaginator(header, commands).run();
     }
 
-    private static void showConcreteService(Service service, Customer customer) throws Exception
+    private static void showConcreteService(ServiceDTO service, CustomerDTO customer) throws Exception
     {
         int chose;
-        Model model = Model.getInstance();
+        ModelJson model = ModelJson.getInstance();
         Controller controller = new Controller();
         System.out.println(LINE_BREAKS + customer.getFirstName() + " " + customer.getLastName() + "        Balance: " +
                 customer.getBalance() + " RUB\n");
@@ -582,14 +592,14 @@ public class CustomerView
         }
     }
 
-    public static String getStringForView(Object object) throws IOException
+    public static String getStringForView(Object object) throws IOException, ObjectNotFoundException
     {
-        Model model = Model.getInstance();
+        ModelJson model = ModelJson.getInstance();
         String ret = null;
 
-        if (object instanceof Order)
+        if (object instanceof OrderDTO)
         {
-            Order order = (Order) object;
+            OrderDTO order = (OrderDTO) object;
             ret = "Name of specification: " + model.getSpecification(order.getSpecId())
                     .getName() + ", order status: ";
             if (order.getOrderStatus()
@@ -610,9 +620,9 @@ public class CustomerView
                 ret += ("cancelled");
             }
         }
-        else if (object instanceof Service)
+        else if (object instanceof ServiceDTO)
         {
-            Service service = (Service) object;
+            ServiceDTO service = (ServiceDTO) object;
             ret = "Name of specification: " + model.getSpecification(service.getSpecificationId())
                     .getName() + ", pay day: " + service.getPayDay() + ", price: " +
                     model.getSpecification(service.getSpecificationId())
@@ -634,9 +644,9 @@ public class CustomerView
                 ret += " disconnected";
             }
         }
-        else if (object instanceof Specification)
+        else if (object instanceof SpecificationDTO)
         {
-            Specification specification = (Specification) object;
+            SpecificationDTO specification = (SpecificationDTO) object;
             ret = specification.getName();
         }
 

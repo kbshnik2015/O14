@@ -2,6 +2,7 @@ package controller.command;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,39 +14,42 @@ import controller.exceptions.UserNotFoundException;
 import controller.exceptions.WrongCommandArgumentsException;
 import controller.managers.WorkWaitersManager;
 import lombok.ToString;
-import model.Model;
-import model.entities.Customer;
-import model.entities.District;
-import model.entities.Employee;
-import model.entities.Order;
-import model.entities.Service;
-import model.entities.Specification;
+import model.database.exceptions.DataNotCreatedWarning;
+import model.database.exceptions.DataNotFoundWarning;
+import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
+import model.dto.DistrictDTO;
+import model.dto.EmployeeDTO;
+import model.dto.OrderDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
 import model.enums.EmployeeStatus;
 
 @SuppressWarnings("SameParameterValue")
 @ToString
 public enum Command
 {
-
     create_customer
             {
                 @Override
                 public String execute(String[] args)
-                        throws IllegalLoginOrPasswordException, WrongCommandArgumentsException, IOException
+                        throws WrongCommandArgumentsException, ObjectNotFoundException, DataNotCreatedWarning,
+                        IllegalLoginOrPasswordException
                 {
                     Controller controller = new Controller();
-                    String firstName = getValueInSting(args, 1);
-                    String lastName = getValueInSting(args, 2);
-                    String login = getValueInSting(args, 3);
-                    String password = getValueInSting(args, 4);
-                    String address = getValueInSting(args, 5);
-                    Float balance = getValueInFloat(args, 6);
+                    CustomerDTO customerDTO = new CustomerDTO();
 
-                    Customer customer = controller
-                            .createCustomer(firstName, lastName, login, password, address, balance);
+                    customerDTO.setFirstName(getValueInSting(args, 1));
+                    customerDTO.setLastName(getValueInSting(args, 2));
+                    customerDTO.setLogin(getValueInSting(args, 3));
+                    customerDTO.setPassword(getValueInSting(args, 4));
+                    customerDTO.setAddress(getValueInSting(args, 5));
+                    customerDTO.setBalance(getValueInFloat(args, 6));
 
-                    return "Customer was created: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (id: " + customer.getId() + ").";
+                    controller.getModel().createCustomer(customerDTO);
+
+                    return "Customer was created: " + customerDTO.getFirstName() + " " + customerDTO.getLastName() +
+                            " (id: " + customerDTO.getId() + ").";
                 }
 
 
@@ -55,40 +59,58 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, IllegalLoginOrPasswordException
+                        throws WrongCommandArgumentsException, ObjectNotFoundException,
+                        DataNotCreatedWarning, IllegalLoginOrPasswordException
                 {
                     Controller controller = new Controller();
-                    String firstName = getValueInSting(args, 1);
-                    String lastName = getValueInSting(args, 2);
-                    String login = getValueInSting(args, 3);
-                    String password = getValueInSting(args, 4);
-                    EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
+                    EmployeeDTO employeeDTO = new EmployeeDTO();
 
-                    Employee employee = controller.createEmployee(firstName, lastName, login, password, employeeStatus);
+                    employeeDTO.setFirstName(getValueInSting(args, 1));
+                    employeeDTO.setLastName(getValueInSting(args, 2));
+                    employeeDTO.setLogin(getValueInSting(args, 3));
+                    employeeDTO.setPassword(getValueInSting(args, 4));
+                    employeeDTO.setEmployeeStatus(parseToEmployeeStatus(args[5]));
 
-                    return "Employee was created: " + employee.getFirstName() + " " + employee.getLastName() +
-                            " (id: " + employee.getId() + ").";
+                    controller.getModel().createEmployee(employeeDTO);
+
+                    return "Employee was created: " + employeeDTO.getFirstName() + " " + employeeDTO.getLastName() +
+                            " (id: " + employeeDTO.getId() + ").";
                 }
             },
 
     update_customer
             {
                 @Override
-                public String execute(String[] args) throws Exception
+                public String execute(String[] args) throws DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger id = getValueInBigInteger(args, 1);
-                    String firstName = getValueInSting(args, 2);
-                    String lastName = getValueInSting(args, 3);
-                    String password = getValueInSting(args, 4);
-                    String address = getValueInSting(args, 5);
-                    Float balance = Command.parseToFloat(args[6]);
+                    CustomerDTO customerDTO = controller.getModel().getCustomer(getValueInBigInteger(args, 1));
 
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    controller.updateCustomer(customer.getId(), firstName, lastName, password, address, balance);
+                    if (getValueInSting(args, 2) != null)
+                    {
+                        customerDTO.setFirstName(getValueInSting(args, 2));
+                    }
+                    if (getValueInSting(args, 3) != null)
+                    {
+                        customerDTO.setLastName(getValueInSting(args, 3));
+                    }
+                    if (getValueInSting(args, 4) != null)
+                    {
+                        customerDTO.setPassword(getValueInSting(args, 4));
+                    }
+                    if (getValueInSting(args, 5) != null)
+                    {
+                        customerDTO.setAddress(getValueInSting(args, 5));
+                    }
+                    if (getValueInSting(args, 6) != null)
+                    {
+                        customerDTO.setBalance(getValueInFloat(args, 6));
+                    }
 
-                    return "Customer was updated: " + customer.getFirstName() + " " + customer.getLastName() +
-                            " (login: " + customer.getLogin() + ").";
+                    controller.getModel().updateCustomer(customerDTO);
+
+                    return "Customer was updated: " + customerDTO.getFirstName() + " " + customerDTO.getLastName() +
+                            " (login: " + customerDTO.getLogin() + ").";
                 }
 
             },
@@ -99,18 +121,29 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = getValueInBigInteger(args, 1);
-                    String firstName = getValueInSting(args, 2);
-                    String lastName = getValueInSting(args, 3);
-                    String password = getValueInSting(args, 4);
-                    EmployeeStatus employeeStatus = parseToEmployeeStatus(args[5]);
+                    EmployeeDTO employeeDTO = controller.getModel().getEmployee(getValueInBigInteger(args, 1));
 
-                    Employee employee = Model.getInstance().getEmployee(id);
+                    if (getValueInSting(args, 2) != null)
+                    {
+                        employeeDTO.setFirstName(getValueInSting(args, 2));
+                    }
+                    if (getValueInSting(args, 3) != null)
+                    {
+                        employeeDTO.setLastName(getValueInSting(args, 3));
+                    }
+                    if (getValueInSting(args, 4) != null)
+                    {
+                        employeeDTO.setPassword(getValueInSting(args, 4));
+                    }
+                    if (parseToEmployeeStatus(args[5]) != null)
+                    {
+                        employeeDTO.setEmployeeStatus(parseToEmployeeStatus(args[5]));
+                    }
 
-                    controller.updateEmployee(id, firstName, lastName, password, employeeStatus);
+                    controller.getModel().updateEmployee(employeeDTO);
 
-                    return "Employee was updated: " + employee.getFirstName() + " " + employee.getLastName() +
-                            " (id: " + employee.getId() + ").";
+                    return "Employee was updated: " + employeeDTO.getFirstName() + " " + employeeDTO.getLastName() +
+                            " (id: " + employeeDTO.getId() + ").";
                 }
 
             },
@@ -119,15 +152,18 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotCreatedWarning
                 {
                     Controller controller = new Controller();
-                    String name = getValueInSting(args, 1);
-                    BigInteger parentId = parseToBigInteger(args[2]);
+                    DistrictDTO districtDTO = new DistrictDTO();
 
-                    District district = controller.createDistrict(name, parentId);
+                    districtDTO.setName(getValueInSting(args, 1));
+                    districtDTO.setParentId(parseToBigInteger(args[2]));
 
-                    return "District was created: " + district.getName() + " (id: " + district.getId() + ").";
+                    controller.getModel().createDistrict(districtDTO);
+
+                    return "DistrictDTO was created: " + districtDTO.getName() + " (id: " + districtDTO.getId() + ").";
                 }
             },
 
@@ -135,17 +171,24 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger districtId = parseToBigInteger(args[1]);
-                    String name = getValueInSting(args, 2);
-                    BigInteger parentId = parseToBigInteger(args[3]);
+                    DistrictDTO districtDTO = controller.getModel().getDistrict(parseToBigInteger(args[1]));
 
-                    District district = controller.getModel().getDistrict(districtId);
-                    controller.updateDistrict(districtId, name, parentId);
+                    if (getValueInSting(args, 2) != null)
+                    {
+                        districtDTO.setName(getValueInSting(args, 2));
+                    }
+                    if (parseToBigInteger(args[3]) != null)
+                    {
+                        districtDTO.setParentId(parseToBigInteger(args[3]));
+                    }
 
-                    return "District was updated: " + district.getName() + " (id: " + district.getId() + ").";
+                    controller.getModel().updateDistrict(districtDTO);
+
+                    return "DistrictDTO was updated: " + districtDTO.getName() + " (id: " + districtDTO.getId() + ").";
                 }
             },
 
@@ -153,21 +196,23 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws WrongCommandArgumentsException, IOException, ObjectNotFoundException
+                        throws WrongCommandArgumentsException, IOException, ObjectNotFoundException, SQLException,
+                        DataNotCreatedWarning
                 {
                     Controller controller = new Controller();
-                    String name = getValueInSting(args, 1);
-                    float price = Command.parseToFloat(args[2]);
-                    String description = getValueInSting(args, 3);
-                    boolean isAddressDepended = Command.parseToBoolean(args[4]);
-                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[5]);
+                    SpecificationDTO specificationDTO = new SpecificationDTO();
 
-                    Specification specification = controller
-                            .createSpecification(name, price, description, isAddressDepended, districtsIds);
+                    specificationDTO.setName(getValueInSting(args, 1));
+                    specificationDTO.setPrice(parseToFloat(args[2]));
+                    specificationDTO.setDescription(getValueInSting(args, 3));
+                    specificationDTO.setAddressDepended(parseToBoolean(args[4]));
+                    specificationDTO.setDistrictsIds(parseToBigIntegerArrayList(args[5]));
 
-                    return "Specification was created: name : " + specification.getName() +
-                            ", id: " + specification.getId() + ")." + "price: " + specification.getPrice() +
-                            " , description: " + specification.getDescription();
+                    controller.getModel().createSpecification(specificationDTO);
+
+                    return "Specification was created: name : " + specificationDTO.getName() +
+                            ", id: " + specificationDTO.getId() + ")." + "price: " + specificationDTO.getPrice() +
+                            " , description: " + specificationDTO.getDescription();
                 }
             },
 
@@ -175,22 +220,39 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws WrongCommandArgumentsException, IOException, ObjectNotFoundException
+                        throws WrongCommandArgumentsException, IOException, ObjectNotFoundException, SQLException,
+                        DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger specId = Command.parseToBigInteger(args[1]);
-                    String name = getValueInSting(args, 2);
-                    float price = Command.parseToFloat(args[3]);
-                    String description = getValueInSting(args, 4);
-                    boolean isAddressDepended = Command.parseToBoolean(args[5]);
-                    ArrayList<BigInteger> districtsIds = Command.parseToBigIntegerArrayList(args[6]);
+                    SpecificationDTO specificationDTO = controller.getModel()
+                            .getSpecification(parseToBigInteger(args[1]));
 
-                    controller.updateSpecification(specId, name, price, description, isAddressDepended, districtsIds);
-                    Specification specification = controller.getModel().getSpecification(specId);
+                    if (getValueInSting(args, 2) != null)
+                    {
+                        specificationDTO.setName(getValueInSting(args, 2));
+                    }
+                    if (getValueInSting(args, 3) != null)
+                    {
+                        specificationDTO.setPrice(parseToFloat(args[3]));
+                    }
+                    if (getValueInSting(args, 4) != null)
+                    {
+                        specificationDTO.setDescription(getValueInSting(args, 4));
+                    }
+                    if (getValueInSting(args, 5) != null)
+                    {
+                        specificationDTO.setAddressDepended(parseToBoolean(args[5]));
+                    }
+                    if (getValueInSting(args, 6) != null)
+                    {
+                        specificationDTO.setDistrictsIds(parseToBigIntegerArrayList(args[6]));
+                    }
 
-                    return "Specification was updated: name : " + specification.getName() +
-                            ", id: " + specification.getId() + ")." + "price: " + specification.getPrice() +
-                            " , description: " + specification.getDescription();
+                    controller.getModel().updateSpecification(specificationDTO);
+
+                    return "Specification was updated: name : " + specificationDTO.getName() +
+                            ", id: " + specificationDTO.getId() + ")." + "price: " + specificationDTO.getPrice() +
+                            " , description: " + specificationDTO.getDescription();
                 }
             },
 
@@ -200,9 +262,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    controller.deleteCustomerCascade(customer.getId());
+
+                    BigInteger id = parseToBigInteger(args[1]);
+                    controller.deleteCustomerCascade(id);
 
                     return "Customer (id: " + id + ") was cascade deleted.";
                 }
@@ -214,9 +276,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.deleteEmployeeCascade(employee.getId());
+
+                    BigInteger id = parseToBigInteger(args[1]);
+                    controller.deleteEmployeeCascade(id);
 
                     return "Employee (id: " + id + ") was cascade deleted.";
                 }
@@ -228,9 +290,9 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.deleteEmployee(employee.getId());
+
+                    BigInteger id = parseToBigInteger(args[1]);
+                    controller.deleteEmployee(id);
 
                     return "Employee (id: " + id + ") was deleted.";
                 }
@@ -240,11 +302,12 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotFoundWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.deleteOrderCascade(orderId);
 
                     return "Order (id: " + orderId + ") was cascade deleted";
@@ -255,11 +318,12 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotFoundWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger specId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger specId = parseToBigInteger(args[1]);
                     controller.deleteSpecificationCascade(specId);
 
                     return "Specification (id: " + specId + ") was cascade deleted";
@@ -270,14 +334,15 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotFoundWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger districtId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger districtId = parseToBigInteger(args[1]);
                     controller.deleteDistrictCascade(districtId);
 
-                    return "District (id: " + districtId + ") was cascade deleted";
+                    return "DistrictDTO (id: " + districtId + ") was cascade deleted";
                 }
             },
 
@@ -285,26 +350,30 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotFoundWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger districtId = Command.parseToBigInteger(args[1]);
-                    boolean isLeaveChildrenInHierarchy = Command.parseToBoolean(args[2]);
+
+                    BigInteger districtId = parseToBigInteger(args[1]);
+                    boolean isLeaveChildrenInHierarchy = parseToBoolean(args[2]);
 
                     controller.deleteDistrict(districtId, isLeaveChildrenInHierarchy);
 
-                    return "District (id: " + districtId + ") was deleted.";
+                    return "DistrictDTO (id: " + districtId + ") was deleted.";
                 }
             },
 
     delete_service
             {
                 @Override
-                public String execute(String[] args) throws IOException, WrongCommandArgumentsException
+                public String execute(String[] args)
+                        throws IOException, WrongCommandArgumentsException, SQLException, ObjectNotFoundException,
+                        DataNotFoundWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger serviceId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger serviceId = parseToBigInteger(args[1]);
                     controller.getModel().deleteService(serviceId);
 
                     return "Service (id: " + serviceId + ") was deleted";
@@ -314,7 +383,7 @@ public enum Command
     get_model
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
@@ -325,12 +394,12 @@ public enum Command
     get_customers
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Customers: \n";
-                    for (Customer customer : controller.getModel().getCustomers().values())
+                    for (CustomerDTO customer : controller.getModel().getCustomers().values())
                     {
                         result = result.concat("\t" + customer.getLogin() + ": " + customer.getFirstName() + " " +
                                 customer.getLastName() + "(" + customer.getId() + ")\n");
@@ -343,12 +412,12 @@ public enum Command
     get_employees
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Employees: \n";
-                    for (Employee employee : controller.getModel().getEmployees().values())
+                    for (EmployeeDTO employee : controller.getModel().getEmployees().values())
                     {
                         result = result.concat("\t" + employee.getLogin() + ": " + employee.getFirstName() + " " +
                                 employee.getLastName() + ", status: " + employee.getEmployeeStatus() + "(" +
@@ -362,12 +431,12 @@ public enum Command
     get_specifications
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Specifications: \n";
-                    for (Specification specification : controller.getModel().getSpecifications().values())
+                    for (SpecificationDTO specification : controller.getModel().getSpecifications().values())
                     {
                         result = result.concat("\t" + specification.getId() + ": name: " + specification.getName() +
                                 ", description: " + specification.getDescription() + ", price: " +
@@ -381,14 +450,15 @@ public enum Command
     get_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args)
+                        throws IOException, SQLException, ObjectNotFoundException, UserNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Orders: \n";
-                    for (Order order : controller.getModel().getOrders().values())
+                    for (OrderDTO order : controller.getModel().getOrders().values())
                     {
-                        Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                        CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
                         result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() +
                                 ", status: " + order.getOrderStatus() +
                                 ", Customer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -403,12 +473,12 @@ public enum Command
     get_districts
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Districts: \n";
-                    for (District district : controller.getModel().getDistricts().values())
+                    for (DistrictDTO district : controller.getModel().getDistricts().values())
                     {
                         result = result.concat("\t" + district.getId() + ": " + district.getName() + "\n");
                     }
@@ -420,14 +490,15 @@ public enum Command
     get_services
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args)
+                        throws IOException, SQLException, ObjectNotFoundException, UserNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Services: \n";
-                    for (Service service : controller.getModel().getServices().values())
+                    for (ServiceDTO service : controller.getModel().getServices().values())
                     {
-                        Customer customer = controller.getModel().getCustomer(service.getCustomerId());
+                        CustomerDTO customer = controller.getModel().getCustomer(service.getCustomerId());
                         result = result.concat("\t" + service.getId() + ": " + customer.getFirstName() + " " +
                                 customer.getLastName() + " (login: " + service.getCustomerId() +
                                 "), specification: " +
@@ -443,12 +514,18 @@ public enum Command
     get_customer_info
             {
                 @Override
-                public String execute(String[] args) throws Exception
+                public String execute(String[] args)
+                        throws SQLException, IOException, ObjectNotFoundException, WrongCommandArgumentsException,
+                        UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Customer customer = Model.getInstance().getCustomer(id);
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
 
                     return "Customer: " + customer.getLogin() + "\n"
                             + "\tFirst name: " + customer.getFirstName() + "\n"
@@ -463,12 +540,18 @@ public enum Command
     get_employee_info
             {
                 @Override
-                public String execute(String[] args) throws Exception
+                public String execute(String[] args)
+                        throws SQLException, IOException, ObjectNotFoundException, WrongCommandArgumentsException,
+                        UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Employee employee = Model.getInstance().getEmployee(id);
+                    EmployeeDTO employee = controller.getModel().getEmployee(id);
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
 
                     return "Employee: " + employee.getLogin() + "\n"
                             + "\tFirst name: " + employee.getFirstName() + "\n"
@@ -483,20 +566,26 @@ public enum Command
     get_order_info
             {
                 @Override
-                public String execute(String[] args) throws IOException, WrongCommandArgumentsException
+                public String execute(String[] args)
+                        throws IOException, WrongCommandArgumentsException, SQLException, ObjectNotFoundException,
+                        UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = Command.parseToBigInteger(args[1]);
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Order order = controller.getModel().getOrder(id);
-                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                    OrderDTO order = controller.getModel().getOrder(id);
+                    if (order == null)
+                    {
+                        throw new WrongCommandArgumentsException("Order wasn't found");
+                    }
+                    SpecificationDTO specification = controller.getModel().getSpecification(order.getSpecId());
+                    CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
 
                     String result = "Order: " + order.getId() + "\tCustomer: " + customer.getFirstName() + " " +
                             customer.getLastName() + " (login: " + order.getCustomerId() + ")" + "\n\tEmployee: ";
                     if (order.getEmployeeId() != null)
                     {
-                        Employee employee = controller.getModel().getEmployee(order.getEmployeeId());
+                        EmployeeDTO employee = controller.getModel().getEmployee(order.getEmployeeId());
                         result = result.concat(employee.getFirstName() + " " + employee.getLastName() +
                                 " (login: " + order.getEmployeeId() + ")");
                     }
@@ -511,7 +600,7 @@ public enum Command
                             "\n\tService:");
                     if (order.getServiceId() != null)
                     {
-                        Service service = controller.getModel().getService(order.getServiceId());
+                        ServiceDTO service = controller.getModel().getService(order.getServiceId());
                         result = result.concat(" id: " + order.getServiceId() + ", status: " +
                                 service.getServiceStatus() + ", pay day: " + service.getPayDay() + "\n");
                     }
@@ -523,14 +612,21 @@ public enum Command
     get_service_info
             {
                 @Override
-                public String execute(String[] args) throws IOException, WrongCommandArgumentsException
+                public String execute(String[] args)
+                        throws IOException, WrongCommandArgumentsException, SQLException, ObjectNotFoundException,
+                        UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = Command.parseToBigInteger(args[1]);
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Service service = controller.getModel().getService(id);
-                    Specification specification = controller.getModel().getSpecification(service.getSpecificationId());
-                    Customer customer = controller.getModel().getCustomer(service.getCustomerId());
+                    ServiceDTO service = controller.getModel().getService(id);
+                    if (service == null)
+                    {
+                        throw new WrongCommandArgumentsException("Service wasn't found");
+                    }
+                    SpecificationDTO specification = controller.getModel()
+                            .getSpecification(service.getSpecificationId());
+                    CustomerDTO customer = controller.getModel().getCustomer(service.getCustomerId());
 
                     return "Service: " + service.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -547,12 +643,17 @@ public enum Command
     get_specification_info
             {
                 @Override
-                public String execute(String[] args) throws IOException, WrongCommandArgumentsException
+                public String execute(String[] args)
+                        throws IOException, WrongCommandArgumentsException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = Command.parseToBigInteger(args[1]);
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Specification specification = controller.getModel().getSpecification(id);
+                    SpecificationDTO specification = controller.getModel().getSpecification(id);
+                    if (specification == null)
+                    {
+                        throw new WrongCommandArgumentsException("Specification wasn't found");
+                    }
 
                     String result = "Specification: " + specification.getId() + "\n"
                             + "\tName: " + specification.getName() + "\n"
@@ -564,7 +665,7 @@ public enum Command
                         result = result.concat("\tDistricts: ");
                         for (BigInteger districtId : specification.getDistrictsIds())
                         {
-                            District district = controller.getModel().getDistrict(districtId);
+                            DistrictDTO district = controller.getModel().getDistrict(districtId);
                             result = result.concat(district.getName() + " (id: " + district.getId() + "), ");
                         }
                     }
@@ -576,14 +677,19 @@ public enum Command
     get_district_info
             {
                 @Override
-                public String execute(String[] args) throws IOException, WrongCommandArgumentsException
+                public String execute(String[] args)
+                        throws IOException, WrongCommandArgumentsException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
-                    BigInteger id = Command.parseToBigInteger(args[1]);
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    District district = controller.getModel().getDistrict(id);
+                    DistrictDTO district = controller.getModel().getDistrict(id);
+                    if (district == null)
+                    {
+                        throw new WrongCommandArgumentsException("District wasn't found");
+                    }
 
-                    String result = "District: " + district.getId() + "\n"
+                    String result = "DistrictDTO: " + district.getId() + "\n"
                             + "\tName: " + district.getName() + "\n"
                             + "\tParent: ";
                     if (district.getParentId() != null)
@@ -595,7 +701,7 @@ public enum Command
                     result = result.concat(" \n\tChildren: ");
                     if (controller.getDistrictChildren(district.getId()) != null)
                     {
-                        for (District children : controller.getDistrictChildren(district.getId()))
+                        for (DistrictDTO children : controller.getDistrictChildren(district.getId()))
                         {
                             result = result.concat(children.getName() + " (id: " + children.getId() + "), ");
                         }
@@ -612,17 +718,25 @@ public enum Command
     create_new_order
             {
                 @Override
-                public String execute(String[] args) throws Exception
+                public String execute(String[] args)
+                        throws SQLException, IOException, ObjectNotFoundException, WrongCommandArgumentsException,
+                        UserNotFoundException, DataNotUpdatedWarning, IllegalTransitionException, DataNotCreatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger customerId =
-                            !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger specId = Command.parseToBigInteger(args[2]);
-                    Customer customer = Model.getInstance().getCustomer(customerId);
-                    Order order = controller.createNewOrder(customer.getId(), specId);
 
-                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
+                    CustomerDTO customer = controller.getModel().getCustomer(parseToBigInteger(args[1]));
+                    SpecificationDTO specification = controller.getModel().getSpecification(parseToBigInteger(args[2]));
 
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    if (specification == null)
+                    {
+                        throw new WrongCommandArgumentsException("Specification wasn't found");
+                    }
+
+                    OrderDTO order = controller.createNewOrder(customer.getId(), specification.getId());
 
                     return "New order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -639,17 +753,26 @@ public enum Command
     create_suspend_order
             {
                 @Override
-                public String execute(String[] args) throws Exception
+                public String execute(String[] args)
+                        throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    Order order = controller.createSuspendOrder(customer.getId(), serviceId);
 
-                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    customer = controller.getModel().getCustomer(order.getCustomerId());
-                    Service service = controller.getModel().getService(order.getServiceId());
+                    CustomerDTO customer = controller.getModel().getCustomer(parseToBigInteger(args[1]));
+                    ServiceDTO service = controller.getModel().getService(parseToBigInteger(args[2]));
+
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    if (service == null)
+                    {
+                        throw new WrongCommandArgumentsException("Service wasn't found");
+                    }
+
+                    OrderDTO order = controller.createSuspendOrder(customer.getId(), service.getId());
+
+                    SpecificationDTO specification = controller.getModel().getSpecification(order.getSpecId());
 
                     return "Suspend order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -671,14 +794,22 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger customerId =
-                            !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = Model.getInstance().getCustomer(customerId);
-                    Order order = controller.createRestoreOrder(customer.getId(), serviceId);
 
-                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Service service = controller.getModel().getService(order.getServiceId());
+                    CustomerDTO customer = controller.getModel().getCustomer(parseToBigInteger(args[1]));
+                    ServiceDTO service = controller.getModel().getService(parseToBigInteger(args[2]));
+
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    if (service == null)
+                    {
+                        throw new WrongCommandArgumentsException("Service wasn't found");
+                    }
+
+                    OrderDTO order = controller.createRestoreOrder(customer.getId(), service.getId());
+
+                    SpecificationDTO specification = controller.getModel().getSpecification(order.getSpecId());
 
                     return "Restore order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -700,14 +831,22 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger customerId =
-                            !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger serviceId = Command.parseToBigInteger(args[2]);
-                    Customer customer = Model.getInstance().getCustomer(customerId);
-                    Order order = controller.createDisconnectOrder(customer.getId(), serviceId);
 
-                    Specification specification = controller.getModel().getSpecification(order.getSpecId());
-                    Service service = controller.getModel().getService(order.getServiceId());
+                    CustomerDTO customer = controller.getModel().getCustomer(parseToBigInteger(args[1]));
+                    ServiceDTO service = controller.getModel().getService(parseToBigInteger(args[2]));
+
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    if (service == null)
+                    {
+                        throw new WrongCommandArgumentsException("Service wasn't found");
+                    }
+
+                    OrderDTO order = controller.createDisconnectOrder(customer.getId(), service.getId());
+
+                    SpecificationDTO specification = controller.getModel().getSpecification(order.getSpecId());
 
                     return "Disconnect order was created: " + order.getId() + "\n"
                             + "\tCustomer: " + customer.getFirstName() + " " + customer.getLastName() +
@@ -728,11 +867,11 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException
+                        ObjectNotFoundException, SQLException, DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.startOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was started.";
@@ -744,11 +883,11 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException
+                        ObjectNotFoundException, SQLException, DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.suspendOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was suspended.";
@@ -760,11 +899,11 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException
+                        ObjectNotFoundException, SQLException, DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.restoreOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was restored.";
@@ -776,11 +915,11 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException, UserNotFoundException
+                        ObjectNotFoundException, UserNotFoundException, SQLException, DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.cancelOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was cancelled.";
@@ -792,11 +931,11 @@ public enum Command
                 @Override
                 public String execute(String[] args)
                         throws WrongCommandArgumentsException, IOException, IllegalTransitionException,
-                        ObjectNotFoundException
+                        ObjectNotFoundException, SQLException, DataNotCreatedWarning, DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
 
+                    BigInteger orderId = parseToBigInteger(args[1]);
                     controller.completeOrder(orderId);
 
                     return "Order (id: " + controller.getModel().getOrder(orderId).getId() + ") was completed.";
@@ -809,10 +948,12 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    float amountOfMoney = Command.parseToFloat(args[2]);
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    controller.changeBalanceOn(customer.getId(), amountOfMoney);
+
+                    BigInteger id = parseToBigInteger(args[1]);
+                    float amountOfMoney = parseToFloat(args[2]);
+
+                    controller.changeBalanceOn(id, amountOfMoney);
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
 
                     return "Balance of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (login: " + customer.getLogin() + ") was changed by " + amountOfMoney;
@@ -822,14 +963,15 @@ public enum Command
     get_free_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args)
+                        throws IOException, SQLException, ObjectNotFoundException, UserNotFoundException
                 {
                     Controller controller = new Controller();
 
                     String result = "Free orders: \n";
-                    for (Order order : controller.getFreeOrders())
+                    for (OrderDTO order : controller.getFreeOrders())
                     {
-                        Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                        CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
                         result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
                                 order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
                                 customer.getLastName() + " (login: " + order.getCustomerId() +
@@ -843,12 +985,13 @@ public enum Command
     get_free_order
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args)
+                        throws IOException, SQLException, ObjectNotFoundException, UserNotFoundException
                 {
                     Controller controller = new Controller();
-                    Order order = controller.getFreeOrder();
+                    OrderDTO order = controller.getFreeOrder();
 
-                    Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                    CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
 
                     return "Free order: \n(id: " + order.getId() + ") " + order.getOrderAim() + ", status: " +
                             order.getOrderStatus() + ", Customer: " + customer.getFirstName() + " " +
@@ -863,15 +1006,20 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    List<Order> orders = (List<Order>) controller.getCustomerOrders(customer.getId());
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    List<OrderDTO> orders = (List<OrderDTO>) controller.getCustomerOrders(customer.getId());
 
                     String result = "Orders of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (id: " + id + "):\n";
                     if (orders != null)
                     {
-                        for (Order order : orders)
+                        for (OrderDTO order : orders)
                         {
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
@@ -888,15 +1036,20 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    List<Service> services = (List<Service>) controller.getCustomerServices(customer.getId());
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    List<ServiceDTO> services = (List<ServiceDTO>) controller.getCustomerServices(customer.getId());
 
                     String result = "Services of customer " + customer.getFirstName() + " " + customer.getLastName() +
                             " (id: " + id + "):\n";
                     if (services != null)
                     {
-                        for (Service service : services)
+                        for (ServiceDTO service : services)
                         {
                             result = result.concat("\t" + service.getId() + ": status: " + service.getServiceStatus() +
                                     ", specification id: " + service.getSpecificationId() + ", pay day:" +
@@ -914,18 +1067,22 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
+                    BigInteger id = parseToBigInteger(args[1]);
 
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    List<Order> orders = (List<Order>) controller.getEmployeeOrders(employee.getId());
+                    EmployeeDTO employee = controller.getModel().getEmployee(id);
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
+                    List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
 
                     String result = "Orders of employee " + employee.getFirstName() + " " + employee.getLastName() +
                             " (id: " + id + "):\n";
                     if (orders != null)
                     {
-                        for (Order order : orders)
+                        for (OrderDTO order : orders)
                         {
-                            Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                            CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
                                     customer.getFirstName() + " " + customer.getLastName() +
                                     " (login: " + order.getCustomerId() + "), status: " +
@@ -943,15 +1100,21 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    List<Service> services = (List<Service>) controller.getCustomerConnectedServices(customer.getId());
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    List<ServiceDTO> services = (List<ServiceDTO>) controller
+                            .getCustomerConnectedServices(customer.getId());
 
                     String result = "Connected services of customer " + customer.getFirstName() + " " +
                             customer.getLastName() + " (id: " + id + ")\n";
                     if (services != null)
                     {
-                        for (Service service : services)
+                        for (ServiceDTO service : services)
                         {
                             result = result.concat("\t" + service.getId() + ": status: " + service.getServiceStatus() +
                                     ", specification id: " + service.getSpecificationId() + ", pay day:" +
@@ -969,15 +1132,20 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Customer customer = Model.getInstance().getCustomer(id);
-                    List<Order> orders = (List<Order>) controller.getCustomerNotFinishedOrders(customer.getId());
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    CustomerDTO customer = controller.getModel().getCustomer(id);
+                    if (customer == null)
+                    {
+                        throw new WrongCommandArgumentsException("Customer wasn't found");
+                    }
+                    List<OrderDTO> orders = (List<OrderDTO>) controller.getCustomerNotFinishedOrders(customer.getId());
 
                     String result = "Not finished orders of customer " + customer.getFirstName() + " " +
                             customer.getLastName() + " (id: " + id + "):\n";
                     if (orders != null)
                     {
-                        for (Order order : orders)
+                        for (OrderDTO order : orders)
                         {
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + ", status: " +
                                     order.getOrderStatus() + ", specification id: " + order.getSpecId() + "\n");
@@ -991,17 +1159,18 @@ public enum Command
     get_orders_of_employees_on_vacation
             {
                 @Override
-                public String execute(String[] args) throws IOException, UserNotFoundException
+                public String execute(String[] args)
+                        throws IOException, UserNotFoundException, SQLException, ObjectNotFoundException
                 {
                     Controller controller = new Controller();
 
-                    List<Order> orders = controller.getOrdersOfEmployeesOnVacation();
+                    List<OrderDTO> orders = controller.getOrdersOfEmployeesOnVacation();
                     String result = "Orders of employees on vacation: \n";
                     if (orders != null)
                     {
-                        for (Order order : orders)
+                        for (OrderDTO order : orders)
                         {
-                            Customer customer = controller.getModel().getCustomer(order.getCustomerId());
+                            CustomerDTO customer = controller.getModel().getCustomer(order.getCustomerId());
                             result = result.concat("\t" + order.getId() + ": " + order.getOrderAim() + " customer: " +
                                     customer.getFirstName() + " " + customer.getLastName() +
                                     " (login: " + order.getCustomerId() + "), status: " +
@@ -1019,8 +1188,13 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Employee employee = Model.getInstance().getEmployee(id);
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    EmployeeDTO employee = controller.getModel().getEmployee(id);
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
 
                     controller.goOnVacation(employee.getId());
 
@@ -1036,8 +1210,14 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Employee employee = Model.getInstance().getEmployee(id);
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    EmployeeDTO employee = controller.getModel().getEmployee(id);
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
+
                     controller.returnFromVacation(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
@@ -1051,8 +1231,13 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    Employee employee = Model.getInstance().getEmployee(id);
+                    BigInteger id = parseToBigInteger(args[1]);
+
+                    EmployeeDTO employee = controller.getModel().getEmployee(id);
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
                     controller.retireEmployee(employee.getId());
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() +
@@ -1066,12 +1251,21 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger orderId = Command.parseToBigInteger(args[2]);
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.assignOrder(employee.getId(), orderId);
 
-                    return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
+                    EmployeeDTO employee = controller.getModel().getEmployee(parseToBigInteger(args[1]));
+                    OrderDTO order = controller.getModel().getOrder(parseToBigInteger(args[2]));
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
+                    if (order == null)
+                    {
+                        throw new WrongCommandArgumentsException("Order wasn't found");
+                    }
+
+                    controller.assignOrder(employee.getId(), order.getId());
+
+                    return "Order (id: " + order.getId() +
                             ") was assigned to employee " + employee.getFirstName() + " " +
                             employee.getLastName() + " (login: " + employee.getLogin() + ").";
                 }
@@ -1083,13 +1277,22 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
-                    BigInteger orderId = Command.parseToBigInteger(args[2]);
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.processOrder(employee.getId(), orderId);
+
+                    EmployeeDTO employee = controller.getModel().getEmployee(parseToBigInteger(args[1]));
+                    OrderDTO order = controller.getModel().getOrder(parseToBigInteger(args[2]));
+                    if (employee == null)
+                    {
+                        throw new WrongCommandArgumentsException("Employee wasn't found");
+                    }
+                    if (order == null)
+                    {
+                        throw new WrongCommandArgumentsException("Order wasn't found");
+                    }
+
+                    controller.processOrder(employee.getId(), order.getId());
 
 
-                    return "Order (id: " + controller.getModel().getOrder(orderId).getId() +
+                    return "Order (id: " + order.getId() +
                             ") was started by employee " + employee.getFirstName() + " " +
                             employee.getLastName() + " (login: " + employee.getLogin() + ").";
                 }
@@ -1099,10 +1302,11 @@ public enum Command
             {
                 @Override
                 public String execute(String[] args)
-                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException
+                        throws IOException, WrongCommandArgumentsException, ObjectNotFoundException, SQLException,
+                        DataNotUpdatedWarning
                 {
                     Controller controller = new Controller();
-                    BigInteger orderId = Command.parseToBigInteger(args[1]);
+                    BigInteger orderId = parseToBigInteger(args[1]);
 
                     controller.unassignOrder(orderId);
 
@@ -1117,11 +1321,10 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.setEmployeeWaitingStatus(employee.getId(), true);
+                    EmployeeDTO employee = controller.getModel().getEmployee(parseToBigInteger(args[1]));
 
+                    controller.setEmployeeWaitingStatus(parseToBigInteger(args[1]), true);
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
                             employee.getLogin() + ") was subscribed for getting free orders.";
@@ -1134,11 +1337,10 @@ public enum Command
                 public String execute(String[] args) throws Exception
                 {
                     Controller controller = new Controller();
-                    BigInteger id = !args[1].equalsIgnoreCase("null") ? Command.parseToBigInteger(args[1]) : null;
 
-                    Employee employee = Model.getInstance().getEmployee(id);
-                    controller.setEmployeeWaitingStatus(employee.getId(), false);
+                    EmployeeDTO employee = controller.getModel().getEmployee(parseToBigInteger(args[1]));
 
+                    controller.setEmployeeWaitingStatus(parseToBigInteger(args[1]), false);
 
                     return "Employee " + employee.getFirstName() + " " + employee.getLastName() + " (login: " +
                             employee.getLogin() + ") was unsubscribed from work waiters.";
@@ -1148,7 +1350,7 @@ public enum Command
     distribute_orders
             {
                 @Override
-                public String execute(String[] args) throws IOException
+                public String execute(String[] args) throws IOException, SQLException, ObjectNotFoundException
                 {
                     WorkWaitersManager.distributeOrders();
 
