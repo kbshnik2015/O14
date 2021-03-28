@@ -1,6 +1,6 @@
 package controller.exceptions;
 
-public class UnknownCommandException extends Throwable
+public class UnknownCommandException extends RuntimeException
 {
     public UnknownCommandException(String message)
     {
