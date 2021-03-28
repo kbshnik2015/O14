@@ -1,484 +1,108 @@
 package model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import model.entities.Customer;
-import model.entities.District;
-import model.entities.Employee;
-import model.entities.Order;
-import model.entities.Service;
-import model.entities.Specification;
-import model.enums.EmployeeStatus;
-import model.enums.OrderAim;
-import model.enums.OrderStatus;
-import model.enums.ServiceStatus;
+import controller.exceptions.IllegalLoginOrPasswordException;
+import controller.exceptions.ObjectNotFoundException;
+import controller.exceptions.UserNotFoundException;
+import model.database.exceptions.DataNotCreatedWarning;
+import model.database.exceptions.DataNotFoundWarning;
+import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
+import model.dto.DistrictDTO;
+import model.dto.EmployeeDTO;
+import model.dto.OrderDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
 
-@Data
-public class Model implements ModelInterface
+public interface Model
 {
+    BigInteger generateNextId();
 
-    @Setter
-    private static Model instance; //Singleton
+    Map<BigInteger, CustomerDTO> getCustomers();
 
-    @Setter
-    @Getter
-    private BigInteger nextId = BigInteger.valueOf(0);
+    Map<BigInteger, EmployeeDTO> getEmployees();
 
-    @Setter
-    @Getter
-    private Map<BigInteger, Customer> customers;
+    Map<BigInteger, DistrictDTO> getDistricts();
 
-    @Setter
-    @Getter
-    private Map<BigInteger, Employee> employees;
+    Map<BigInteger, SpecificationDTO> getSpecifications();
 
-    @Setter
-    @Getter
-    private Map<BigInteger, District> districts;
+    Map<BigInteger, ServiceDTO> getServices();
 
-    @Setter
-    @Getter
-    private Map<BigInteger, Specification> specifications;
+    Map<BigInteger, OrderDTO> getOrders();
 
-    @Setter
-    @Getter
-    private Map<BigInteger, Service> services;
+    CustomerDTO createCustomer(CustomerDTO customer)
+            throws DataNotCreatedWarning, IllegalLoginOrPasswordException;
 
-    @Setter
-    @Getter
-    private Map<BigInteger, Order> orders;
+    void updateCustomer(CustomerDTO customer)
+            throws DataNotUpdatedWarning, UserNotFoundException;
 
-    private static transient String sourceFile = "model.json";
+    void deleteCustomer(BigInteger id) throws DataNotFoundWarning, UserNotFoundException;
 
-    private Model()
-    {
-        this.orders = new HashMap<>();
-        this.services = new HashMap<>();
-        this.specifications = new HashMap<>();
-        this.districts = new HashMap<>();
-        this.employees = new HashMap<>();
-        this.customers = new HashMap<>();
-    }
+    CustomerDTO getCustomer(BigInteger id) throws UserNotFoundException;
 
-    public static synchronized Model getInstance() throws IOException
-    {
-        if (instance == null)
-        {
-            loadFromFile();
-        }
-        return instance;
-    }
+    EmployeeDTO createEmployee(EmployeeDTO employee)
+            throws DataNotCreatedWarning, IllegalLoginOrPasswordException;
 
-    public void clear()
-    {
-        nextId = BigInteger.valueOf(0);
-        customers.clear();
-        employees.clear();
-        services.clear();
-        specifications.clear();
-        orders.clear();
-        districts.clear();
-    }
+    void updateEmployee(EmployeeDTO employee)
+            throws DataNotUpdatedWarning, UserNotFoundException;
 
-    public BigInteger generateNextId()
-    {
-        nextId = nextId.add(BigInteger.valueOf(1));
-        return nextId;
-    }
+    void deleteEmployee(BigInteger id) throws DataNotFoundWarning, UserNotFoundException;
 
-    @Override
-    public Customer createCustomer(Customer customer)
-    {
-        if (customers == null)
-        {
-            customers = new HashMap<>();
-        }
-        customer.setId(generateNextId());
-        customers.put(customer.getId(), customer);
+    EmployeeDTO getEmployee(BigInteger id) throws UserNotFoundException;
 
-        return customer;
-    }
+    DistrictDTO createDistrict(DistrictDTO district)
+            throws DataNotCreatedWarning, ObjectNotFoundException;
 
-    @Override
-    public void updateCustomer(Customer customer)
-    {
-        customers.put(customer.getId(), customer);
-    }
+    void updateDistrict(DistrictDTO district)
+            throws DataNotUpdatedWarning, ObjectNotFoundException;
 
-    public void updateCustomer(BigInteger id, String firstName, String lastName, String password, String address,
-            float balance)
-    {
-        Customer customer = getCustomer(id);
-        if (customer != null)
-        {
-            if (firstName != null)
-            {
-                customer.setFirstName(firstName);
-            }
-            if (lastName != null)
-            {
-                customer.setLastName(lastName);
-            }
-            if (password != null)
-            {
-                customer.setPassword(password);
-            }
-            if (address != null)
-            {
-                customer.setAddress(address);
-            }
-            if (balance >= 0)
-            {
-                customer.setBalance(balance);
-            }
-        }
-    }
+    void deleteDistrict(BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException;
 
-    @Override
-    public void deleteCustomer(BigInteger id)
-    {
-        customers.remove(id);
-    }
+    DistrictDTO getDistrict(BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public Customer getCustomer(BigInteger id)
-    {
-        return customers.get(id);
-    }
+    SpecificationDTO createSpecification(SpecificationDTO specification)
+            throws DataNotCreatedWarning;
 
-    @Override
-    public Employee createEmployee(Employee employee)
-    {
-        if (employees == null)
-        {
-            employees = new HashMap<>();
-        }
-        employee.setId(generateNextId());
-        employees.put(employee.getId(), employee);
-        return employee;
-    }
+    void updateSpecification(SpecificationDTO specification)
+            throws DataNotUpdatedWarning, ObjectNotFoundException;
 
-    @Override
-    public void updateEmployee(Employee employee)
-    {
-        employees.put(employee.getId(), employee);
-    }
+    void deleteSpecification(BigInteger id)
+            throws DataNotFoundWarning, ObjectNotFoundException;
 
-    public void updateEmployee(BigInteger id, String firstName, String lastName, String password,
-            EmployeeStatus employeeStatus)
-    {
-        Employee employee = getEmployee(id);
-        if (employee != null)
-        {
-            if (firstName != null)
-            {
-                employee.setFirstName(firstName);
-            }
-            if (lastName != null)
-            {
-                employee.setLastName(lastName);
-            }
-            if (password != null)
-            {
-                employee.setPassword(password);
-            }
-            if (employeeStatus != null)
-            {
-                employee.setEmployeeStatus(employeeStatus);
-            }
-        }
-    }
+    SpecificationDTO getSpecification(BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public void deleteEmployee(BigInteger id)
-    {
-        employees.remove(id);
-    }
+    ServiceDTO createService(ServiceDTO service) throws DataNotCreatedWarning;
 
-    @Override
-    public Employee getEmployee(BigInteger id)
-    {
-        return employees.get(id);
-    }
+    void updateService(ServiceDTO service)
+            throws DataNotUpdatedWarning, ObjectNotFoundException;
 
-    @Override
-    public District createDistrict(District district)
-    {
-        if (districts == null)
-        {
-            districts = new HashMap<>();
-        }
-        district.setId(generateNextId());
-        districts.put(district.getId(), district);
-        return district;
-    }
+    void deleteService(BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException;
 
-    public District createDistrict(String name, BigInteger parentId)
-    {
-        District district = new District(name, parentId);
-        return createDistrict(district);
-    }
+    ServiceDTO getService(BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public void updateDistrict(District district)
-    {
-        districts.put(district.getId(), district);
-    }
+    OrderDTO createOrder(OrderDTO order) throws DataNotCreatedWarning;
 
-    public void updateDistrict(BigInteger id, String name, BigInteger parentId)
-    {
-        District district = getDistrict(id);
-        if (district != null)
-        {
-            if (name != null)
-            {
-                district.setName(name);
-            }
-            if (parentId != null)
-            {
-                district.setParentId(parentId);
-            }
-        }
-    }
+    void updateOrder(OrderDTO order) throws DataNotUpdatedWarning;
 
-    @Override
-    public void deleteDistrict(BigInteger id)
-    {
-        districts.remove(id);
-    }
+    void deleteOrder(BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException;
 
-    @Override
-    public District getDistrict(BigInteger Id)
-    {
-        return districts.get(Id);
-    }
+    OrderDTO getOrder(BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public Specification createSpecification(Specification specification)
-    {
-        if (specifications == null)
-        {
-            specifications = new HashMap<>();
-        }
-        specification.setId(generateNextId());
-        specifications.put(specification.getId(), specification);
-        return specification;
-    }
+    void checkLogin(String login) throws IllegalLoginOrPasswordException;
 
-    public Specification createSpecification(String name, float price, String description, boolean isAddressDepended,
-            ArrayList<BigInteger> districtsIds)
-    {
-        Specification specification = new Specification(name, price, description, isAddressDepended, districtsIds);
+    void checkPassword(String password) throws IllegalLoginOrPasswordException;
 
-        return createSpecification(specification);
-    }
+    void checkCustomerExists(final BigInteger id) throws UserNotFoundException;
 
+    void checkEmployeeExists(final BigInteger id) throws UserNotFoundException;
 
-    @Override
-    public void updateSpecification(Specification specification)
-    {
-        specifications.put(specification.getId(), specification);
-    }
+    void checkDistrictExists(BigInteger id) throws ObjectNotFoundException;
 
-    public void updateSpecification(BigInteger id, String name, float price, String description,
-            boolean isAddressDepended,
-            ArrayList<BigInteger> districtsIds)
-    {
-        Specification specification = getSpecification(id);
-        if (specification != null)
-        {
-            if (name != null)
-            {
-                specification.setName(name);
-            }
-            if (price >= 0)
-            {
-                specification.setPrice(price);
-            }
-            if (description != null)
-            {
-                specification.setDescription(description);
-            }
-            specification.setAddressDepended(isAddressDepended);
-            if (isAddressDepended && districtsIds != null)
-            {
-                specification.setDistrictsIds(districtsIds);
-            }
-            else
-            {
-                specification.setDistrictsIds(new ArrayList<>());
-            }
-        }
-    }
+    void checkSpecificationExists(final BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public void deleteSpecification(BigInteger id)
-    {
-        specifications.remove(id);
-    }
+    void checkServiceExists(final BigInteger id) throws ObjectNotFoundException;
 
-    @Override
-    public Specification getSpecification(BigInteger Id)
-    {
-        return specifications.get(Id);
-    }
-
-    @Override
-    public Service createService(Service service)
-    {
-        if (services == null)
-        {
-            services = new HashMap<>();
-        }
-        service.setId(generateNextId());
-        services.put(service.getId(), service);
-        return service;
-    }
-
-    @Override
-    public void updateService(Service service)
-    {
-        services.put(service.getId(), service);
-    }
-
-    public void updateService(BigInteger id, Date payDay, BigInteger specificationId, ServiceStatus servStatus)
-    {
-        Service service = getService(id);
-        if (service != null)
-        {
-            if (payDay != null)
-            {
-                service.setPayDay(payDay);
-            }
-            if (specificationId != null && getSpecifications().containsKey(specificationId))
-            {
-                service.setSpecificationId(specificationId);
-            }
-            if (servStatus != null)
-            {
-                service.setServiceStatus(servStatus);
-            }
-        }
-    }
-
-    @Override
-    public void deleteService(BigInteger id)
-    {
-        services.remove(id);
-    }
-
-    @Override
-    public Service getService(BigInteger Id)
-    {
-        return services.get(Id);
-    }
-
-    @Override
-    public Order createOrder(Order order)
-    {
-        if (orders == null)
-        {
-            orders = new HashMap<>();
-        }
-        order.setId(generateNextId());
-        orders.put(order.getId(), order);
-        return order;
-    }
-
-    @Override
-    public void updateOrder(Order order)
-    {
-        orders.put(order.getId(), order);
-    }
-
-    public void updateOrder(BigInteger orderId, BigInteger customerId, BigInteger employeeId, OrderAim orderAim,
-            OrderStatus orderStatus, String address)
-    {
-        Order order = getOrder(orderId);
-        if (order != null)
-        {
-            if (customerId != null && getCustomers().containsKey(customerId))
-            {
-                order.setCustomerId(customerId);
-            }
-            if (employeeId != null && getEmployees().containsKey(employeeId))
-            {
-                order.setEmployeeId(employeeId);
-            }
-            if (orderAim != null)
-            {
-                order.setOrderAim(orderAim);
-            }
-            if (orderStatus != null)
-            {
-                order.setOrderStatus(orderStatus);
-            }
-            if (address != null)
-            {
-                order.setAddress(address);
-            }
-        }
-    }
-
-    @Override
-    public void deleteOrder(BigInteger id)
-    {
-        orders.remove(id);
-    }
-
-    @Override
-    public Order getOrder(BigInteger Id)
-    {
-        return orders.get(Id);
-    }
-
-    public void saveToFile() throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try (FileWriter writer = new FileWriter(sourceFile, false))
-        {
-            mapper.writeValue(writer, instance);
-        }
-    }
-
-    public void saveToFile(String filepath) throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try (FileWriter writer = new FileWriter(filepath, false))
-        {
-            mapper.writeValue(writer, instance);
-        }
-    }
-
-    public static void loadFromFile() throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try (FileReader reader = new FileReader(sourceFile))
-        {
-            instance = mapper.readValue(reader, Model.class);
-        }
-    }
-
-    public static void loadFromFile(String filepath) throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try (FileReader reader = new FileReader(filepath))
-        {
-            instance = mapper.readValue(reader, Model.class);
-        }
-        sourceFile = filepath;
-    }
-
+    void checkOrderExists(final BigInteger id) throws ObjectNotFoundException;
 }

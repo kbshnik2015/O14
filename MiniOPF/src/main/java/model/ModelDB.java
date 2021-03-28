@@ -3,10 +3,14 @@ package model;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import controller.exceptions.IllegalLoginOrPasswordException;
+import controller.exceptions.ObjectNotFoundException;
+import controller.exceptions.UserNotFoundException;
 import model.database.ConnectionPool;
 import model.database.dao.CustomerDAO;
 import model.database.dao.DistrictDAO;
@@ -17,6 +21,18 @@ import model.database.dao.SpecificationDAO;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
+import model.dto.DistrictDTO;
+import model.dto.EmployeeDTO;
+import model.dto.OrderDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
+import model.dto.transformers.CustomerTransformer;
+import model.dto.transformers.DistrictTransformer;
+import model.dto.transformers.EmployeeTransformer;
+import model.dto.transformers.OrderTransformer;
+import model.dto.transformers.ServiceTransformer;
+import model.dto.transformers.SpecificationTransformer;
 import model.entities.Customer;
 import model.entities.District;
 import model.entities.Employee;
@@ -24,7 +40,7 @@ import model.entities.Order;
 import model.entities.Service;
 import model.entities.Specification;
 
-public class ModelDB implements ModelInterface
+public class ModelDB implements Model
 {
     private CustomerDAO customerDAO;
 
@@ -38,6 +54,18 @@ public class ModelDB implements ModelInterface
 
     private OrderDAO orderDAO;
 
+    private static transient CustomerTransformer customerTransformer = new CustomerTransformer();
+
+    private static transient EmployeeTransformer employeeTransformer = new EmployeeTransformer();
+
+    private static transient DistrictTransformer districtTransformer = new DistrictTransformer();
+
+    private static transient OrderTransformer orderTransformer = new OrderTransformer();
+
+    private static transient ServiceTransformer serviceTransformer = new ServiceTransformer();
+
+    private static transient SpecificationTransformer specificationTransformer = new SpecificationTransformer();
+
     public ModelDB() throws SQLException
     {
         final Connection connection = ConnectionPool.getConnection();
@@ -49,226 +77,689 @@ public class ModelDB implements ModelInterface
         orderDAO = new OrderDAO(connection);
     }
 
-    public Map<BigInteger, Customer> getCustomers() throws SQLException
+    @Override
+    public BigInteger generateNextId()
     {
-        List<Customer> list = customerDAO.findAll();
-        Map<BigInteger, Customer> map = new HashMap<>();
+        try
+        {
+            return customerDAO.getNextId();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public Map<BigInteger, CustomerDTO> getCustomers()
+    {
+        List<Customer> list = new ArrayList<>();
+        try
+        {
+            list = customerDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, CustomerDTO> map = new HashMap<>();
         for (Customer customer : list)
         {
-            map.put(customer.getId(), customer);
+            map.put(customer.getId(), (CustomerDTO) customerTransformer.toDto(customer));
         }
 
         return map;
     }
 
-    public Map<BigInteger, Employee> getEmployees() throws SQLException
+    @Override
+    public Map<BigInteger, EmployeeDTO> getEmployees()
     {
-        List<Employee> list = employeeDAO.findAll();
-        Map<BigInteger, Employee> map = new HashMap<>();
+        List<Employee> list = new ArrayList<>();
+        try
+        {
+            list = employeeDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, EmployeeDTO> map = new HashMap<>();
         for (Employee employee : list)
         {
-            map.put(employee.getId(), employee);
+            map.put(employee.getId(), (EmployeeDTO) employeeTransformer.toDto(employee));
         }
 
         return map;
     }
 
-    public Map<BigInteger, District> getDistricts() throws SQLException
+    @Override
+    public Map<BigInteger, DistrictDTO> getDistricts()
     {
-        List<District> list = districtDAO.findAll();
-        Map<BigInteger, District> map = new HashMap<>();
+        List<District> list = new ArrayList<>();
+        try
+        {
+            list = districtDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, DistrictDTO> map = new HashMap<>();
         for (District district : list)
         {
-            map.put(district.getId(), district);
+            map.put(district.getId(), (DistrictDTO) districtTransformer.toDto(district));
         }
 
         return map;
     }
 
-    public Map<BigInteger, Specification> getSpecifications() throws SQLException
+    @Override
+    public Map<BigInteger, SpecificationDTO> getSpecifications()
     {
-        List<Specification> list = specificationDAO.findAll();
-        Map<BigInteger, Specification> map = new HashMap<>();
+        List<Specification> list = new ArrayList<>();
+        try
+        {
+            list = specificationDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, SpecificationDTO> map = new HashMap<>();
         for (Specification specification : list)
         {
-            map.put(specification.getId(), specification);
+            map.put(specification.getId(), (SpecificationDTO) specificationTransformer.toDto(specification));
         }
 
         return map;
     }
 
-    public Map<BigInteger, Service> getServices() throws SQLException
+    @Override
+    public Map<BigInteger, ServiceDTO> getServices()
     {
-        List<Service> list = serviceDAO.findAll();
-        Map<BigInteger, Service> map = new HashMap<>();
+        List<Service> list = new ArrayList<>();
+        try
+        {
+            list = serviceDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, ServiceDTO> map = new HashMap<>();
         for (Service service : list)
         {
-            map.put(service.getId(), service);
+            map.put(service.getId(), (ServiceDTO) serviceTransformer.toDto(service));
         }
 
         return map;
     }
 
-    public Map<BigInteger, Order> getOrders() throws SQLException
+    @Override
+    public Map<BigInteger, OrderDTO> getOrders()
     {
-        List<Order> list = orderDAO.findAll();
-        Map<BigInteger, Order> map = new HashMap<>();
+        List<Order> list = new ArrayList<>();
+        try
+        {
+            list = orderDAO.findAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        Map<BigInteger, OrderDTO> map = new HashMap<>();
         for (Order order : list)
         {
-            map.put(order.getId(), order);
+            map.put(order.getId(), (OrderDTO) orderTransformer.toDto(order));
         }
 
         return map;
     }
 
     @Override
-    public Customer createCustomer(final Customer customer) throws DataNotCreatedWarning, SQLException
+    public CustomerDTO createCustomer(final CustomerDTO customerDTO)
+            throws DataNotCreatedWarning, IllegalLoginOrPasswordException
     {
-        customerDAO.create(customer);
+        checkLogin(customerDTO.getLogin());
+        checkPassword(customerDTO.getPassword());
+
+        BigInteger id = generateNextId();
+        customerDTO.setId(id);
+        try
+        {
+            customerDAO.create((Customer) customerTransformer.toEntity(customerDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            return (CustomerDTO) customerTransformer.toDto(customerDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public void updateCustomer(final Customer customer) throws SQLException, DataNotUpdatedWarning
+    public void updateCustomer(final CustomerDTO customerDTO)
+            throws DataNotUpdatedWarning, UserNotFoundException
     {
-        customerDAO.update(customer);
+        checkCustomerExists(customerDTO.getId());
+
+        try
+        {
+            customerDAO.update((Customer) customerTransformer.toEntity(customerDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void deleteCustomer(final BigInteger id) throws SQLException, DataNotFoundWarning
+    public void deleteCustomer(final BigInteger id) throws DataNotFoundWarning, UserNotFoundException
     {
-        customerDAO.delete(id);
+        checkCustomerExists(id);
+
+        try
+        {
+            customerDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Customer getCustomer(final BigInteger id) throws SQLException
+    public CustomerDTO getCustomer(final BigInteger id) throws UserNotFoundException
     {
-        return customerDAO.findById(id);
-    }
+        checkCustomerExists(id);
 
-    @Override
-    public Employee createEmployee(final Employee employee) throws DataNotCreatedWarning, SQLException
-    {
-        employeeDAO.create(employee);
+        try
+        {
+            return (CustomerDTO) customerTransformer.toDto(customerDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public void updateEmployee(final Employee employee) throws SQLException, DataNotUpdatedWarning
+    public EmployeeDTO createEmployee(final EmployeeDTO employeeDTO)
+            throws DataNotCreatedWarning, IllegalLoginOrPasswordException
     {
-        employeeDAO.update(employee);
-    }
+        checkLogin(employeeDTO.getLogin());
+        checkPassword(employeeDTO.getPassword());
 
-    @Override
-    public void deleteEmployee(final BigInteger id) throws SQLException, DataNotFoundWarning
-    {
-        employeeDAO.delete(id);
-    }
+        BigInteger id = generateNextId();
+        employeeDTO.setId(id);
+        try
+        {
+            employeeDAO.create((Employee) employeeTransformer.toEntity(employeeDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-    @Override
-    public Employee getEmployee(final BigInteger id) throws SQLException
-    {
-        return employeeDAO.findById(id);
-    }
+        try
+        {
+            return (EmployeeDTO) employeeTransformer.toDto(employeeDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-    @Override
-    public District createDistrict(final District district) throws DataNotCreatedWarning, SQLException
-    {
-        districtDAO.create(district);
         return null;
     }
 
     @Override
-    public void updateDistrict(final District district) throws SQLException, DataNotUpdatedWarning
+    public void updateEmployee(final EmployeeDTO employeeDTO)
+            throws DataNotUpdatedWarning, UserNotFoundException
     {
-        districtDAO.update(district);
+        checkEmployeeExists(employeeDTO.getId());
+
+        try
+        {
+            employeeDAO.update((Employee) employeeTransformer.toEntity(employeeDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void deleteDistrict(final BigInteger id) throws SQLException, DataNotFoundWarning
+    public void deleteEmployee(final BigInteger id) throws DataNotFoundWarning, UserNotFoundException
     {
-        districtDAO.delete(id);
+        checkEmployeeExists(id);
+
+        try
+        {
+            employeeDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public District getDistrict(final BigInteger Id) throws SQLException
+    public EmployeeDTO getEmployee(final BigInteger id) throws UserNotFoundException
     {
-        return districtDAO.findById(Id);
-    }
+        checkEmployeeExists(id);
 
-    @Override
-    public Specification createSpecification(final Specification specification)
-            throws DataNotCreatedWarning, SQLException
-    {
-        specificationDAO.create(specification);
+        try
+        {
+            return (EmployeeDTO) employeeTransformer.toDto(employeeDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public void updateSpecification(final Specification specification) throws SQLException, DataNotUpdatedWarning
+    public DistrictDTO createDistrict(final DistrictDTO districtDTO)
+            throws DataNotCreatedWarning, ObjectNotFoundException
     {
-        specificationDAO.update(specification);
-    }
+        if (districtDTO.getParentId() != null)
+        {
+            checkDistrictExists(districtDTO.getParentId());
+        }
 
-    @Override
-    public void deleteSpecification(final BigInteger id) throws SQLException, DataNotFoundWarning
-    {
-        specificationDAO.delete(id);
-    }
+        BigInteger id = generateNextId();
+        districtDTO.setId(id);
+        try
+        {
+            districtDAO.create((District) districtTransformer.toEntity(districtDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-    @Override
-    public Specification getSpecification(final BigInteger Id) throws SQLException
-    {
-        return specificationDAO.findById(Id);
-    }
+        try
+        {
+            return (DistrictDTO) districtTransformer.toDto(districtDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
-    @Override
-    public Service createService(final Service service) throws DataNotCreatedWarning, SQLException
-    {
-        serviceDAO.create(service);
         return null;
     }
 
     @Override
-    public void updateService(final Service service) throws SQLException, DataNotUpdatedWarning
+    public void updateDistrict(final DistrictDTO districtDTO)
+            throws DataNotUpdatedWarning, ObjectNotFoundException
     {
-        serviceDAO.update(service);
+        checkDistrictExists(districtDTO.getId());
+
+        try
+        {
+            districtDAO.update((District) districtTransformer.toEntity(districtDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void deleteService(final BigInteger id) throws SQLException, DataNotFoundWarning
+    public void deleteDistrict(final BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException
     {
-        serviceDAO.delete(id);
+        checkDistrictExists(id);
+
+        try
+        {
+            districtDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Service getService(final BigInteger Id) throws SQLException
+    public DistrictDTO getDistrict(final BigInteger id) throws ObjectNotFoundException
     {
-        return serviceDAO.findById(Id);
-    }
+        checkDistrictExists(id);
 
-    @Override
-    public Order createOrder(final Order order) throws DataNotCreatedWarning, SQLException
-    {
-        orderDAO.create(order);
+        try
+        {
+            return (DistrictDTO) districtTransformer.toDto(districtDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public void updateOrder(final Order order) throws SQLException, DataNotUpdatedWarning
+    public SpecificationDTO createSpecification(final SpecificationDTO specificationDTO)
+            throws DataNotCreatedWarning
     {
-        orderDAO.update(order);
+        BigInteger id = generateNextId();
+        specificationDTO.setId(id);
+        try
+        {
+            specificationDAO.create((Specification) specificationTransformer.toEntity(specificationDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            return (SpecificationDTO) specificationTransformer.toDto(specificationDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
-    public void deleteOrder(final BigInteger id) throws SQLException, DataNotFoundWarning
+    public void updateSpecification(final SpecificationDTO specificationDTO)
+            throws DataNotUpdatedWarning, ObjectNotFoundException
     {
-        orderDAO.delete(id);
+        checkSpecificationExists(specificationDTO.getId());
+
+        try
+        {
+            specificationDAO.update((Specification) specificationTransformer.toEntity(specificationDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Order getOrder(final BigInteger Id) throws SQLException
+    public void deleteSpecification(final BigInteger id)
+            throws DataNotFoundWarning, ObjectNotFoundException
     {
-        return orderDAO.findById(Id);
+        checkSpecificationExists(id);
+
+        try
+        {
+            specificationDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public SpecificationDTO getSpecification(final BigInteger id) throws ObjectNotFoundException
+    {
+        checkSpecificationExists(id);
+
+        try
+        {
+            return (SpecificationDTO) serviceTransformer.toDto(specificationDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public ServiceDTO createService(final ServiceDTO serviceDTO) throws DataNotCreatedWarning
+    {
+        BigInteger id = generateNextId();
+        serviceDTO.setId(id);
+        try
+        {
+            serviceDAO.create((Service) serviceTransformer.toEntity(serviceDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            return (ServiceDTO) serviceTransformer.toDto(serviceDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void updateService(final ServiceDTO serviceDTO)
+            throws DataNotUpdatedWarning, ObjectNotFoundException
+    {
+        checkServiceExists(serviceDTO.getId());
+
+        try
+        {
+            serviceDAO.update((Service) serviceTransformer.toEntity(serviceDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteService(final BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException
+    {
+        checkServiceExists(id);
+
+        try
+        {
+            serviceDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public ServiceDTO getService(final BigInteger id) throws ObjectNotFoundException
+    {
+        checkServiceExists(id);
+
+        try
+        {
+            return (ServiceDTO) serviceTransformer.toDto(serviceDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public OrderDTO createOrder(final OrderDTO orderDTO) throws DataNotCreatedWarning
+    {
+        BigInteger id = generateNextId();
+        orderDTO.setId(id);
+        try
+        {
+            orderDAO.create((Order) orderTransformer.toEntity(orderDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            return (OrderDTO) orderTransformer.toDto(orderDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void updateOrder(final OrderDTO orderDTO) throws DataNotUpdatedWarning
+    {
+        try
+        {
+            orderDAO.update((Order) orderTransformer.toEntity(orderDTO));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteOrder(final BigInteger id) throws DataNotFoundWarning, ObjectNotFoundException
+    {
+        checkOrderExists(id);
+
+        try
+        {
+            orderDAO.delete(id);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public OrderDTO getOrder(final BigInteger id) throws ObjectNotFoundException
+    {
+        checkOrderExists(id);
+
+        try
+        {
+            return (OrderDTO) orderTransformer.toDto(orderDAO.findById(id));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void checkLogin(String login) throws IllegalLoginOrPasswordException
+    {
+        if (login == null)
+        {
+            throw new IllegalLoginOrPasswordException("Login can't be nullable!");
+        }
+
+        for (CustomerDTO customer : getCustomers().values())
+        {
+            if (customer.getLogin().equals(login))
+            {
+                throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+            }
+        }
+
+        for (EmployeeDTO employee : getEmployees().values())
+        {
+            if (employee.getLogin().equals(login))
+            {
+                throw new IllegalLoginOrPasswordException("Login (" + login + ") already exist!");
+            }
+        }
+    }
+
+    @Override
+    public void checkPassword(String password) throws IllegalLoginOrPasswordException
+    {
+        if (password == null)
+        {
+            throw new IllegalLoginOrPasswordException("Password can't be nullable!");
+        }
+    }
+
+    @Override
+    public void checkCustomerExists(final BigInteger id) throws UserNotFoundException
+    {
+        if (!getCustomers().containsKey(id))
+        {
+            throw new UserNotFoundException("Customer (id: " + id + ") doesn't exist!");
+        }
+    }
+
+    @Override
+    public void checkEmployeeExists(final BigInteger id) throws UserNotFoundException
+    {
+        if (!getEmployees().containsKey(id))
+        {
+            throw new UserNotFoundException("Employee (id: " + id + ") doesn't exist!");
+        }
+    }
+
+    @Override
+    public void checkDistrictExists(BigInteger id) throws ObjectNotFoundException
+    {
+        if (!getDistricts().containsKey(id))
+        {
+            throw new ObjectNotFoundException("District (id: " + id + ") doesn't exist");
+        }
+    }
+
+    @Override
+    public void checkSpecificationExists(final BigInteger id) throws ObjectNotFoundException
+    {
+        if (!getSpecifications().containsKey(id))
+        {
+            throw new ObjectNotFoundException("Specification (id: " + id + ") doesn't exist");
+        }
+    }
+
+    @Override
+    public void checkServiceExists(final BigInteger id) throws ObjectNotFoundException
+    {
+        if (!getServices().containsKey(id))
+        {
+            throw new ObjectNotFoundException("Service (id: " + id + ") doesn't exist");
+        }
+    }
+
+    @Override
+    public void checkOrderExists(final BigInteger id) throws ObjectNotFoundException
+    {
+        if (!getOrders().containsKey(id))
+        {
+            throw new ObjectNotFoundException("Order (id: " + id + ") doesn't exist");
+        }
     }
 }
