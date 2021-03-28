@@ -15,6 +15,7 @@ public class EmployeeTransformer implements Transformer
         EmployeeDTO employeeDTO = new EmployeeDTO();
 
         employeeDTO.setId(entity.getId());
+        employeeDTO.setFirstName(((Employee) entity).getFirstName());
         employeeDTO.setLastName(((Employee) entity).getLastName());
         employeeDTO.setLogin(((Employee) entity).getLogin());
         employeeDTO.setPassword(((Employee) entity).getPassword());
@@ -30,6 +31,7 @@ public class EmployeeTransformer implements Transformer
         Employee employee = new Employee();
 
         employee.setId(entityDTO.getId());
+        employee.setFirstName(((EmployeeDTO) entityDTO).getFirstName());
         employee.setLastName(((EmployeeDTO) entityDTO).getLastName());
         employee.setLogin(((EmployeeDTO) entityDTO).getLogin());
         employee.setPassword(((EmployeeDTO) entityDTO).getPassword());
