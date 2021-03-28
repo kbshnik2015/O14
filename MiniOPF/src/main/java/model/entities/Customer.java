@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 import lombok.ToString;
 
 @Data
@@ -14,8 +16,10 @@ import lombok.ToString;
 public class Customer extends AbstractUser
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private String address;
 
+    @Setter(onMethod_ = {@Synchronized})
     private float balance;
 
     public Customer(String firstName, String lastName, String login, String password, String address, float balance)

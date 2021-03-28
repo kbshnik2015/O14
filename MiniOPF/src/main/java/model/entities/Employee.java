@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 import lombok.ToString;
 import model.enums.EmployeeStatus;
 
@@ -16,9 +18,11 @@ import model.enums.EmployeeStatus;
 public class Employee extends AbstractUser
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private EmployeeStatus employeeStatus;
 
     @Getter
+    @Setter(onMethod_ = {@Synchronized})
     private boolean isWaitingForOrders;
 
     public Employee(String firstName, String lastName, String login, String password, EmployeeStatus employeeStatus)

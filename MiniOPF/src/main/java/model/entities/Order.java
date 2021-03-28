@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 import model.enums.OrderAim;
 import model.enums.OrderStatus;
 
@@ -12,20 +14,28 @@ import model.enums.OrderStatus;
 public class Order implements Entity
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger id;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger customerId;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger employeeId;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger specId;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger serviceId;
 
+    @Setter(onMethod_ = {@Synchronized})
     private OrderAim orderAim;
 
+    @Setter(onMethod_ = {@Synchronized})
     private OrderStatus orderStatus;
 
+    @Setter(onMethod_ = {@Synchronized})
     private String address;
 
     public Order(BigInteger customerId, BigInteger employeeId, BigInteger specId, BigInteger serviceId,

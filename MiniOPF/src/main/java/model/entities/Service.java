@@ -5,6 +5,8 @@ import java.util.Date;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 import model.enums.ServiceStatus;
 
 @Data
@@ -12,14 +14,19 @@ import model.enums.ServiceStatus;
 public class Service implements Entity
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger id;
 
+    @Setter(onMethod_ = {@Synchronized})
     private Date payDay;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger specificationId;
 
+    @Setter(onMethod_ = {@Synchronized})
     private ServiceStatus serviceStatus;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger customerId;
 
     public Service(Date payDay, BigInteger spec, ServiceStatus serviceStatus, BigInteger customerId)

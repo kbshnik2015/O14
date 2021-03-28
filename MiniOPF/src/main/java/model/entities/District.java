@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 
 
 @Data
@@ -11,10 +13,13 @@ import lombok.NoArgsConstructor;
 public class District implements Entity
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger id;
 
+    @Setter(onMethod_ = {@Synchronized})
     private String name;
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger parentId;
 
     public District(String name, BigInteger parentId)

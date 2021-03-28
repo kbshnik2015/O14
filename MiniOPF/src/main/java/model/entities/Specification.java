@@ -6,22 +6,30 @@ import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Synchronized;
 
 @Data
 @NoArgsConstructor
 public class Specification implements Entity
 {
 
+    @Setter(onMethod_ = {@Synchronized})
     private BigInteger id;
 
+    @Setter(onMethod_ = {@Synchronized})
     private String name;
 
+    @Setter(onMethod_ = {@Synchronized})
     private float price;
 
+    @Setter(onMethod_ = {@Synchronized})
     private String description;
 
+    @Setter(onMethod_ = {@Synchronized})
     private boolean isAddressDepended;
 
+    @Setter(onMethod_ = {@Synchronized})
     private List<BigInteger> districtsIds;
 
 
