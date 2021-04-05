@@ -3,14 +3,11 @@ package model;
 import java.sql.SQLException;
 
 import controller.exceptions.ObjectNotFoundException;
-import lombok.Getter;
-import lombok.Setter;
 
 public class ModelFactory
 {
-    @Getter
-    @Setter
-    private static String currentModel;
+    private static String currentModel = "modeldb";
+//    private static String currentModel = "modeljson";
 
     public static Model getModel() throws ObjectNotFoundException
     {
