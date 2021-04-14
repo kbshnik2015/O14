@@ -1,50 +1,65 @@
 package servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import controller.Controller;
+import lombok.SneakyThrows;
+import model.Model;
+import model.ModelFactory;
+import model.dto.*;
+import model.entities.Order;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
 
-import controller.Controller;
-import lombok.SneakyThrows;
-import model.entities.AbstractUser;
-import model.entities.Customer;
-import model.entities.Employee;
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet
 {
-    Controller controller;
-
     @SneakyThrows
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException
+    @Override
+    public void init() throws ServletException
     {
-//        controller = new Controller();
-//        String login = request.getParameter("login");
-//        String password = request.getParameter("password");
-//
-//        AbstractUser user = controller.login(login, password);
-//
-//        if (user instanceof Customer){
-//            request.getRequestDispatcher("views/customer.jsp").forward(request, response);
-//        }
-//        else if(user instanceof Employee){
-//            request.getRequestDispatcher("views/employee.jsp").forward(request, response);
-//        }
+        super.init();
+
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+    @SneakyThrows
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        PrintWriter writer = response.getWriter();
-        writer.println("<html>");
-            writer.println("<h1>Hello World!</h1>");
-        writer.println("</html>");
+
+    }
+
+    @SneakyThrows
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+
+        ModelFactory modelFactory = new ModelFactory();
+        Model model = modelFactory.getModel();
+        Controller controller = new Controller();
+        HttpSession session = request.getSession();
+
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
+
+        AbstractUserDTO user = controller.login(login, password);
+
+
+        if (user instanceof CustomerDTO)
+        {
+            CustomerDTO customer = (CustomerDTO) user;
+            session.setAttribute("currentCustomer", customer);
+            request.getRequestDispatcher("/view/customer/demoCustomer.jsp").forward(request, response);
+        }
+        else if(user instanceof EmployeeDTO)
+        {
+            EmployeeDTO employee = (EmployeeDTO) user;
+            session.setAttribute("currentEmployee",employee);
+            response.sendRedirect("/NavigationServlet?allOrders=click");
+        }
     }
 }

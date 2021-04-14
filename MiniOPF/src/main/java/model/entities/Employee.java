@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -20,8 +19,7 @@ public class Employee extends AbstractUser
 
     @Setter(onMethod_ = {@Synchronized})
     private EmployeeStatus employeeStatus;
-
-    @Getter
+    
     @Setter(onMethod_ = {@Synchronized})
     private boolean isWaitingForOrders;
 

@@ -43,4 +43,5 @@ public class SpecificationDTO implements EntityDTO
         this.isAddressDepended = isAddressDepended;
         this.districtsIds = districtsIds;
     }
+
 }

@@ -1,0 +1,69 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Services</title>
+        <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"  %>
+        <c:import url="Header.jsp"/>
+        <jsp:useBean id="services" scope="request" type="java.util.Map"/>
+    </head>
+    <body>
+    <form action="/NavigationServlet" method="get" name="navigation" style="margin: 0px">
+        <button name="allOrders" value="click" type="submit" >All orders</button>
+        <button name="myOrders" value="click" type="submit">My orders</button>
+        <button name="services" value="click" type="submit" disabled="disabled">Services</button>
+        <button name="spec" value="click" type="submit">Specifications</button>
+        <button name="customers" value="click" type="submit">Customers</button>
+        <button name="districts" value="click" type="submit">Districts</button>
+    </form>
+    <table class="table table-bordered" border="1" cellspacing="0">
+        <form action="">
+            <c:import url="../tableView/tableButtons/servicesButtons.jsp"/>
+        <thead>
+            <tr bgcolor="#a9a9a9">
+                <th style="text-align:center;"><input type="checkbox" id="all" ></th>
+                <td>
+                    id
+                    <br>
+                    <input type="text">
+                </td>
+                <td>
+                    Pay day
+                    <br>
+                    <input type="text">
+                </td>
+                <td>
+                    Specification id
+                    <br>
+                    <input type="text">
+                </td>
+                <td>
+                    Service status
+                    <br>
+                    <input type="text">
+                </td>
+                <td>
+                    Customer id
+                    <br>
+                    <input type="text">
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="service" items="${services}">
+                <tr>
+                    <th style="text-align:center;"><input type="checkbox"></th>
+                    <td>${service.value.id }</td>
+                    <td>${service.value.payDay}</td>
+                    <td><a href="/view/employee/editSpecification.jsp&specIf=${service.value.specificationId}">${service.value.specificationId}</a></td>
+                    <td>${service.value.serviceStatus}</td>
+                    <td>${service.value.customerId}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+        </form>
+    </table>
+    <script>
+        $('.table').checkboxTable();
+    </script>
+    </body>
+</html>

@@ -1,15 +1,15 @@
 package model.database;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class ConnectionPool
 {
     private static DataSource dataSource;
+
 
     static
     {
@@ -17,12 +17,12 @@ public class ConnectionPool
         {
             InitialContext initContext = new InitialContext();
             dataSource = (DataSource) initContext.lookup("java:comp/env/jdbc/miniopf");
-        }
-        catch (NamingException e)
+        } catch (NamingException e)
         {
             e.printStackTrace();
         }
     }
+
 
     private ConnectionPool()
     {
@@ -41,8 +41,7 @@ public class ConnectionPool
             {
                 connection.close();
             }
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             e.printStackTrace();
         }

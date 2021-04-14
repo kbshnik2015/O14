@@ -1,8 +1,4 @@
-<%@ page import="controller.Controller" %>
-<%@ page import="model.entities.Service" %>
-<%@ page import="model.entities.Customer" %>
-<%@ page import="jdk.nashorn.internal.ir.CatchNode" %>
-<%@ page import="model.Model" %><%--
+<%--
   Created by IntelliJ IDEA.
   User: Lenovo
   Date: 11.02.2021
@@ -15,20 +11,22 @@
     <title>MiniOPF</title>
   </head>
   <body>
-  <form method="POST" action="/main">
-      <div align="center">
-          <p>LOGIN:
-              <label>
-                  <input type="text" name="login" required>
-              </label>
-          </p>
-          <p>PASSWORD:
-              <label>
-                  <input type="text" name="password" required>
-              </label>
-          </p>
-          <input type="submit" name="button" value="LOGIN">
-      </div>
-  </form>
+  <div align="middle">
+      <form action="/login" method="get" name="loginForm">
+          <div>
+              <input tabindex="1" placeholder="LOGIN" type="text" name="login" required>
+          </div>
+          <br>
+          <div>
+              <input tabindex="2" placeholder="PASSWORD" type="password" name="password" required>
+          </div>
+          <br>
+          <div>
+              <button type="submit">Sing in</button>
+          </div>
+      </form>
+      <button type="submit" formaction="">Register Customer</button>
+      <button type="submit" formaction="">Register Employee</button>
+  </div>
   </body>
 </html>
