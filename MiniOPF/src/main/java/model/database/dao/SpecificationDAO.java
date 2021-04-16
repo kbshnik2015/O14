@@ -91,7 +91,7 @@ public class SpecificationDAO extends AbstractDAO<Specification>
                 specification.setName(resultSet.getString("name"));
                 specification.setPrice(resultSet.getFloat("price"));
                 specification.setDescription(resultSet.getString("description"));
-                specification.setAddressDepended(resultSet.getBoolean("is_address_depended"));
+                specification.setAddressDependence(resultSet.getBoolean("is_address_depended"));
                 specification.setDistrictsIds(findSpecificationDistricts(specification.getId()));
                 specifications.add(specification);
             }
@@ -115,7 +115,7 @@ public class SpecificationDAO extends AbstractDAO<Specification>
                 specification.setName(resultSet.getString("name"));
                 specification.setPrice(resultSet.getFloat("price"));
                 specification.setDescription(resultSet.getString("description"));
-                specification.setAddressDepended(resultSet.getBoolean("is_address_depended"));
+                specification.setAddressDependence(resultSet.getBoolean("is_address_depended"));
                 specification.setDistrictsIds(findSpecificationDistricts(specification.getId()));
             }
         }
@@ -132,7 +132,7 @@ public class SpecificationDAO extends AbstractDAO<Specification>
             preparedStatement.setString(2, entity.getName());
             preparedStatement.setFloat(3, entity.getPrice());
             preparedStatement.setString(4, entity.getDescription());
-            preparedStatement.setBoolean(5, entity.isAddressDepended());
+            preparedStatement.setBoolean(5, entity.isAddressDependence());
             boolean isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             if (isObjectNotCreated)
             {
@@ -150,7 +150,7 @@ public class SpecificationDAO extends AbstractDAO<Specification>
             preparedStatement.setString(1, entity.getName());
             preparedStatement.setFloat(2, entity.getPrice());
             preparedStatement.setString(3, entity.getDescription());
-            preparedStatement.setBoolean(4, entity.isAddressDepended());
+            preparedStatement.setBoolean(4, entity.isAddressDependence());
             preparedStatement.setLong(5, parseToLong(entity.getId()));
             boolean isObjectNotUpdated = preparedStatement.executeUpdate() == 0;
             if (isObjectNotUpdated)

@@ -423,7 +423,7 @@ public class ModelJson implements Model
             specification.setName(specificationDTO.getName());
             specification.setPrice(specificationDTO.getPrice());
             specification.setDescription(specificationDTO.getDescription());
-            specification.setAddressDepended(specificationDTO.isAddressDepended());
+            specification.setAddressDependence(specificationDTO.isAddressDependence());
             specification.setDistrictsIds(specificationDTO.getDistrictsIds());
         }
 

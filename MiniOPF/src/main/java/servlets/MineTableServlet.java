@@ -41,15 +41,8 @@ public class MineTableServlet extends HttpServlet
             regexps.put("orderAim",request.getParameter("orderAim"));
             regexps.put("orderStatus",request.getParameter("orderStatus"));
             regexps.put("address",request.getParameter("address"));
-            //request.setAttribute("allOrders",regexParser.filterOrders(orders,regexps));
-            HashMap<BigInteger,OrderDTO> result =
-                    (HashMap<BigInteger, OrderDTO>) regexParser.filterOrders(orders,regexps);
-            PrintWriter printWriter = response.getWriter();
-            for(Map.Entry<BigInteger, OrderDTO> order : result.entrySet()) {
-                printWriter.println(order.getValue().toString());
-            }
-            printWriter.println("end");
-            //getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
+            request.setAttribute("allOrders",regexParser.filterOrders(orders,regexps));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
     }
 }

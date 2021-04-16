@@ -19,7 +19,7 @@ public class RegexParser
 {
     private static boolean matchesBigInteger(BigInteger value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -40,7 +40,7 @@ public class RegexParser
 
     private static boolean matchesFloat(float value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -54,7 +54,7 @@ public class RegexParser
 
     private static boolean matchesString(String value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -78,7 +78,7 @@ public class RegexParser
 
     private static boolean matchesBoolean(boolean value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -88,7 +88,7 @@ public class RegexParser
 
     private static boolean matchesEnum(String value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -98,7 +98,7 @@ public class RegexParser
 
     private static boolean matchesListId(List<BigInteger> values, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -134,7 +134,7 @@ public class RegexParser
 
     private static boolean matchesDate(Date value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -235,7 +235,7 @@ public class RegexParser
                     matchesString(specification.getName(), regexps.get("name")) &&
                     matchesFloat(specification.getPrice(), regexps.get("price")) &&
                     matchesString(specification.getDescription(), regexps.get("description")) &&
-                    matchesBoolean(specification.isAddressDepended(), regexps.get("isAddressDepended")) &&
+                    matchesBoolean(specification.isAddressDependence(), regexps.get("isAddressDepended")) &&
                     matchesListId(specification.getDistrictsIds(), regexps.get("districtsIds")))
             {
                 filteredSpecifications.put(specification.getId(), specification);

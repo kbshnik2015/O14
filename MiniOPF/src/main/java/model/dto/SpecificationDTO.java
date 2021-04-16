@@ -19,28 +19,28 @@ public class SpecificationDTO implements EntityDTO
 
     private String description;
 
-    private boolean isAddressDepended;
+    private boolean addressDependence;
 
     private List<BigInteger> districtsIds;
 
-    public SpecificationDTO(String name, float price, String description, boolean isAddressDepended,
+    public SpecificationDTO(String name, float price, String description, boolean addressDependence,
             ArrayList<BigInteger> districtsIds)
     {
         this.name = name;
         this.price = price;
         this.description = description;
-        this.isAddressDepended = isAddressDepended;
+        this.addressDependence = addressDependence;
         this.districtsIds = districtsIds;
     }
 
-    public SpecificationDTO(BigInteger id, String name, float price, String description, boolean isAddressDepended,
+    public SpecificationDTO(BigInteger id, String name, float price, String description, boolean addressDependence,
             List<BigInteger> districtsIds)
     {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.isAddressDepended = isAddressDepended;
+        this.addressDependence = addressDependence;
         this.districtsIds = districtsIds;
     }
 

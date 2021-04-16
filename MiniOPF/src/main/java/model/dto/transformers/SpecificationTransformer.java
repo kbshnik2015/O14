@@ -18,7 +18,7 @@ public class SpecificationTransformer implements Transformer
         specificationDTO.setName(((Specification) entity).getName());
         specificationDTO.setPrice(((Specification) entity).getPrice());
         specificationDTO.setDescription(((Specification) entity).getDescription());
-        specificationDTO.setAddressDepended(((Specification) entity).isAddressDepended());
+        specificationDTO.setAddressDependence(((Specification) entity).isAddressDependence());
         specificationDTO.setDistrictsIds(((Specification) entity).getDistrictsIds());
 
         return specificationDTO;
@@ -33,7 +33,7 @@ public class SpecificationTransformer implements Transformer
         specification.setName(((SpecificationDTO) entityDTO).getName());
         specification.setPrice(((SpecificationDTO) entityDTO).getPrice());
         specification.setDescription(((SpecificationDTO) entityDTO).getDescription());
-        specification.setAddressDepended(((SpecificationDTO) entityDTO).isAddressDepended());
+        specification.setAddressDependence(((SpecificationDTO) entityDTO).isAddressDependence());
         specification.setDistrictsIds(((SpecificationDTO) entityDTO).getDistrictsIds());
 
         return specification;

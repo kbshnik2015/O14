@@ -27,30 +27,30 @@ public class Specification implements Entity
     private String description;
 
     @Setter(onMethod_ = {@Synchronized})
-    private boolean isAddressDepended;
+    private boolean addressDependence;
 
     @Setter(onMethod_ = {@Synchronized})
     private List<BigInteger> districtsIds;
 
 
-    public Specification(String name, float price, String description, boolean isAddressDepended,
+    public Specification(String name, float price, String description, boolean addressDependence,
             ArrayList<BigInteger> districtsIds)
     {
         this.name = name;
         this.price = price;
         this.description = description;
-        this.isAddressDepended = isAddressDepended;
+        this.addressDependence = addressDependence;
         this.districtsIds = districtsIds;
     }
 
-    public Specification(BigInteger id, String name, float price, String description, boolean isAddressDepended,
+    public Specification(BigInteger id, String name, float price, String description, boolean addressDependence,
             List<BigInteger> districtsIds)
     {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.isAddressDepended = isAddressDepended;
+        this.addressDependence = addressDependence;
         this.districtsIds = districtsIds;
     }
 }

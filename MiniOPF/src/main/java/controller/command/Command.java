@@ -205,7 +205,7 @@ public enum Command
                     specificationDTO.setName(getValueInSting(args, 1));
                     specificationDTO.setPrice(parseToFloat(args[2]));
                     specificationDTO.setDescription(getValueInSting(args, 3));
-                    specificationDTO.setAddressDepended(parseToBoolean(args[4]));
+                    specificationDTO.setAddressDependence(parseToBoolean(args[4]));
                     specificationDTO.setDistrictsIds(parseToBigIntegerArrayList(args[5]));
 
                     controller.getModel().createSpecification(specificationDTO);
@@ -241,7 +241,7 @@ public enum Command
                     }
                     if (getValueInSting(args, 5) != null)
                     {
-                        specificationDTO.setAddressDepended(parseToBoolean(args[5]));
+                        specificationDTO.setAddressDependence(parseToBoolean(args[5]));
                     }
                     if (getValueInSting(args, 6) != null)
                     {
@@ -596,7 +596,7 @@ public enum Command
                             "\n\t\tname: " + specification.getName() +
                             "\n\t\tprice: " + specification.getPrice() +
                             "\n\t\tdescription: " + specification.getDescription() +
-                            "\n\t\taddress depended: " + specification.isAddressDepended() +
+                            "\n\t\taddress depended: " + specification.isAddressDependence() +
                             "\n\tService:");
                     if (order.getServiceId() != null)
                     {
@@ -634,7 +634,7 @@ public enum Command
                             + "\tSpecification: id: " + service.getSpecificationId() + ", name: " +
                             specification.getName() + ", price:" + specification.getPrice() +
                             ", description: " + specification.getDescription() +
-                            ", address depended: " + specification.isAddressDepended() +
+                            ", address depended: " + specification.isAddressDependence() +
                             "\n\tStatus: " + service.getServiceStatus() +
                             "\n\tPay day: " + service.getPayDay() + "\n";
                 }
@@ -659,8 +659,8 @@ public enum Command
                             + "\tName: " + specification.getName() + "\n"
                             + "\tDescription: " + specification.getDescription() + "\n"
                             + "\tPrice: " + specification.getPrice() + "\n"
-                            + "\tAddress depended : " + specification.isAddressDepended() + "\n";
-                    if (specification.isAddressDepended() && specification.getDistrictsIds() != null)
+                            + "\tAddress depended : " + specification.isAddressDependence() + "\n";
+                    if (specification.isAddressDependence() && specification.getDistrictsIds() != null)
                     {
                         result = result.concat("\tDistricts: ");
                         for (BigInteger districtId : specification.getDistrictsIds())
@@ -746,7 +746,7 @@ public enum Command
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
                             ", price: " + specification.getPrice() +
                             ", description: " + specification.getDescription() +
-                            ", address depended: " + specification.isAddressDepended() + "\n";
+                            ", address depended: " + specification.isAddressDependence() + "\n";
                 }
             },
 
@@ -782,7 +782,7 @@ public enum Command
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
                             ", price: " + specification.getPrice() +
                             ", description: " + specification.getDescription() +
-                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            ", address depended: " + specification.isAddressDependence() + "\n"
                             + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
                             ", pay day: " + service.getPayDay() + "\n";
                 }
@@ -819,7 +819,7 @@ public enum Command
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
                             ", price: " + specification.getPrice() +
                             ", description: " + specification.getDescription() +
-                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            ", address depended: " + specification.isAddressDependence() + "\n"
                             + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
                             ", pay day: " + service.getPayDay() + "\n";
                 }
@@ -856,7 +856,7 @@ public enum Command
                             + "\tSpecification: id: " + order.getSpecId() + ", name: " + specification.getName() +
                             ", price: " + specification.getPrice() +
                             ", description: " + specification.getDescription() +
-                            ", address depended: " + specification.isAddressDepended() + "\n"
+                            ", address depended: " + specification.isAddressDependence() + "\n"
                             + "\tService: id: " + order.getServiceId() + ", status: " + service.getServiceStatus() +
                             ", pay day: " + service.getPayDay() + "\n";
                 }
