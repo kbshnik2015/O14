@@ -1,23 +1,23 @@
 package servlets;
 
+import controller.Controller;
 import controller.RegexParser;
 import model.Model;
 import model.ModelFactory;
+import model.dto.EmployeeDTO;
 import model.dto.OrderDTO;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet (name = "MineTableServlet", value = "/MineTableServlet")
-public class MineTableServlet extends HttpServlet
+@WebServlet (name = "MyOrdersTableServlet", value = "/MyOrdersTableServlet")
+public class MyOrdersTableServlet extends HttpServlet
 {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -25,8 +25,10 @@ public class MineTableServlet extends HttpServlet
 
         if ("click".equals(request.getParameter("filter"))){
             HashMap<String,String> filterParams = new HashMap<>();
-            Model model = ModelFactory.getModel();
-            List<OrderDTO> allOrders = new ArrayList<>( model.getOrders().values());;
+            Controller controller = new Controller();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentEmployee");
+            List<OrderDTO> myOrders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
 
             filterParams.put("id",request.getParameter("id"));
             filterParams.put("serviceId",request.getParameter("serviceId"));
@@ -36,9 +38,8 @@ public class MineTableServlet extends HttpServlet
             filterParams.put("orderAim",request.getParameter("orderAim"));
             filterParams.put("orderStatus",request.getParameter("orderStatus"));
             filterParams.put("address",request.getParameter("address"));
-
             request.setAttribute("filterParams",filterParams);
-            request.setAttribute("allOrders",RegexParser.filterOrders(allOrders,filterParams));
+            request.setAttribute("myOrders", RegexParser.filterOrders(myOrders,filterParams));
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
     }

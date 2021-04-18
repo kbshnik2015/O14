@@ -28,10 +28,8 @@ public class EmployeeServlet extends HttpServlet
         Model model = modelFactory.getModel();
         HttpSession session = request.getSession();
         EmployeeDTO currentEmployee = (EmployeeDTO) session.getAttribute("currentEmployee");
-        response.getWriter().write("here");
         if("on".equals(request.getParameter("waitForWork"))){
             currentEmployee.setWaitingForOrders(true);
-            response.getWriter().write("here2");
         }else {
             currentEmployee.setWaitingForOrders(false);
         }
@@ -39,6 +37,6 @@ public class EmployeeServlet extends HttpServlet
         session.removeAttribute("currentEmployee");
         session.setAttribute("currentEmployee",currentEmployee);
         response.sendRedirect(request.getHeader("referer"));
-       // getServletContext().getRequestDispatcher("/NavigationServlet?allOrders=click").forward(request, response);
+
     }
 }

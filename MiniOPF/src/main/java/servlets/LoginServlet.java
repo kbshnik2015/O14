@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import model.Model;
 import model.ModelFactory;
 import model.dto.*;
-import model.entities.Order;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/login")
@@ -45,15 +43,13 @@ public class LoginServlet extends HttpServlet
 
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-
         AbstractUserDTO user = controller.login(login, password);
-
 
         if (user instanceof CustomerDTO)
         {
             CustomerDTO customer = (CustomerDTO) user;
             session.setAttribute("currentCustomer", customer);
-            request.getRequestDispatcher("/view/customer/demoCustomer.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
         }
         else if(user instanceof EmployeeDTO)
         {

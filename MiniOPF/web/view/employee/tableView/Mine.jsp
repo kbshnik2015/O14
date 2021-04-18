@@ -4,7 +4,8 @@
         <title>Mine</title>
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"  %>
         <c:import url="Header.jsp"/>
-        <jsp:useBean id="allOrders" scope="request" type="java.util.Map"/>
+        <jsp:useBean id="allOrders" scope="request" type="java.util.List"/>
+        <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
         <form action="/NavigationServlet" method="get" name="navigation" style="margin: 0px">
@@ -18,39 +19,38 @@
         <table class="table table-bordered" border="1" cellspacing="0">
             <form action="/MineTableServlet" method="post">
                 <c:import url="../tableView/tableButtons/ordersButtons.jsp"/>
-                <form action="">
                 <thead>
                     <tr bgcolor="#a9a9a9">
                         <th style="text-align:center;"><input type="checkbox" id="all"></th>
                         <td>
                             id
                             <br>
-                            <input type="text" name="id">
+                            <input type="text" name="id" value=${filterParams.get("id")}>
                         </td>
                         <td>
                             Service id
                             <br>
-                            <input type="text" name="serviceId">
+                            <input type="text" name="serviceId" value=${filterParams.get("serviceId")}>
                         </td>
                         <td>
                             Specification id
                             <br>
-                            <input type="text" name="specId">
+                            <input type="text" name="specId" value=${filterParams.get("specId")}>
                         </td>
                         <td>
                             Customer id
                             <br>
-                            <input type="text" name="customerId">
+                            <input type="text" name="customerId" value=${filterParams.get("customerId")}>
                         </td>
                         <td>
                             Employee id
                             <br>
-                            <input type="text" name="employeeId">
+                            <input type="text" name="employeeId" value=${filterParams.get("employeeId")}>
                         </td>
                         <td>
                             Address
                             <br>
-                            <input type="text" name="address">
+                            <input type="text" name="address" value=${filterParams.get("address")}>
                         </td>
                         <td>
                             Order aim
@@ -83,14 +83,14 @@
                     <c:forEach var="order" items="${allOrders}">
                         <tr>
                             <th style="text-align:center;"><input type="checkbox"></th>
-                            <td>${order.value.id }</td>
-                            <td><a href="/view/employee/editView/editService.jsp?serviceId=${order.value.serviceId}">${order.value.serviceId}</a></td>
-                            <td><a href="/view/employee/editView/editSpecification.jsp?specId=${order.value.specId}">${order.value.specId}</a></td>
-                            <td><a href="/view/employee/editView/editCustomer.jsp?specId=${order.value.customerId}">${order.value.customerId}</a></td>
-                            <td>${order.value.employeeId}</td>
-                            <td>${order.value.address}</td>
-                            <td>${order.value.orderAim}</td>
-                            <td>${order.value.orderStatus}</td>
+                            <td>${order.id }</td>
+                            <td><a href="/view/employee/editView/editService.jsp?serviceId=${order.serviceId}">${order.serviceId}</a></td>
+                            <td><a href="/view/employee/editView/editSpecification.jsp?specId=${order.specId}">${order.specId}</a></td>
+                            <td><a href="/view/employee/editView/editCustomer.jsp?specId=${order.customerId}">${order.customerId}</a></td>
+                            <td>${order.employeeId}</td>
+                            <td>${order.address}</td>
+                            <td>${order.orderAim}</td>
+                            <td>${order.orderStatus}</td>
                         </tr>
                     </c:forEach>
                 <tbody>
