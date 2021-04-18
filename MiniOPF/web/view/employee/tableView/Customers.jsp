@@ -4,7 +4,8 @@
         <title>Customers</title>
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
         <c:import url="Header.jsp"/>
-        <jsp:useBean id="customers" scope="request" type="java.util.Map"/>
+        <jsp:useBean id="customers" scope="request" type="java.util.List"/>
+        <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
     <form action="/NavigationServlet" method="get" name="navigation" style="margin: 0px">
@@ -16,7 +17,7 @@
         <button name="districts" value="click" type="submit">Districts</button>
     </form>
     <table class="table table-bordered" border="1" cellspacing="0">
-        <form action="">
+        <form action="/CustomersTableServlet" method="get">
             <c:import url="../tableView/tableButtons/customersButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
@@ -24,32 +25,32 @@
                 <td>
                     id
                     <br>
-                    <input type="text">
+                    <input type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     First name
                     <br>
-                    <input type="text">
+                    <input type="text" name="firstName" value="${filterParams.get("firstName")}">
                 </td>
                 <td>
                     Last name
                     <br>
-                    <input type="text">
+                    <input type="text" name="lastName" value="${filterParams.get("lastName")}">
                 </td>
                 <td>
                     Login
                     <br>
-                    <input type="text">
+                    <input type="text" name="login" value="${filterParams.get("login")}">
                 </td>
                 <td>
                     Address
                     <br>
-                    <input type="text">
+                    <input type="text" name="address" value="${filterParams.get("address")}">
                 </td>
                 <td>
                     Balance
                     <br>
-                    <input type="text">
+                    <input type="text" name="balance" value="${filterParams.get("balance")}">
                 </td>
             </tr>
         </thead>
@@ -57,12 +58,12 @@
             <c:forEach var="customer" items="${customers}">
                 <tr>
                     <th style="text-align:center;"><input type="checkbox"></th>
-                    <td>${customer.value.id }</td>
-                    <td>${customer.value.firstName}</td>
-                    <td>${customer.value.lastName}</td>
-                    <td>${customer.value.login}</td>
-                    <td>${customer.value.address}</td>
-                    <td>${customer.value.balance}</td>
+                    <td>${customer.id }</td>
+                    <td>${customer.firstName}</td>
+                    <td>${customer.lastName}</td>
+                    <td>${customer.login}</td>
+                    <td>${customer.address}</td>
+                    <td>${customer.balance}</td>
                 </tr>
             </c:forEach>
         </tbody>

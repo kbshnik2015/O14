@@ -1,10 +1,7 @@
 package controller;
 
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +16,7 @@ public class RegexParser
 {
     private static boolean matchesBigInteger(BigInteger value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -40,7 +37,7 @@ public class RegexParser
 
     private static boolean matchesFloat(float value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -54,7 +51,7 @@ public class RegexParser
 
     private static boolean matchesString(String value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -78,7 +75,7 @@ public class RegexParser
 
     private static boolean matchesBoolean(boolean value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -88,7 +85,7 @@ public class RegexParser
 
     private static boolean matchesEnum(String value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -98,7 +95,7 @@ public class RegexParser
 
     private static boolean matchesListId(List<BigInteger> values, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -134,7 +131,7 @@ public class RegexParser
 
     private static boolean matchesDate(Date value, String inputRegex)
     {
-        if (inputRegex == null)
+        if ("".equals(inputRegex))
         {
             return true;
         }
@@ -164,10 +161,10 @@ public class RegexParser
         System.out.println(matchesDate(null, "-"));
     }
 
-    public static Map<BigInteger, CustomerDTO> filterCustomers(Map<BigInteger, CustomerDTO> customers,
+    public static List<CustomerDTO> filterCustomers(Map<BigInteger, CustomerDTO> customers,
             Map<String, String> regexps)
     {
-        Map<BigInteger, CustomerDTO> filteredCustomers = new HashMap<>();
+        List<CustomerDTO> filteredCustomers = new ArrayList<>();
 
         for (CustomerDTO customer : customers.values())
         {
@@ -178,17 +175,16 @@ public class RegexParser
                     matchesString(customer.getAddress(), regexps.get("address")) &&
                     matchesFloat(customer.getBalance(), regexps.get("balance")))
             {
-                filteredCustomers.put(customer.getId(), customer);
+                filteredCustomers.add(customer);
             }
         }
-
         return filteredCustomers;
     }
 
-    public static Map<BigInteger, EmployeeDTO> filterEmployees(Map<BigInteger, EmployeeDTO> employees,
+    public static List<EmployeeDTO> filterEmployees(Map<BigInteger, EmployeeDTO> employees,
             Map<String, String> regexps)
     {
-        Map<BigInteger, EmployeeDTO> filteredEmployees = new HashMap<>();
+        List<EmployeeDTO> filteredEmployees = new ArrayList<>();
 
         for (EmployeeDTO employee : employees.values())
         {
@@ -199,35 +195,34 @@ public class RegexParser
                     matchesEnum(employee.getEmployeeStatus().toString(), regexps.get("employeeStatus")) &&
                     matchesBoolean(employee.isWaitingForOrders(), regexps.get("isWaitingForOrders")))
             {
-                filteredEmployees.put(employee.getId(), employee);
+                filteredEmployees.add(employee);
             }
         }
 
         return filteredEmployees;
     }
 
-    public static Map<BigInteger, DistrictDTO> filterDistricts(Map<BigInteger, DistrictDTO> districts,
+    public static List<DistrictDTO> filterDistricts(Map<BigInteger, DistrictDTO> districts,
             Map<String, String> regexps)
     {
-        Map<BigInteger, DistrictDTO> filteredDistricts = new HashMap<>();
+        List<DistrictDTO> filteredDistricts = new ArrayList<>();
 
         for (DistrictDTO district : districts.values())
         {
             if (matchesBigInteger(district.getId(), regexps.get("id")) &&
-                    matchesString(district.getName(), regexps.get("name")) &&
-                    matchesBigInteger(district.getParentId(), regexps.get("parentId")))
+                    matchesString(district.getName(), regexps.get("name")))
             {
-                filteredDistricts.put(district.getId(), district);
+                filteredDistricts.add(district);
             }
         }
 
         return filteredDistricts;
     }
 
-    public static Map<BigInteger, SpecificationDTO> filterSpecifications(
+    public static List<SpecificationDTO> filterSpecifications(
             Map<BigInteger, SpecificationDTO> specifications, Map<String, String> regexps)
     {
-        Map<BigInteger, SpecificationDTO> filteredSpecifications = new HashMap<>();
+        List<SpecificationDTO> filteredSpecifications = new ArrayList<>();
 
         for (SpecificationDTO specification : specifications.values())
         {
@@ -235,20 +230,20 @@ public class RegexParser
                     matchesString(specification.getName(), regexps.get("name")) &&
                     matchesFloat(specification.getPrice(), regexps.get("price")) &&
                     matchesString(specification.getDescription(), regexps.get("description")) &&
-                    matchesBoolean(specification.isAddressDepended(), regexps.get("isAddressDepended")) &&
+                    matchesBoolean(specification.isAddressDependence(), regexps.get("isAddressDependence")) &&
                     matchesListId(specification.getDistrictsIds(), regexps.get("districtsIds")))
             {
-                filteredSpecifications.put(specification.getId(), specification);
+                filteredSpecifications.add(specification);
             }
         }
 
         return filteredSpecifications;
     }
 
-    public static Map<BigInteger, ServiceDTO> filterServices(
+    public static List<ServiceDTO> filterServices(
             Map<BigInteger, ServiceDTO> services, Map<String, String> regexps)
     {
-        Map<BigInteger, ServiceDTO> filteredServices = new HashMap<>();
+        List<ServiceDTO> filteredServices = new ArrayList<>();
 
         for (ServiceDTO service : services.values())
         {
@@ -258,19 +253,18 @@ public class RegexParser
                     matchesEnum(service.getServiceStatus().toString(), regexps.get("serviceStatus")) &&
                     matchesBigInteger(service.getCustomerId(), regexps.get("customerId")))
             {
-                filteredServices.put(service.getId(), service);
+                filteredServices.add(service);
             }
         }
 
         return filteredServices;
     }
 
-    public static Map<BigInteger, OrderDTO> filterOrders(
-            Map<BigInteger, OrderDTO> orders, Map<String, String> regexps)
+    public static List<OrderDTO> filterOrders(List<OrderDTO> orders, Map<String, String> regexps)
     {
-        Map<BigInteger, OrderDTO> filteredOrders = new HashMap<>();
+        List<OrderDTO> filteredOrders = new ArrayList<OrderDTO>();
 
-        for (OrderDTO order : orders.values())
+        for (OrderDTO order : orders)
         {
             if (matchesBigInteger(order.getId(), regexps.get("id")) &&
                     matchesBigInteger(order.getCustomerId(), regexps.get("customerId")) &&
@@ -281,10 +275,9 @@ public class RegexParser
                     matchesEnum(order.getOrderStatus().toString(), regexps.get("orderStatus")) &&
                     matchesString(order.getAddress(), regexps.get("address")))
             {
-                filteredOrders.put(order.getId(), order);
+                filteredOrders.add(order);
             }
         }
-
         return filteredOrders;
     }
 

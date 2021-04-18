@@ -4,7 +4,8 @@
         <title>Specifications</title>
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
         <c:import url="Header.jsp"/>
-        <jsp:useBean id="specs" scope="request" type="java.util.Map"/>
+        <jsp:useBean id="specs" scope="request" type="java.util.List"/>
+        <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
     <form action="/NavigationServlet" method="get" name="navigation" style="margin: 0px">
@@ -16,40 +17,46 @@
         <button name="districts" value="click" type="submit">Districts</button>
     </form>
     <table class="table table-bordered" border="1" cellspacing="0">
-        <form action="">
+        <form action="/SpecsTableServlet" method="post">
             <c:import url="../tableView/tableButtons/specsButtons.jsp"/>
         <thead>
+
             <tr bgcolor="#a9a9a9">
                 <th style="text-align:center;"><input type="checkbox" id="all" ></th>
                 <td>
                     id
                     <br>
-                    <input type="text" >
+                    <input type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Name
                     <br>
-                    <input type="text">
+                    <input type="text" name="name"  value="${filterParams.get("name")}">
                 </td>
                 <td>
                     Price
                     <br>
-                    <input type="text">
+                    <input type="text" name="price"  value="${filterParams.get("price")}">
                 </td>
                 <td>
                     Description
                     <br>
-                    <input type="text">
+                    <input type="text" name="description"  value="${filterParams.get("description")}">
                 </td>
                 <td>
                     Is address depended
                     <br>
-                    <input type="text">
+                    <select size="1"  name="isAddressDependence">
+                        <option disabled>Choose address dependency</option>
+                        <option selected value="">-</option>
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select>
                 </td>
                 <td>
                     Districts id's
                     <br>
-                    <input type="text">
+                    <input type="text" name="districtsIds"  value="${filterParams.get("districtsIds")}">
                 </td>
             </tr>
         </thead>
@@ -57,13 +64,13 @@
         <c:forEach var="spec" items="${specs}">
                 <tr>
                     <th style="text-align:center;"><input type="checkbox"></th>
-                    <td>${spec.value.id }</td>
-                    <td>${spec.value.name}</td>
-                    <td>${spec.value.price}</td>
-                    <td>${spec.value.description}</td>
-                    <td>${spec.value.addressDependence}</td>
+                    <td>${spec.id }</td>
+                    <td>${spec.name}</td>
+                    <td>${spec.price}</td>
+                    <td>${spec.description}</td>
+                    <td>${spec.addressDependence}</td>
                     <td>
-                        <c:forEach var="district" items="${spec.value.districtsIds}">
+                        <c:forEach var="district" items="${spec.districtsIds}">
                             <a href="/view/employee/editView/editDistrict.jsp?districtId=${district}">${district}</a>
                             <br>
                         </c:forEach>

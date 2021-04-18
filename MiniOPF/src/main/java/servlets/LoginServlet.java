@@ -1,56 +1,61 @@
 package servlets;
 
-import java.io.IOException;
+import controller.Controller;
+import lombok.SneakyThrows;
+import model.Model;
+import model.ModelFactory;
+import model.dto.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
-import controller.Controller;
-import lombok.SneakyThrows;
-import model.dto.AbstractUserDTO;
-import model.dto.CustomerDTO;
-import model.dto.EmployeeDTO;
-import model.entities.AbstractUser;
-import model.entities.Customer;
-import model.entities.Employee;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/main")
+@WebServlet(name = "LoginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet
 {
-    Controller controller;
+    @SneakyThrows
+    @Override
+    public void init() throws ServletException
+    {
+        super.init();
+
+    }
 
     @SneakyThrows
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        controller = new Controller();
+
+    }
+
+    @SneakyThrows
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+
+        ModelFactory modelFactory = new ModelFactory();
+        Model model = modelFactory.getModel();
+        Controller controller = new Controller();
+        HttpSession session = request.getSession();
+
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-
         AbstractUserDTO user = controller.login(login, password);
 
         if (user instanceof CustomerDTO)
         {
-            request.getRequestDispatcher("view/customer.jsp").forward(request, response);
+            CustomerDTO customer = (CustomerDTO) user;
+            session.setAttribute("currentCustomer", customer);
+            request.getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
         }
-        else if (user instanceof EmployeeDTO)
+        else if(user instanceof EmployeeDTO)
         {
-            request.getRequestDispatcher("view/employee.jsp").forward(request, response);
-
+            EmployeeDTO employee = (EmployeeDTO) user;
+            session.setAttribute("currentEmployee",employee);
+            response.sendRedirect("/NavigationServlet?allOrders=click");
         }
     }
-
-    //    @SneakyThrows
-    //    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    //            throws ServletException, IOException
-    //    {
-    //        PrintWriter writer = response.getWriter();
-    //        writer.println("<html>");
-    //        writer.println("<h1>Hello World!</h1>");
-    //        writer.println("</html>");
-    //    }
-
 }
