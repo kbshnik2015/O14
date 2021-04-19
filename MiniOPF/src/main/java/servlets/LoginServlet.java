@@ -48,14 +48,14 @@ public class LoginServlet extends HttpServlet
         if (user instanceof CustomerDTO)
         {
             CustomerDTO customer = (CustomerDTO) user;
-            session.setAttribute("currentCustomer", customer);
+            session.setAttribute("currentUser", customer);
             request.getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
         }
         else if(user instanceof EmployeeDTO)
         {
             EmployeeDTO employee = (EmployeeDTO) user;
-            session.setAttribute("currentEmployee",employee);
-            response.sendRedirect("/NavigationServlet?allOrders=click");
+            session.setAttribute("currentUser",employee);
+            response.sendRedirect("/employee/NavigationServlet?allOrders=click");
         }
     }
 }

@@ -3,7 +3,7 @@
 <html>
     <head>
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
-        <jsp:useBean id="currentEmployee" scope="session" class="model.dto.EmployeeDTO"/>
+        <jsp:useBean id="currentUser" scope="session" class="model.dto.EmployeeDTO"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
         <script>
@@ -42,10 +42,10 @@
                 };
             })(jQuery);
         </script>
-        <p>You are login as: ${currentEmployee.firstName}  ${currentEmployee.lastName}</p>
-        <form action="/EmployeeServlet" method="POST" name="waitForWorkForm">
+        <p>You are login as: ${currentUser.firstName}  ${currentUser.lastName}</p>
+        <form action="/employee/EmployeeServlet" method="POST" name="waitForWorkForm">
             <c:choose>
-                <c:when test="${currentEmployee.waitingForOrders}" >
+                <c:when test="${currentUser.waitingForOrders}" >
                     <input type = "checkbox"  name = "waitForWork" value="on" checked onClick="waitForWorkForm.submit()"> Wait for work
                 </c:when>
                 <c:otherwise>

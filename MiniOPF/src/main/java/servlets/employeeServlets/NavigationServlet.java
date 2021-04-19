@@ -1,4 +1,4 @@
-package servlets;
+package servlets.employeeServlets;
 
 import controller.Controller;
 import model.Model;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@WebServlet (name = "NavigationServlet", value = "/NavigationServlet")
+@WebServlet (name = "NavigationServlet", value = "/employee/NavigationServlet")
 public class NavigationServlet extends HttpServlet
 {
     @Override
@@ -23,7 +23,7 @@ public class NavigationServlet extends HttpServlet
         Model model = modelFactory.getModel();
         Controller controller = new Controller();
         HttpSession session = request.getSession();
-        EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentEmployee");
+        EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
         HashMap<String,String> filterParams = new HashMap<>();
 
         request.setAttribute("filterParams",filterParams);
