@@ -1,4 +1,4 @@
-package servlets;
+package servlets.employeeServlets;
 
 import controller.Controller;
 import controller.RegexParser;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-@WebServlet (name = "CustomersTableServlet", value = "/CustomersTableServlet")
+@WebServlet (name = "CustomersTableServlet", value = "/employee/CustomersTableServlet")
 public class CustomersTableServlet extends HttpServlet
 {
     @Override

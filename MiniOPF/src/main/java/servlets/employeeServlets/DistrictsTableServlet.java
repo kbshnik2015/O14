@@ -1,4 +1,4 @@
-package servlets;
+package servlets.employeeServlets;
 
 import controller.RegexParser;
 import model.Model;
@@ -10,7 +10,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.util.HashMap;
 
-@WebServlet (name = "DistrictsTableServlet", value = "/DistrictsTableServlet")
+@WebServlet (name = "DistrictsTableServlet", value = "/employee/DistrictsTableServlet")
 public class DistrictsTableServlet extends HttpServlet
 {
     @Override

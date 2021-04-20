@@ -1,4 +1,4 @@
-package servlets;
+package servlets.employeeServlets;
 
 import lombok.SneakyThrows;
 import model.Model;
@@ -11,7 +11,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 
-@WebServlet (name = "EmployeeServlet", value = "/EmployeeServlet")
+@WebServlet (name = "EmployeeServlet", value = "/employee/EmployeeServlet")
 public class EmployeeServlet extends HttpServlet
 {
     @Override

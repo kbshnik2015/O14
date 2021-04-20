@@ -8,7 +8,7 @@
         <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
-    <form action="/NavigationServlet" method="get" name="navigation" style="margin: 0px">
+    <form action="/employee/NavigationServlet" method="get" name="navigation" style="margin: 0px">
         <button name="allOrders" value="click" type="submit">All orders</button>
         <button name="myOrders" value="click" type="submit">My orders</button>
         <button name="services" value="click" type="submit">Services</button>
@@ -17,8 +17,8 @@
         <button name="districts" value="click" type="submit">Districts</button>
     </form>
     <table class="table table-bordered" border="1" cellspacing="0">
-        <form action="/CustomersTableServlet" method="get">
-            <c:import url="../tableView/tableButtons/customersButtons.jsp"/>
+        <form action="/employee/CustomersTableServlet" method="get">
+            <c:import url="tableButtons/customersButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
                 <th style="text-align:center;"><input type="checkbox" id="all" ></th>
