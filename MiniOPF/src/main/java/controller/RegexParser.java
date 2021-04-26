@@ -101,7 +101,7 @@ public class RegexParser
         }
         if ("-".equals(inputRegex))
         {
-            return values == null;
+            return values.size() == 0;
         }
         if (values == null)
         {
@@ -262,7 +262,7 @@ public class RegexParser
 
     public static List<OrderDTO> filterOrders(List<OrderDTO> orders, Map<String, String> regexps)
     {
-        List<OrderDTO> filteredOrders = new ArrayList<OrderDTO>();
+        List<OrderDTO> filteredOrders = new ArrayList<>();
 
         for (OrderDTO order : orders)
         {
