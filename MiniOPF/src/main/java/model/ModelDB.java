@@ -520,7 +520,7 @@ public class ModelDB implements Model
 
         try
         {
-            return (SpecificationDTO) serviceTransformer.toDto(specificationDAO.findById(id));
+            return (SpecificationDTO) specificationTransformer.toDto(specificationDAO.findById(id));
         }
         catch (SQLException e)
         {
