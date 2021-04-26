@@ -23,8 +23,6 @@ public abstract class AbstractDAO<T extends Entity>
 
     private static final String GET_NEXT_ID = "SELECT nextval('idSeq')";
 
-    private final String DELETE = "DELETE FROM " + getTableName() + " WHERE id =?;";
-
     public AbstractDAO(Connection connection)
     {
         this.connection = connection;
@@ -72,7 +70,7 @@ public abstract class AbstractDAO<T extends Entity>
 
     public void delete(BigInteger id) throws SQLException, DataNotFoundWarning
     {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE))
+        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id =?;"))
         {
             preparedStatement.setLong(1, parseToLong(id));
             boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
@@ -88,7 +86,7 @@ public abstract class AbstractDAO<T extends Entity>
         List<BigInteger> notDeletedIds = new ArrayList<>();
         for (BigInteger id : ids)
         {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE))
+            try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + tableName + " WHERE id =?;"))
             {
                 preparedStatement.setLong(1, parseToLong(id));
                 boolean isObjectNotFound = preparedStatement.executeUpdate() == 0;
