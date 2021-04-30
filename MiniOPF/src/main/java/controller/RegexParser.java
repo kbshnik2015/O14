@@ -210,7 +210,8 @@ public class RegexParser
         for (DistrictDTO district : districts.values())
         {
             if (matchesBigInteger(district.getId(), regexps.get("id")) &&
-                    matchesString(district.getName(), regexps.get("name")))
+                    matchesString(district.getName(), regexps.get("name")) &&
+                    matchesBigInteger(district.getParentId(), regexps.get("parentId")))
             {
                 filteredDistricts.add(district);
             }
