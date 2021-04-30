@@ -101,7 +101,14 @@ public class ServiceDAO extends AbstractDAO<Service>
         {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             preparedStatement.setLong(1, parseToLong(entity.getId()));
-            preparedStatement.setDate(2, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
+            if (entity.getPayDay() == null)
+            {
+                preparedStatement.setNull(2, java.sql.Types.DATE);
+            }
+            else
+            {
+                preparedStatement.setDate(2, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
+            }
             preparedStatement.setLong(3, parseToLong(entity.getSpecificationId()));
             preparedStatement.setString(4, entity.getServiceStatus().toString());
             preparedStatement.setLong(5, parseToLong(entity.getCustomerId()));
@@ -119,7 +126,14 @@ public class ServiceDAO extends AbstractDAO<Service>
         try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SERVICE))
         {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            preparedStatement.setDate(1, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
+            if (entity.getPayDay() == null)
+            {
+                preparedStatement.setNull(1, java.sql.Types.DATE);
+            }
+            else
+            {
+                preparedStatement.setDate(1, java.sql.Date.valueOf(formatter.format(entity.getPayDay())));
+            }
             preparedStatement.setLong(2, parseToLong(entity.getSpecificationId()));
             preparedStatement.setString(3, entity.getServiceStatus().toString());
             preparedStatement.setLong(4, parseToLong(entity.getCustomerId()));
