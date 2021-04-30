@@ -18,7 +18,7 @@ public class DistrictDAO extends AbstractDAO<District>
     private static final String SELECT_DISTRICT_BY_ID = "SELECT * FROM districts WHERE id =?;";
     private static final String INSERT_INTO_DISTRICTS = "INSERT INTO districts VALUES (?, ?, ?)";
     private static final String INSERT_INTO_DISTRICTS_WITHOUT_PARENT =
-            "INSERT INTO districts (id_district, name) VALUES (?, ?)";
+            "INSERT INTO districts (id, name) VALUES (?, ?)";
     private static final String UPDATE_DISTRICT = "UPDATE districts SET name =?, id_parent =? WHERE id = ?;";
     private static final String UPDATE_DISTRICT_WITHOUT_PARENT = "UPDATE districts SET name =?, id_parent = default " +
             "WHERE id = ?;";
