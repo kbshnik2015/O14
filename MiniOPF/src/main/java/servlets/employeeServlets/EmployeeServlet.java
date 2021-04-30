@@ -1,17 +1,20 @@
 package servlets.employeeServlets;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import lombok.SneakyThrows;
 import model.Model;
 import model.ModelFactory;
 import model.dto.EmployeeDTO;
-import model.entities.Employee;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
-import java.io.IOException;
-
-@WebServlet (name = "EmployeeServlet", value = "/employee/EmployeeServlet")
+@WebServlet(name = "EmployeeServlet", value = "/employee/EmployeeServlet")
 public class EmployeeServlet extends HttpServlet
 {
     @Override
@@ -28,14 +31,17 @@ public class EmployeeServlet extends HttpServlet
         Model model = modelFactory.getModel();
         HttpSession session = request.getSession();
         EmployeeDTO currentEmployee = (EmployeeDTO) session.getAttribute("currentEmployee");
-        if("on".equals(request.getParameter("waitForWork"))){
+        if ("on".equals(request.getParameter("waitForWork")))
+        {
             currentEmployee.setWaitingForOrders(true);
-        }else {
+        }
+        else
+        {
             currentEmployee.setWaitingForOrders(false);
         }
         model.updateEmployee(currentEmployee);
         session.removeAttribute("currentEmployee");
-        session.setAttribute("currentEmployee",currentEmployee);
+        session.setAttribute("currentEmployee", currentEmployee);
         response.sendRedirect(request.getHeader("referer"));
 
     }

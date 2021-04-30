@@ -10,10 +10,12 @@
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>
+
     <filter>
         <filter-name>employeeFilter</filter-name>
         <filter-class>filters.EmployeeFilter</filter-class>
     </filter>
+
     <filter-mapping>
         <filter-name>employeeFilter</filter-name>
         <url-pattern>/view/employee/*</url-pattern>

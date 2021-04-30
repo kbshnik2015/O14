@@ -18,7 +18,7 @@
         </form>
         <table class="table table-bordered" border="1" cellspacing="0">
             <form action="/employee/MyOrdersTableServlet" method="post">
-                <c:import url="tableButtons/ordersButtons.jsp"/>
+                <c:import url="tableButtons/myOrdersButtons.jsp"/>
                 <thead>
                 <tr bgcolor="#a9a9a9">
                     <th style="text-align:center;"><input type="checkbox" id="all"></th>
@@ -82,7 +82,7 @@
                 <tbody>
                 <c:forEach var="order" items="${myOrders}">
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox"></th>
+                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${order.id}"></th>
                     <td>${order.id }</td>
                     <td><a href="/view/employee/editView/editService.jsp?serviceId=${order.serviceId}">${order.serviceId}</a></td>
                     <td><a href="/view/employee/editView/editSpecification.jsp?specId=${order.specId}">${order.specId}</a></td>

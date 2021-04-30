@@ -31,14 +31,19 @@
                     <br>
                     <input type="text" name="name" value="${filterParams.get("name")}">
                 </td>
+                <td>
+                    parentId<br>
+                    <input type="text" name="parentId" value="${filterParams.get("parentId")}">
+                </td>
             </tr>
         </thead>
         <tbody>
             <c:forEach var="district" items="${districts}" >
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox"></th>
+                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${district.id}"></th>
                     <td>${district.id }</td>
                     <td>${district.name}</td>
+                    <td>${district.parentId}</td>
                 </tr>
             </c:forEach>
         </tbody>

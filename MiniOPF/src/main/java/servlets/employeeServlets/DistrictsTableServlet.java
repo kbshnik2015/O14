@@ -1,31 +1,162 @@
 package servlets.employeeServlets;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import controller.RegexParser;
 import model.Model;
 import model.ModelFactory;
+import model.database.exceptions.DataNotCreatedWarning;
+import model.database.exceptions.DataNotFoundWarning;
+import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.DistrictDTO;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
-import java.io.IOException;
-import java.util.HashMap;
-
-@WebServlet (name = "DistrictsTableServlet", value = "/employee/DistrictsTableServlet")
+@WebServlet(name = "DistrictsTableServlet", value = "/employee/DistrictsTableServlet")
 public class DistrictsTableServlet extends HttpServlet
 {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        if ("click".equals(request.getParameter("filter"))){
-            HashMap<String,String> filterParams = new HashMap<>();
+        if ("click".equals(request.getParameter("filter")))
+        {
+            HashMap<String, String> filterParams = new HashMap<>();
             Model model = ModelFactory.getModel();
 
-            filterParams.put("id",request.getParameter("id"));
-            filterParams.put("name",request.getParameter("name"));
+            filterParams.put("id", request.getParameter("id"));
+            filterParams.put("name", request.getParameter("name"));
+            filterParams.put("parentId", request.getParameter("parentId"));
 
-            request.setAttribute("filterParams",filterParams);
-            request.setAttribute("districts", RegexParser.filterDistricts(model.getDistricts(),filterParams));
-            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp").forward(request, response);
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("districts", RegexParser.filterDistricts(model.getDistricts(), filterParams));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("delete")))
+        {
+            Model model = ModelFactory.getModel();
+            String[] checks = request.getParameterValues("checks");
+            for (int i = 0; i < checks.length; i++)
+            {
+                try
+                {
+                    model.deleteDistrict(BigInteger.valueOf(Long.valueOf(checks[i])));
+                }
+                catch (DataNotFoundWarning dataNotFoundWarning)
+                {
+                    dataNotFoundWarning.printStackTrace();
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            request.setAttribute("districts", districts);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("edit")))
+        {
+            Model model = ModelFactory.getModel();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                DistrictDTO districtDTO = model.getDistrict(BigInteger.valueOf(Long.valueOf(checks[0])));
+                request.setAttribute("district", districtDTO);
+                List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+                request.setAttribute("districts", districts);
+                getServletContext().getRequestDispatcher("/view/employee/editView/editDistrict.jsp")
+                        .forward(request, response);
+            }
+            else
+            {
+                HashMap<String, String> filterParams = new HashMap<>();
+                request.setAttribute("filterParams", filterParams);
+                List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+                request.setAttribute("districts", districts);
+                getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                        .forward(request, response);
+            }
+        }
+
+        if ("click".equals(request.getParameter("confirmEdit")))
+        {
+            Model model = ModelFactory.getModel();
+            DistrictDTO districtDTO = model.getDistrict(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+            if (!request.getParameter("name").equals(""))
+            {
+                districtDTO.setName(request.getParameter("name"));
+            }
+            if (!request.getParameter("parentId").equals(""))
+            {
+                districtDTO.setParentId(BigInteger.valueOf(Long.valueOf(request.getParameter("parentId"))));
+            }
+            else
+            {
+                districtDTO.setParentId(null);
+            }
+
+            try
+            {
+                model.updateDistrict(districtDTO);
+            }
+            catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+            {
+                dataNotUpdatedWarning.printStackTrace();
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            request.setAttribute("districts", districts);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("create")))
+        {
+            Model model = ModelFactory.getModel();
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            request.setAttribute("districts", districts);
+            getServletContext().getRequestDispatcher("/view/employee/createView/createDistrict.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("confirmCreate")))
+        {
+            Model model = ModelFactory.getModel();
+            DistrictDTO districtDTO = new DistrictDTO();
+            districtDTO.setName(request.getParameter("name"));
+            if (!request.getParameter("parentId").equals(""))
+            {
+                districtDTO.setParentId(BigInteger.valueOf(Long.valueOf(request.getParameter("parentId"))));
+            }
+
+            try
+            {
+                model.createDistrict(districtDTO);
+            }
+            catch (DataNotCreatedWarning dataNotCreatedWarning)
+            {
+                dataNotCreatedWarning.printStackTrace();
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            request.setAttribute("districts", districts);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                    .forward(request, response);
         }
     }
 

@@ -59,7 +59,7 @@
         <tbody>
             <c:forEach var="service" items="${services}">
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox"></th>
+                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${service.id}"></th>
                     <td>${service.id }</td>
                     <td>${service.payDay}</td>
                     <td><a href="/view/employee/editSpecification.jsp&specIf=${service.specificationId}">${service.specificationId}</a></td>

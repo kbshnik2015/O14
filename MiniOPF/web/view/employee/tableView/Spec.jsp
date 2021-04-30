@@ -16,9 +16,10 @@
         <button name="customers" value="click" type="submit">Customers</button>
         <button name="districts" value="click" type="submit">Districts</button>
     </form>
+
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/SpecsTableServlet" method="post">
-            <c:import url="tableButtons/specsButtons.jsp"/>
+            <c:import url="/view/employee/tableView/tableButtons/specsButtons.jsp"/>
         <thead>
 
             <tr bgcolor="#a9a9a9">
@@ -63,7 +64,7 @@
         <tbody>
         <c:forEach var="spec" items="${specs}">
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox"></th>
+                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${spec.id}"></th>
                     <td>${spec.id }</td>
                     <td>${spec.name}</td>
                     <td>${spec.price}</td>
