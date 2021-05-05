@@ -33,7 +33,7 @@ public class MyOrdersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             Controller controller = new Controller();
             HttpSession session = request.getSession();
-            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentEmployee");
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
             List<OrderDTO> myOrders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
 
             filterParams.put("id", request.getParameter("id"));
@@ -46,7 +46,7 @@ public class MyOrdersTableServlet extends HttpServlet
             filterParams.put("address", request.getParameter("address"));
             request.setAttribute("filterParams", filterParams);
             request.setAttribute("myOrders", RegexParser.filterOrders(myOrders, filterParams));
-            getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp").forward(request, response);
         }
 
         if ("click".equals(request.getParameter("delete")))

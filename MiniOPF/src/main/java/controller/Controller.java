@@ -599,4 +599,26 @@ public class Controller
         }
     }
 
+    public String getNameOfSpecByOrderId(BigInteger orderId){
+        OrderDTO order = model.getOrder(orderId);
+        SpecificationDTO specification = model.getSpecification(order.getSpecId());
+        return specification.getName();
+    }
+
+    public Date getNextPayDay(BigInteger customerId){
+        List<ServiceDTO> services = (List<ServiceDTO>) this.getCustomerServices(customerId);
+        Date minimumDate = null;
+        for (ServiceDTO service : services)
+        {
+            if (service.getPayDay() != null ){
+                if (minimumDate == null){
+                    minimumDate = service.getPayDay();
+                }else{
+                    minimumDate = service.getPayDay().before(minimumDate) ? service.getPayDay() : minimumDate;
+                }
+            }
+        }
+        return minimumDate;
+    }
+
 }
