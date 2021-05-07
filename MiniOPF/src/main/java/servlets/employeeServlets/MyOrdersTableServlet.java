@@ -2,6 +2,7 @@ package servlets.employeeServlets;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,20 +15,71 @@ import javax.servlet.http.HttpSession;
 
 import controller.Controller;
 import controller.RegexParser;
+import controller.validators.OrderValidator;
 import model.Model;
 import model.ModelFactory;
+import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
+import model.dto.CustomerDTO;
 import model.dto.EmployeeDTO;
 import model.dto.OrderDTO;
+import model.dto.ServiceDTO;
+import model.dto.SpecificationDTO;
+import model.enums.OrderAim;
+import model.enums.OrderStatus;
 
 @WebServlet(name = "MyOrdersTableServlet", value = "/employee/MyOrdersTableServlet")
 public class MyOrdersTableServlet extends HttpServlet
 {
+    private static OrderStatus parseToOrderStatus(final String arg)
+    {
+        OrderStatus orderStatus = null;
+        switch (arg)
+        {
+            case "IN_PROGRESS":
+                orderStatus = OrderStatus.IN_PROGRESS;
+                break;
+            case "SUSPENDED":
+                orderStatus = OrderStatus.SUSPENDED;
+                break;
+            case "COMPLETED":
+                orderStatus = OrderStatus.COMPLETED;
+                break;
+            case "ENTERING":
+                orderStatus = OrderStatus.ENTERING;
+                break;
+            case "CANCELLED":
+                orderStatus = OrderStatus.CANCELLED;
+                break;
+        }
+        return orderStatus;
+    }
+
+    private static OrderAim parseToOrderAim(final String arg)
+    {
+        OrderAim orderAim = null;
+        switch (arg)
+        {
+            case "NEW":
+                orderAim = OrderAim.NEW;
+                break;
+            case "SUSPEND":
+                orderAim = OrderAim.SUSPEND;
+                break;
+            case "RESTORE":
+                orderAim = OrderAim.RESTORE;
+                break;
+            case "DISCONNECT":
+                orderAim = OrderAim.DISCONNECT;
+                break;
+        }
+        return orderAim;
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-
         if ("click".equals(request.getParameter("filter")))
         {
             HashMap<String, String> filterParams = new HashMap<>();
@@ -46,27 +98,30 @@ public class MyOrdersTableServlet extends HttpServlet
             filterParams.put("address", request.getParameter("address"));
             request.setAttribute("filterParams", filterParams);
             request.setAttribute("myOrders", RegexParser.filterOrders(myOrders, filterParams));
-            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp").forward(request, response);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
         }
 
         if ("click".equals(request.getParameter("delete")))
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteOrder(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
             HashMap<String, String> filterParams = new HashMap<>();
-
             request.setAttribute("filterParams", filterParams);
             Controller controller = new Controller();
             HttpSession session = request.getSession();
@@ -86,18 +141,151 @@ public class MyOrdersTableServlet extends HttpServlet
             request.setAttribute("filterParams", filterParams);
 
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    controller.unassignOrder(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotUpdatedWarning dataNotUpdatedWarning)
-                {
-                    dataNotUpdatedWarning.printStackTrace();
+                    try
+                    {
+                        controller.unassignOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
                 }
             }
 
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("create")))
+        {
+            Model model = ModelFactory.getModel();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            request.setAttribute("employee", employee);
+            List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+            request.setAttribute("customers", customers);
+            List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
+            request.setAttribute("employees", employees);
+            List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+            request.setAttribute("specs", specs);
+            List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
+            request.setAttribute("services", services);
+            getServletContext().getRequestDispatcher("/view/employee/createView/createMyOrder.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("confirmCreate")))
+        {
+            Model model = ModelFactory.getModel();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setOrderAim(parseToOrderAim(request.getParameter("aim")));
+            orderDTO.setOrderStatus(parseToOrderStatus(request.getParameter("status")));
+            orderDTO.setCustomerId(BigInteger.valueOf(Long.valueOf(request.getParameter("customerId"))));
+            orderDTO.setEmployeeId(employee.getId());
+            orderDTO.setSpecId(BigInteger.valueOf(Long.valueOf(request.getParameter("specId"))));
+            if (!request.getParameter("serviceId").equals(""))
+            {
+                orderDTO.setServiceId(BigInteger.valueOf(Long.valueOf(request.getParameter("serviceId"))));
+            }
+            if (!request.getParameter("address").equals(""))
+            {
+                orderDTO.setAddress(request.getParameter("address"));
+            }
+
+            try
+            {
+                OrderValidator orderValidator = new OrderValidator();
+                if (orderValidator.validate(orderDTO))
+                {
+                    model.createOrder(orderDTO);
+                }
+            }
+            catch (DataNotCreatedWarning dataNotCreatedWarning)
+            {
+                dataNotCreatedWarning.printStackTrace();
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            Controller controller = new Controller();
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("edit")))
+        {
+            Model model = ModelFactory.getModel();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                request.setAttribute("employee", employee);
+                OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(checks[0])));
+                request.setAttribute("order", orderDTO);
+                List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+                request.setAttribute("customers", customers);
+                List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
+                request.setAttribute("employees", employees);
+                List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+                request.setAttribute("specs", specs);
+                List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
+                request.setAttribute("services", services);
+                getServletContext().getRequestDispatcher("/view/employee/editView/editMyOrder.jsp")
+                        .forward(request, response);
+            }
+            else
+            {
+                HashMap<String, String> filterParams = new HashMap<>();
+                request.setAttribute("filterParams", filterParams);
+                Controller controller = new Controller();
+                request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+                getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                        .forward(request, response);
+            }
+        }
+
+        if ("click".equals(request.getParameter("confirmEdit")))
+        {
+            Model model = ModelFactory.getModel();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+            orderDTO.setOrderAim(parseToOrderAim(request.getParameter("aim")));
+            orderDTO.setOrderStatus(parseToOrderStatus(request.getParameter("status")));
+            orderDTO.setCustomerId(BigInteger.valueOf(Long.valueOf(request.getParameter("customerId"))));
+            orderDTO.setEmployeeId(employee.getId());
+            orderDTO.setSpecId(BigInteger.valueOf(Long.valueOf(request.getParameter("specId"))));
+            if (!request.getParameter("serviceId").equals(""))
+            {
+                orderDTO.setServiceId(BigInteger.valueOf(Long.valueOf(request.getParameter("serviceId"))));
+            }
+            if (!request.getParameter("address").equals(""))
+            {
+                orderDTO.setAddress(request.getParameter("address"));
+            }
+
+            try
+            {
+                model.updateOrder(orderDTO);
+            }
+            catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+            {
+                dataNotUpdatedWarning.printStackTrace();
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            Controller controller = new Controller();
             request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);

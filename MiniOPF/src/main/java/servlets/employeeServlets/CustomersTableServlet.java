@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.validators.CustomerValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
-import model.dto.DistrictDTO;
 
 @WebServlet(name = "CustomersTableServlet", value = "/employee/CustomersTableServlet")
 public class CustomersTableServlet extends HttpServlet
@@ -49,15 +49,18 @@ public class CustomersTableServlet extends HttpServlet
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteCustomer(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteCustomer(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
@@ -92,7 +95,11 @@ public class CustomersTableServlet extends HttpServlet
 
             try
             {
-                model.createCustomer(customerDTO);
+                CustomerValidator customerValidator = new CustomerValidator();
+                if (customerValidator.validate(customerDTO))
+                {
+                    model.createCustomer(customerDTO);
+                }
             }
             catch (DataNotCreatedWarning dataNotCreatedWarning)
             {

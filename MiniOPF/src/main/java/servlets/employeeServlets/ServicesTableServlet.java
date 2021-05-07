@@ -1,7 +1,5 @@
 package servlets.employeeServlets;
 
-import sun.net.idn.StringPrep;
-
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -19,13 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.validators.ServiceValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
-import model.dto.DistrictDTO;
 import model.dto.ServiceDTO;
 import model.dto.SpecificationDTO;
 import model.enums.ServiceStatus;
@@ -78,15 +76,18 @@ public class ServicesTableServlet extends HttpServlet
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteService(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteService(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
@@ -114,10 +115,12 @@ public class ServicesTableServlet extends HttpServlet
             Model model = ModelFactory.getModel();
             ServiceDTO serviceDTO = new ServiceDTO();
 
-            if (!request.getParameter("day").equals("") && !request.getParameter("month").equals("") && !request.getParameter("year").equals(""))
+            if (!request.getParameter("day").equals("") && !request.getParameter("month").equals("") &&
+                    !request.getParameter("year").equals(""))
             {
                 DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                String payDayString = request.getParameter("year") + "-" + request.getParameter("month") + "-" + request.getParameter("day");
+                String payDayString = request.getParameter("year") + "-" + request.getParameter("month") + "-" +
+                        request.getParameter("day");
                 try
                 {
                     Date payDay = formatter.parse(payDayString);
@@ -143,7 +146,11 @@ public class ServicesTableServlet extends HttpServlet
 
             try
             {
-                model.createService(serviceDTO);
+                ServiceValidator serviceValidator = new ServiceValidator();
+                if (serviceValidator.validate(serviceDTO))
+                {
+                    model.createService(serviceDTO);
+                }
             }
             catch (DataNotCreatedWarning dataNotCreatedWarning)
             {
@@ -189,10 +196,12 @@ public class ServicesTableServlet extends HttpServlet
             Model model = ModelFactory.getModel();
             ServiceDTO serviceDTO = model.getService(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
 
-            if (!request.getParameter("day").equals("") && !request.getParameter("month").equals("") && !request.getParameter("year").equals(""))
+            if (!request.getParameter("day").equals("") && !request.getParameter("month").equals("") &&
+                    !request.getParameter("year").equals(""))
             {
                 DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                String payDayString = request.getParameter("year") + "-" + request.getParameter("month") + "-" + request.getParameter("day");
+                String payDayString = request.getParameter("year") + "-" + request.getParameter("month") + "-" +
+                        request.getParameter("day");
                 try
                 {
                     Date payDay = formatter.parse(payDayString);

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.validators.DistrictValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -45,15 +46,18 @@ public class DistrictsTableServlet extends HttpServlet
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteDistrict(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteDistrict(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
@@ -144,7 +148,11 @@ public class DistrictsTableServlet extends HttpServlet
 
             try
             {
-                model.createDistrict(districtDTO);
+                DistrictValidator districtValidator = new DistrictValidator();
+                if (districtValidator.validate(districtDTO))
+                {
+                    model.createDistrict(districtDTO);
+                }
             }
             catch (DataNotCreatedWarning dataNotCreatedWarning)
             {

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.validators.SpecificationValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -48,20 +49,22 @@ public class SpecsTableServlet extends HttpServlet
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteSpecification(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteSpecification(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
             HashMap<String, String> filterParams = new HashMap<>();
-
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
             request.setAttribute("specs", specs);
@@ -108,7 +111,11 @@ public class SpecsTableServlet extends HttpServlet
 
             try
             {
-                model.createSpecification(specificationDTO);
+                SpecificationValidator specificationValidator = new SpecificationValidator();
+                if (specificationValidator.validate(specificationDTO))
+                {
+                    model.createSpecification(specificationDTO);
+                }
             }
             catch (DataNotCreatedWarning dataNotCreatedWarning)
             {
@@ -141,14 +148,16 @@ public class SpecsTableServlet extends HttpServlet
                 request.setAttribute("filterParams", filterParams);
                 List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
                 request.setAttribute("specs", specs);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
+                getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp")
+                        .forward(request, response);
             }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))
         {
             Model model = ModelFactory.getModel();
-            SpecificationDTO specificationDTO = model.getSpecification(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+            SpecificationDTO specificationDTO = model
+                    .getSpecification(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
             if (!request.getParameter("name").equals(""))
             {
                 specificationDTO.setName(request.getParameter("name"));

@@ -15,13 +15,13 @@ import javax.servlet.http.HttpSession;
 
 import controller.Controller;
 import controller.RegexParser;
+import controller.validators.OrderValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
-import model.dto.DistrictDTO;
 import model.dto.EmployeeDTO;
 import model.dto.OrderDTO;
 import model.dto.ServiceDTO;
@@ -85,7 +85,7 @@ public class MineTableServlet extends HttpServlet
         {
             HashMap<String, String> filterParams = new HashMap<>();
             Model model = ModelFactory.getModel();
-            List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values()); ;
+            List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
 
             filterParams.put("id", request.getParameter("id"));
             filterParams.put("serviceId", request.getParameter("serviceId"));
@@ -105,15 +105,18 @@ public class MineTableServlet extends HttpServlet
         {
             Model model = ModelFactory.getModel();
             String[] checks = request.getParameterValues("checks");
-            for (int i = 0; i < checks.length; i++)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    model.deleteOrder(BigInteger.valueOf(Long.valueOf(checks[i])));
-                }
-                catch (DataNotFoundWarning dataNotFoundWarning)
-                {
-                    dataNotFoundWarning.printStackTrace();
+                    try
+                    {
+                        model.deleteOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotFoundWarning dataNotFoundWarning)
+                    {
+                        dataNotFoundWarning.printStackTrace();
+                    }
                 }
             }
 
@@ -134,15 +137,18 @@ public class MineTableServlet extends HttpServlet
             request.setAttribute("filterParams", filterParams);
 
             String[] checks = request.getParameterValues("checks");
-            for (final String check : checks)
+            if (checks != null)
             {
-                try
+                for (final String check : checks)
                 {
-                    controller.assignOrder(employee.getId(), BigInteger.valueOf(Long.valueOf(check)));
-                }
-                catch (DataNotUpdatedWarning dataNotUpdatedWarning)
-                {
-                    dataNotUpdatedWarning.printStackTrace();
+                    try
+                    {
+                        controller.assignOrder(employee.getId(), BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
                 }
             }
 
@@ -189,7 +195,11 @@ public class MineTableServlet extends HttpServlet
 
             try
             {
-                model.createOrder(orderDTO);
+                OrderValidator orderValidator = new OrderValidator();
+                if (orderValidator.validate(orderDTO))
+                {
+                    model.createOrder(orderDTO);
+                }
             }
             catch (DataNotCreatedWarning dataNotCreatedWarning)
             {
@@ -228,7 +238,8 @@ public class MineTableServlet extends HttpServlet
                 request.setAttribute("filterParams", filterParams);
                 List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
                 request.setAttribute("allOrders", allOrders);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
+                getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp")
+                        .forward(request, response);
             }
         }
 
