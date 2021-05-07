@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet
         {
             CustomerDTO customer = (CustomerDTO) user;
             session.setAttribute("currentUser", customer);
-            request.getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
+            response.sendRedirect("/CustomerNavigationServlet?ref=main");
         }
         else if(user instanceof EmployeeDTO)
         {

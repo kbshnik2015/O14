@@ -14,6 +14,7 @@ import controller.exceptions.ObjectNotFoundException;
 import controller.managers.WorkWaitersManager;
 import lombok.Data;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -38,7 +39,6 @@ public class Controller
 
     @Getter
     private Model model;
-
     public Controller()
     {
         model = ModelFactory.getModel();
@@ -621,4 +621,33 @@ public class Controller
         return minimumDate;
     }
 
+    public  boolean isAvailableService (BigInteger customerId, BigInteger specId){
+        CustomerDTO customer = model.getCustomer(customerId);
+        SpecificationDTO specification = model.getSpecification(specId);
+        if(specification.isAddressDependence()){
+            List<BigInteger> districtsIds = specification.getDistrictsIds();
+            for (BigInteger districtId:districtsIds)
+            {
+                if (model.getDistrict(districtId).getName().equals(customer.getAddress())){
+                    return true;
+                }
+            }
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    public boolean isThereDisconnectionOrder(BigInteger serviceId){
+        long count = model.getOrders().values().stream()
+                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.DISCONNECT.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .count();
+        return count>0;
+    }
+    public boolean isThereSuspensionOrder(BigInteger serviceId){
+        long count = model.getOrders().values().stream()
+                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.SUSPEND.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .count();
+        return count>0;
+    }
 }
