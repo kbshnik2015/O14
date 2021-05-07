@@ -18,7 +18,7 @@
 
     <script>
         function confirmDelete() {
-            isDelete = confirm("You sure you want delete?");
+            isDelete = confirm("Are you sure you want delete the order(s)?");
         }
     </script>
 </head>

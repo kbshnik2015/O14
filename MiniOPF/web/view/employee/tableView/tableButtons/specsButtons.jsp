@@ -18,7 +18,7 @@
 
 <script>
     function confirmDelete() {
-        isDelete = confirm("You sure you want delete?");
+        isDelete = confirm("Are you sure you want delete the specification(s)? Services and orders with the specification(s) will be cascade deleted");
     }
 </script>
 </body>
