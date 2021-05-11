@@ -78,6 +78,26 @@ public class MineTableServlet extends HttpServlet
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Model model = ModelFactory.getModel();
+        OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        request.setAttribute("order", orderDTO);
+        List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+        request.setAttribute("customers", customers);
+        List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
+        request.setAttribute("employees", employees);
+        List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+        request.setAttribute("specs", specs);
+        List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
+        request.setAttribute("services", services);
+        getServletContext().getRequestDispatcher("/view/employee/editView/editOrder.jsp")
+                .forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
 
@@ -211,36 +231,6 @@ public class MineTableServlet extends HttpServlet
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
-        }
-
-        if ("click".equals(request.getParameter("edit")))
-        {
-            Model model = ModelFactory.getModel();
-            String[] checks = request.getParameterValues("checks");
-            if (checks != null)
-            {
-                OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(checks[0])));
-                request.setAttribute("order", orderDTO);
-                List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-                request.setAttribute("customers", customers);
-                List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
-                request.setAttribute("employees", employees);
-                List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-                request.setAttribute("specs", specs);
-                List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-                request.setAttribute("services", services);
-                getServletContext().getRequestDispatcher("/view/employee/editView/editOrder.jsp")
-                        .forward(request, response);
-            }
-            else
-            {
-                HashMap<String, String> filterParams = new HashMap<>();
-                request.setAttribute("filterParams", filterParams);
-                List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-                request.setAttribute("allOrders", allOrders);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp")
-                        .forward(request, response);
-            }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))

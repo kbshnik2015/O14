@@ -78,6 +78,29 @@ public class MyOrdersTableServlet extends HttpServlet
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Model model = ModelFactory.getModel();
+        HttpSession session = request.getSession();
+        EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+        request.setAttribute("employee", employee);
+        OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        request.setAttribute("order", orderDTO);
+        List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+        request.setAttribute("customers", customers);
+        List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
+        request.setAttribute("employees", employees);
+        List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+        request.setAttribute("specs", specs);
+        List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
+        request.setAttribute("services", services);
+        getServletContext().getRequestDispatcher("/view/employee/editView/editMyOrder.jsp")
+                .forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if ("click".equals(request.getParameter("filter")))
@@ -219,39 +242,6 @@ public class MyOrdersTableServlet extends HttpServlet
             request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
-        }
-
-        if ("click".equals(request.getParameter("edit")))
-        {
-            Model model = ModelFactory.getModel();
-            HttpSession session = request.getSession();
-            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
-            String[] checks = request.getParameterValues("checks");
-            if (checks != null)
-            {
-                request.setAttribute("employee", employee);
-                OrderDTO orderDTO = model.getOrder(BigInteger.valueOf(Long.valueOf(checks[0])));
-                request.setAttribute("order", orderDTO);
-                List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-                request.setAttribute("customers", customers);
-                List<EmployeeDTO> employees = new ArrayList<>(model.getEmployees().values());
-                request.setAttribute("employees", employees);
-                List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-                request.setAttribute("specs", specs);
-                List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-                request.setAttribute("services", services);
-                getServletContext().getRequestDispatcher("/view/employee/editView/editMyOrder.jsp")
-                        .forward(request, response);
-            }
-            else
-            {
-                HashMap<String, String> filterParams = new HashMap<>();
-                request.setAttribute("filterParams", filterParams);
-                Controller controller = new Controller();
-                request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
-                getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
-                        .forward(request, response);
-            }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))

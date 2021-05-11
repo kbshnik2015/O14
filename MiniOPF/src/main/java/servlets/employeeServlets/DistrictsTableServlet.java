@@ -27,6 +27,20 @@ public class DistrictsTableServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Model model = ModelFactory.getModel();
+        DistrictDTO districtDTO = model.getDistrict(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        request.setAttribute("district", districtDTO);
+        List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+        request.setAttribute("districts", districts);
+        getServletContext().getRequestDispatcher("/view/employee/editView/editDistrict.jsp")
+                .forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         if ("click".equals(request.getParameter("filter")))
         {
             HashMap<String, String> filterParams = new HashMap<>();
@@ -67,30 +81,6 @@ public class DistrictsTableServlet extends HttpServlet
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
-        }
-
-        if ("click".equals(request.getParameter("edit")))
-        {
-            Model model = ModelFactory.getModel();
-            String[] checks = request.getParameterValues("checks");
-            if (checks != null)
-            {
-                DistrictDTO districtDTO = model.getDistrict(BigInteger.valueOf(Long.valueOf(checks[0])));
-                request.setAttribute("district", districtDTO);
-                List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-                request.setAttribute("districts", districts);
-                getServletContext().getRequestDispatcher("/view/employee/editView/editDistrict.jsp")
-                        .forward(request, response);
-            }
-            else
-            {
-                HashMap<String, String> filterParams = new HashMap<>();
-                request.setAttribute("filterParams", filterParams);
-                List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-                request.setAttribute("districts", districts);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
-                        .forward(request, response);
-            }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))

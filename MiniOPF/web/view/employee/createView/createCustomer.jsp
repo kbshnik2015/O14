@@ -5,7 +5,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/employee/CustomersTableServlet" method="get">
+    <form action="/employee/CustomersTableServlet" method="post">
         <table>
             <tbody>
             <tr>

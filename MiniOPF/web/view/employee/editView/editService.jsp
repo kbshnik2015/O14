@@ -9,7 +9,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/employee/ServicesTableServlet" method="get">
+    <form action="/employee/ServicesTableServlet" method="post">
         <input hidden name="id" value="${service.id}">
         <table>
             <tbody>

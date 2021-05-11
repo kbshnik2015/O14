@@ -65,14 +65,14 @@
         <c:forEach var="spec" items="${specs}">
                 <tr>
                     <th style="text-align:center;"><input type="checkbox" name="checks" value="${spec.id}"></th>
-                    <td>${spec.id }</td>
+                    <td><a href="/employee/SpecsTableServlet?id=${spec.id }">${spec.id }</a></td>
                     <td>${spec.name}</td>
                     <td>${spec.price}</td>
                     <td>${spec.description}</td>
                     <td>${spec.addressDependence}</td>
                     <td>
                         <c:forEach var="district" items="${spec.districtsIds}">
-                            <a href="/view/employee/editView/editDistrict.jsp?districtId=${district}">${district}</a>
+                            <a href="/employee/DistrictsTableServlet?id=${district}">${district}</a>
                             <br>
                         </c:forEach>
                     </td>

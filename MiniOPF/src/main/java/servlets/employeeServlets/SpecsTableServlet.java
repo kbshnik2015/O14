@@ -26,6 +26,20 @@ import model.dto.SpecificationDTO;
 public class SpecsTableServlet extends HttpServlet
 {
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Model model = ModelFactory.getModel();
+        SpecificationDTO specificationDTO = model.getSpecification(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        request.setAttribute("spec", specificationDTO);
+        List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+        request.setAttribute("districts", districts);
+        getServletContext().getRequestDispatcher("/view/employee/editView/editSpecification.jsp")
+                .forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if ("click".equals(request.getParameter("filter")))
@@ -127,30 +141,6 @@ public class SpecsTableServlet extends HttpServlet
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
-        }
-
-        if ("click".equals(request.getParameter("edit")))
-        {
-            Model model = ModelFactory.getModel();
-            String[] checks = request.getParameterValues("checks");
-            if (checks != null)
-            {
-                SpecificationDTO specificationDTO = model.getSpecification(BigInteger.valueOf(Long.valueOf(checks[0])));
-                request.setAttribute("spec", specificationDTO);
-                List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-                request.setAttribute("districts", districts);
-                getServletContext().getRequestDispatcher("/view/employee/editView/editSpecification.jsp")
-                        .forward(request, response);
-            }
-            else
-            {
-                HashMap<String, String> filterParams = new HashMap<>();
-                request.setAttribute("filterParams", filterParams);
-                List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-                request.setAttribute("specs", specs);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp")
-                        .forward(request, response);
-            }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))

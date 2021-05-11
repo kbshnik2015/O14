@@ -83,10 +83,10 @@
                 <c:forEach var="order" items="${myOrders}">
                 <tr>
                     <th style="text-align:center;"><input type="checkbox" name="checks" value="${order.id}"></th>
-                    <td>${order.id }</td>
-                    <td><a href="/view/employee/editView/editService.jsp?serviceId=${order.serviceId}">${order.serviceId}</a></td>
-                    <td><a href="/view/employee/editView/editSpecification.jsp?specId=${order.specId}">${order.specId}</a></td>
-                    <td><a href="/view/employee/editView/editCustomer.jsp?specId=${order.customerId}">${order.customerId}</a></td>
+                    <td><a href="/employee/MyOrdersTableServlet?id=${order.id }">${order.id }</a></td>
+                    <td><a href="/employee/ServicesTableServlet?id=${order.serviceId}">${order.serviceId}</a></td>
+                    <td><a href="/employee/SpecsTableServlet?id=${order.specId}">${order.specId}</a></td>
+                    <td><a href="/employee/CustomersTableServlet?id=${order.customerId}">${order.customerId}</a></td>
                     <td>${order.employeeId}</td>
                     <td>${order.address}</td>
                     <td>${order.orderAim}</td>

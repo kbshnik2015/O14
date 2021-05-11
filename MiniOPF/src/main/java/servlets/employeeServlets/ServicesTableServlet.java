@@ -24,6 +24,7 @@ import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
+import model.dto.DistrictDTO;
 import model.dto.ServiceDTO;
 import model.dto.SpecificationDTO;
 import model.enums.ServiceStatus;
@@ -54,6 +55,22 @@ public class ServicesTableServlet extends HttpServlet
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Model model = ModelFactory.getModel();
+        ServiceDTO serviceDTO = model.getService(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        request.setAttribute("service", serviceDTO);
+        List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+        request.setAttribute("specs", specs);
+        List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+        request.setAttribute("customers", customers);
+        getServletContext().getRequestDispatcher("/view/employee/editView/editService.jsp")
+                .forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if ("click".equals(request.getParameter("filter")))
         {
@@ -163,32 +180,6 @@ public class ServicesTableServlet extends HttpServlet
             request.setAttribute("services", services);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
                     .forward(request, response);
-        }
-
-        if ("click".equals(request.getParameter("edit")))
-        {
-            Model model = ModelFactory.getModel();
-            String[] checks = request.getParameterValues("checks");
-            if (checks != null)
-            {
-                ServiceDTO serviceDTO = model.getService(BigInteger.valueOf(Long.valueOf(checks[0])));
-                request.setAttribute("service", serviceDTO);
-                List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-                request.setAttribute("specs", specs);
-                List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-                request.setAttribute("customers", customers);
-                getServletContext().getRequestDispatcher("/view/employee/editView/editService.jsp")
-                        .forward(request, response);
-            }
-            else
-            {
-                HashMap<String, String> filterParams = new HashMap<>();
-                request.setAttribute("filterParams", filterParams);
-                List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-                request.setAttribute("services", services);
-                getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
-                        .forward(request, response);
-            }
         }
 
         if ("click".equals(request.getParameter("confirmEdit")))

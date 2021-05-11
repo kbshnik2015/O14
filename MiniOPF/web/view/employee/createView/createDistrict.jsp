@@ -7,7 +7,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/employee/DistrictsTableServlet" method="get">
+    <form action="/employee/DistrictsTableServlet" method="post">
         <table>
             <tbody>
             <tr>

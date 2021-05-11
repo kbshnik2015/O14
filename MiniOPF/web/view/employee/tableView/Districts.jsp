@@ -17,7 +17,7 @@
         <button name="districts" value="click" type="submit" disabled="disabled">Districts</button>
     </form>
     <table class="table table-bordered" border="1" cellspacing="0">
-        <form action="/employee/DistrictsTableServlet" method="get">
+        <form action="/employee/DistrictsTableServlet" method="post">
             <c:import url="tableButtons/districtsButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
@@ -41,9 +41,9 @@
             <c:forEach var="district" items="${districts}" >
                 <tr>
                     <th style="text-align:center;"><input type="checkbox" name="checks" value="${district.id}"></th>
-                    <td>${district.id }</td>
+                    <td><a href="/employee/DistrictsTableServlet?id=${district.id }">${district.id }</a></td>
                     <td>${district.name}</td>
-                    <td>${district.parentId}</td>
+                    <td><a href="/employee/DistrictsTableServlet?id=${district.parentId}">${district.parentId}</a></td>
                 </tr>
             </c:forEach>
         </tbody>

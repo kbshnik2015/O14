@@ -8,7 +8,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/employee/ServicesTableServlet" method="get">
+    <form action="/employee/ServicesTableServlet" method="post">
         <table>
             <tbody>
             <tr>

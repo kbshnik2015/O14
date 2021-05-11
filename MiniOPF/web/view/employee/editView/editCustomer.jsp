@@ -6,7 +6,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/employee/CustomersTableServlet" method="get">
+    <form action="/employee/CustomersTableServlet" method="post">
         <input hidden name="id" value="${customer.id}">
         <table>
             <tbody>
