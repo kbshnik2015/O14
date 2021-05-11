@@ -14,6 +14,11 @@
     <button name="delete" value="click" onclick="confirmDelete()" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;"><img src="https://img.icons8.com/color/20/000000/filled-trash.png" style="vertical-align: middle"/>Delete</button>
     <button name="filter" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;"><img src="https://img.icons8.com/color/20/000000/sorting-answers.png" style="vertical-align: middle"/>Filter</button>
     <button name="unassignOrders" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;"><img src="https://img.icons8.com/color/20/000000/add-list.png" style="vertical-align: middle"/>Unassign order(s)</button>
+    <button name="startOrder" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;">Start</button>
+    <button name="completeOrder" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;">Complete</button>
+    <button name="cancelOrder" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;">Cancel</button>
+    <button name="suspendOrder" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;">Suspend</button>
+    <button name="restoreOrder" value="click" style="background-color: Transparent; background-repeat:no-repeat; border: none; cursor:pointer; overflow: hidden; outline:none;">Restore</button>
 
     <script>
         function confirmDelete() {

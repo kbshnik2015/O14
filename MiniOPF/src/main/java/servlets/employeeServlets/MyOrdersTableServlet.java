@@ -280,5 +280,158 @@ public class MyOrdersTableServlet extends HttpServlet
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
+
+        if ("click".equals(request.getParameter("startOrder")))
+        {
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            Controller controller = new Controller();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                for (final String check : checks)
+                {
+                    try
+                    {
+                        controller.startOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
+
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("completeOrder")))
+        {
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            Controller controller = new Controller();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                for (final String check : checks)
+                {
+                    try
+                    {
+                        try
+                        {
+                            controller.completeOrder(BigInteger.valueOf(Long.valueOf(check)));
+                        }
+                        catch (DataNotCreatedWarning dataNotCreatedWarning)
+                        {
+                            dataNotCreatedWarning.printStackTrace();
+                        }
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
+
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("cancelOrder")))
+        {
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            Controller controller = new Controller();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                for (final String check : checks)
+                {
+                    try
+                    {
+                        controller.cancelOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
+
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("suspendOrder")))
+        {
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            Controller controller = new Controller();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                for (final String check : checks)
+                {
+                    try
+                    {
+                        controller.suspendOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
+
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("restoreOrder")))
+        {
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            Controller controller = new Controller();
+            String[] checks = request.getParameterValues("checks");
+            if (checks != null)
+            {
+                for (final String check : checks)
+                {
+                    try
+                    {
+                        controller.restoreOrder(BigInteger.valueOf(Long.valueOf(check)));
+                    }
+                    catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                    {
+                        dataNotUpdatedWarning.printStackTrace();
+                    }
+
+                }
+            }
+
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
     }
 }
