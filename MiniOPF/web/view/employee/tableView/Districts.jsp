@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Districts</title>
+        <link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"  %>
         <c:import url="Header.jsp"/>
         <jsp:useBean id="districts" scope="request" type="java.util.List"/>
@@ -21,18 +22,26 @@
             <c:import url="tableButtons/districtsButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
-                <th style="text-align:center;"><input type="checkbox" id="all" ></th>
+                <th ><input type="checkbox" id="all" ></th>
                 <td>
-                    id<br>
-                    <input type="text" name="id" value="${filterParams.get("id")}">
+                    id
+                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <br>
+                    <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Name
+                    <button class="arrow" type="button" name="nameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="nameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="name" value="${filterParams.get("name")}">
                 </td>
                 <td>
-                    parentId<br>
+                    parent Id
+                    <button class="arrow" type="button" name="parentIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="parentIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <br>
                     <input type="text" name="parentId" value="${filterParams.get("parentId")}">
                 </td>
             </tr>
@@ -40,7 +49,7 @@
         <tbody>
             <c:forEach var="district" items="${districts}" >
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${district.id}"></th>
+                    <th><input type="checkbox" name="checks" value="${district.id}"></th>
                     <td><a href="/employee/DistrictsTableServlet?id=${district.id }">${district.id }</a></td>
                     <td>${district.name}</td>
                     <td><a href="/employee/DistrictsTableServlet?id=${district.parentId}">${district.parentId}</a></td>

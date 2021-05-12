@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Services</title>
+        <link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"  %>
         <c:import url="Header.jsp"/>
         <jsp:useBean id="services" scope="request" type="java.util.List"/>
@@ -21,24 +22,32 @@
             <c:import url="tableButtons/servicesButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
-                <th style="text-align:center;"><input type="checkbox" id="all" ></th>
+                <th><input type="checkbox" id="all" ></th>
                 <td>
                     id
+                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
-                    <input type="text" name="id" value="${filterParams.get("id")}">
+                    <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Pay day
+                    <button class="arrow" type="button" name="payDaySortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="payDaySortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="payDay" value="${filterParams.get("payDay")}">
                 </td>
                 <td>
                     Specification id
+                    <button class="arrow" type="button" name="specIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="specIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text"name="specificationId" value="${filterParams.get("specificationId")}">
                 </td>
                 <td>
                     Service status
+                    <button class="arrow" type="button" name="serviceStatusSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="serviceStatusSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <select size="1"  name="serviceStatus">
                         <option disabled>Choose service status</option>
@@ -51,6 +60,8 @@
                 </td>
                 <td>
                     Customer id
+                    <button class="arrow" type="button" name="customerIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="customerIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="customerId" value="${filterParams.get("customerId")}">
                 </td>
@@ -59,7 +70,7 @@
         <tbody>
             <c:forEach var="service" items="${services}">
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${service.id}"></th>
+                    <th><input type="checkbox" name="checks" value="${service.id}"></th>
                     <td><a href="/employee/ServicesTableServlet?id=${service.id }">${service.id }</a></td>
                     <td>${service.payDay}</td>
                     <td><a href="/employee/SpecsTableServlet?id=${service.specificationId}">${service.specificationId}</a></td>

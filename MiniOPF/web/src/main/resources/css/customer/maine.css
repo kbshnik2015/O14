@@ -45,3 +45,18 @@ p{
     margin: 5px;
     font-family: 'Montserrat', sans-serif;
 }
+
+input[type="number"] {
+    border: 1px solid royalblue;
+    border-radius: 3px;
+    font-size: 20px;
+    width: 75px;
+}
+
+button{
+    font-size: 15px;
+    border-radius: 5px;
+    background-color: royalblue;
+    padding: 5px;
+    color: white;
+}

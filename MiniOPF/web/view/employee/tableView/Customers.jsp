@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Customers</title>
+        <link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
         <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
         <c:import url="Header.jsp"/>
         <jsp:useBean id="customers" scope="request" type="java.util.List"/>
@@ -21,34 +22,46 @@
             <c:import url="tableButtons/customersButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
-                <th style="text-align:center;"><input type="checkbox" id="all" ></th>
-                <td>
+                <th ><input type="checkbox" id="all" ></th>
+                <td class="idColumn">
                     id
+                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
-                    <input type="text" name="id" value="${filterParams.get("id")}">
+                    <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     First name
+                    <button class="arrow" type="button" name="firstNameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="firstNameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="firstName" value="${filterParams.get("firstName")}">
                 </td>
                 <td>
                     Last name
+                    <button class="arrow" type="button" name="lastNameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="lastNameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="lastName" value="${filterParams.get("lastName")}">
                 </td>
                 <td>
                     Login
+                    <button class="arrow" type="button" name="loginSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="loginSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="login" value="${filterParams.get("login")}">
                 </td>
                 <td>
                     Address
+                    <button class="arrow" type="button" name="addressSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="addressSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="address" value="${filterParams.get("address")}">
                 </td>
                 <td>
                     Balance
+                    <button class="arrow" type="button" name="balanceSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
+                    <button class="arrow" type="button" name="balanceSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="balance" value="${filterParams.get("balance")}">
                 </td>
@@ -57,7 +70,7 @@
         <tbody>
             <c:forEach var="customer" items="${customers}">
                 <tr>
-                    <th style="text-align:center;"><input type="checkbox" name="checks" value="${customer.id}"></th>
+                    <th><input type="checkbox" name="checks" value="${customer.id}"></th>
                     <td><a href="/employee/CustomersTableServlet?id=${customer.id }">${customer.id }</a></td>
                     <td>${customer.firstName}</td>
                     <td>${customer.lastName}</td>
