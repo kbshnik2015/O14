@@ -18,8 +18,8 @@
             <button type="submit">Sing in</button>
         </div>
     </form>
-    <button type="submit" formaction="">Register Customer</button>
-    <button type="submit" formaction="">Register Employee</button>
+    <button type="button" onClick='location.href="/view/registration/CustomerRegistration.jsp"' >Register Customer</button>
+    <button type="button" onClick='location.href="/view/registration/EmployeeRegistration.jsp"'>Register Employee</button>
 </div>
 </body>
 </html>

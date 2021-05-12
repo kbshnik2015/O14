@@ -1,8 +1,4 @@
-<%@ page import="model.Model" %>
-<%@ page import="controller.Controller" %>
-<%@ page import="java.math.BigInteger" %>
-<%@ page import="model.ModelFactory" %>
-<jsp:useBean id="nextPayDay" scope="request" class="java.util.Date"/>
+<jsp:useBean id="nextPayDay" scope="request" class="java.lang.String"/>
 <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
 <jsp:useBean id="currentUser" scope="session" class="model.dto.CustomerDTO"/>
 <link rel="stylesheet" href="/src/main/resources/css/customer/maine.css">
@@ -12,13 +8,16 @@
     <title>Mine</title>
 </head>
 <body>
-        <c:import url="Header.jsp"/>
-        <main class="main">
-            <p>${currentUser.firstName} ${currentUser.lastName}</p>
-            <p>Address: ${currentUser.address}</p>
-            <p>Balance: ${currentUser.balance}</p>
-            <p>The next day of debiting money: ${nextPayDay}</p>
-        </main>
-
+    <c:import url="Header.jsp"/>
+    <main class="main">
+        <p>${currentUser.firstName} ${currentUser.lastName}</p>
+        <p>Address: ${currentUser.address}</p>
+        <p>Balance: ${currentUser.balance}</p>
+        <p>The next day of debiting money: ${nextPayDay}</p>
+        <form action="/CustomerTopUpServlet" method="post">
+            <p>Enter the top-up amount:<input type="number" min="0" name="topUp"></p>
+            <p><button type="submit" name="topUpButton" value="click">TOP UP</button></p>
+        </form>
+    </main>
 </body>
 </html>

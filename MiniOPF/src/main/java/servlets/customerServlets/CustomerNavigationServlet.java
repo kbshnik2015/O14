@@ -14,7 +14,6 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @WebServlet (name = "CustomerNavigationServlet", value = "/CustomerNavigationServlet")
@@ -30,7 +29,7 @@ public class CustomerNavigationServlet extends HttpServlet
 
         if ("main".equals(request.getParameter("ref")))
         {
-            Date nextPayDay = controller.getNextPayDay(currentUser.getId());
+            String nextPayDay = controller.getNextPayDay(currentUser.getId());
             request.setAttribute("nextPayDay",nextPayDay);
             getServletContext().getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
         }
@@ -43,7 +42,7 @@ public class CustomerNavigationServlet extends HttpServlet
         }
         else if ("specs".equals(request.getParameter("ref")))
         {
-            List<SpecificationDTO> specs = new ArrayList(model.getSpecifications().values());
+            List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
             request.setAttribute("specs",specs);
             getServletContext().getRequestDispatcher("/view/customer/Specifications.jsp").forward(request, response);
         }
