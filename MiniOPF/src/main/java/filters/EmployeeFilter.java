@@ -13,12 +13,6 @@ import java.io.IOException;
 public class EmployeeFilter implements Filter
 {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException
-    {
-        Filter.super.init(filterConfig);
-    }
-
-    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws
             IOException, ServletException
     {
@@ -40,9 +34,5 @@ public class EmployeeFilter implements Filter
             filterChain.doFilter(request, response);
         }
     }
-    @Override
-    public void destroy()
-    {
-        Filter.super.destroy();
-    }
+
 }
