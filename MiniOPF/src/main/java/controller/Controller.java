@@ -605,8 +605,11 @@ public class Controller
         return specification.getName();
     }
 
-    public Date getNextPayDay(BigInteger customerId){
+    public String getNextPayDay(BigInteger customerId){
         List<ServiceDTO> services = (List<ServiceDTO>) this.getCustomerServices(customerId);
+        if (services.isEmpty()){
+            return "-";
+        }
         Date minimumDate = null;
         for (ServiceDTO service : services)
         {
@@ -618,7 +621,7 @@ public class Controller
                 }
             }
         }
-        return minimumDate;
+        return minimumDate.toString();
     }
 
     public  boolean isAvailableService (BigInteger customerId, BigInteger specId){
