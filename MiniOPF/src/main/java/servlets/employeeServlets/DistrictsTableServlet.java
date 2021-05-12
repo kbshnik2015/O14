@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.comparators.districtComparators.DistrictIdComparator;
+import controller.comparators.districtComparators.DistrictNameComparator;
+import controller.comparators.districtComparators.DistrictParentIdComparator;
 import controller.validators.DistrictValidator;
 import model.Model;
 import model.ModelFactory;
@@ -50,8 +53,51 @@ public class DistrictsTableServlet extends HttpServlet
             filterParams.put("name", request.getParameter("name"));
             filterParams.put("parentId", request.getParameter("parentId"));
 
+            List<DistrictDTO> districts = RegexParser.filterDistricts(model.getDistricts(), filterParams);
+
+            if (request.getParameter("sort") != null)
+            {
+                switch (request.getParameter("sort"))
+                {
+                    case "idDescending":
+                        districts.sort(new DistrictIdComparator().reversed());
+                        break;
+                    case "nameAscending":
+                        districts.sort(new DistrictNameComparator());
+                        break;
+                    case "nameDescending":
+                        districts.sort(new DistrictNameComparator().reversed());
+                        break;
+                    case "parentIdAscending":
+                        districts.sort(new DistrictParentIdComparator());
+                        break;
+                    case "parentIdDescending":
+                        districts.sort(new DistrictParentIdComparator().reversed());
+                        break;
+                    default:
+                        districts.sort(new DistrictIdComparator());
+                        break;
+                }
+            }
+            else
+            {
+                districts.sort(new DistrictIdComparator());
+            }
+
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("districts", RegexParser.filterDistricts(model.getDistricts(), filterParams));
+            request.setAttribute("districts", districts);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("discardFilter")))
+        {
+            Model model = ModelFactory.getModel();
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            districts.sort(new DistrictIdComparator());
+            request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
         }
@@ -78,6 +124,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            districts.sort(new DistrictIdComparator());
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
@@ -112,6 +159,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            districts.sort(new DistrictIdComparator());
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
@@ -152,6 +200,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            districts.sort(new DistrictIdComparator());
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);

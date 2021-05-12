@@ -27,46 +27,46 @@
                 <th><input type="checkbox" id="all" ></th>
                 <td>
                     id
-                    <input id="idDescending" type="radio" name="sort" value="idDescending">
-                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="idAscending" type="radio" name="sort" value="idAscending">
-                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="idDescending" type="radio" name="sort" value="idDescending">
+                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Name
-                    <input id="nameDescending" type="radio" name="sort" value="nameDescending">
-                    <label for="nameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="nameAscending" type="radio" name="sort" value="nameAscending">
-                    <label for="nameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="nameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="nameDescending" type="radio" name="sort" value="nameDescending">
+                    <label for="nameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="name"  value="${filterParams.get("name")}">
                 </td>
                 <td>
                     Price
-                    <input id="priceDescending" type="radio" name="sort" value="priceDescending">
-                    <label for="priceDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="priceAscending" type="radio" name="sort" value="priceAscending">
-                    <label for="priceAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="priceAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="priceDescending" type="radio" name="sort" value="priceDescending">
+                    <label for="priceDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="price"  value="${filterParams.get("price")}">
                 </td>
                 <td>
                     Description
-                    <input id="descriptionDescending" type="radio" name="sort" value="descriptionDescending">
-                    <label for="descriptionDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="descriptionAscending" type="radio" name="sort" value="descriptionAscending">
-                    <label for="descriptionAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="descriptionAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="descriptionDescending" type="radio" name="sort" value="descriptionDescending">
+                    <label for="descriptionDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="description"  value="${filterParams.get("description")}">
                 </td>
                 <td>
                     Is address depended
-                    <input id="isAddressDependedDescending" type="radio" name="sort" value="isAddressDependedDescending">
-                    <label for="isAddressDependedDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="isAddressDependedAscending" type="radio" name="sort" value="isAddressDependedAscending">
-                    <label for="isAddressDependedAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="isAddressDependedAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="isAddressDependedDescending" type="radio" name="sort" value="isAddressDependedDescending">
+                    <label for="isAddressDependedDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <select size="1"  name="isAddressDependence">
                         <option disabled>Choose address dependency</option>
