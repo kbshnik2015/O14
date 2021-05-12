@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
     <head>
         <title>Specifications</title>
@@ -27,36 +27,46 @@
                 <th><input type="checkbox" id="all" ></th>
                 <td>
                     id
-                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="idDescending" type="radio" name="sort" value="idDescending">
+                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="idAscending" type="radio" name="sort" value="idAscending">
+                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Name
-                    <button class="arrow" type="button" name="nameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="nameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="nameDescending" type="radio" name="sort" value="nameDescending">
+                    <label for="nameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="nameAscending" type="radio" name="sort" value="nameAscending">
+                    <label for="nameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="name"  value="${filterParams.get("name")}">
                 </td>
                 <td>
                     Price
-                    <button class="arrow" type="button" name="nameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="nameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="priceDescending" type="radio" name="sort" value="priceDescending">
+                    <label for="priceDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="priceAscending" type="radio" name="sort" value="priceAscending">
+                    <label for="priceAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="price"  value="${filterParams.get("price")}">
                 </td>
                 <td>
                     Description
-                    <button class="arrow" type="button" name="descriptionSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="descriptionSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="descriptionDescending" type="radio" name="sort" value="descriptionDescending">
+                    <label for="descriptionDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="descriptionAscending" type="radio" name="sort" value="descriptionAscending">
+                    <label for="descriptionAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="description"  value="${filterParams.get("description")}">
                 </td>
                 <td>
                     Is address depended
-                    <button class="arrow" type="button" name="isAddressDependedSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="isAddressDependedSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="isAddressDependedDescending" type="radio" name="sort" value="isAddressDependedDescending">
+                    <label for="isAddressDependedDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="isAddressDependedAscending" type="radio" name="sort" value="isAddressDependedAscending">
+                    <label for="isAddressDependedAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <select size="1"  name="isAddressDependence">
                         <option disabled>Choose address dependency</option>
@@ -67,8 +77,6 @@
                 </td>
                 <td>
                     Districts id's
-                    <button class="arrow" type="button" name="districtsIdsSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="districtsIdsSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
                     <br>
                     <input type="text" name="districtsIds"  value="${filterParams.get("districtsIds")}">
                 </td>
@@ -78,7 +86,7 @@
         <c:forEach var="spec" items="${specs}">
                 <tr>
                     <th><input type="checkbox" name="checks" value="${spec.id}"></th>
-                    <td class="idСolumn"><a href="/employee/SpecsTableServlet?id=${spec.id }">${spec.id }</a></td>
+                    <td><a href="/employee/SpecsTableServlet?id=${spec.id }">${spec.id }</a></td>
                     <td>${spec.name}</td>
                     <td>${spec.price}</td>
                     <td>${spec.description}</td>

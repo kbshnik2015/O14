@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
     <head>
         <title>Districts</title>
@@ -25,22 +25,28 @@
                 <th ><input type="checkbox" id="all" ></th>
                 <td>
                     id
-                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="idDescending" type="radio" name="sort" value="idDescending">
+                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="idAscending" type="radio" name="sort" value="idAscending">
+                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Name
-                    <button class="arrow" type="button" name="nameSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="nameSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="nameDescending" type="radio" name="sort" value="nameDescending">
+                    <label for="nameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="nameAscending" type="radio" name="sort" value="nameAscending">
+                    <label for="nameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="name" value="${filterParams.get("name")}">
                 </td>
                 <td>
                     parent Id
-                    <button class="arrow" type="button" name="parentIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="parentIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="parentIdDescending" type="radio" name="sort" value="parentIdDescending">
+                    <label for="parentIdDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="parentIdAscending" type="radio" name="sort" value="parentIdAscending">
+                    <label for="parentIdAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="parentId" value="${filterParams.get("parentId")}">
                 </td>

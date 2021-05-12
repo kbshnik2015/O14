@@ -1,4 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
         <title>Services</title>
@@ -25,29 +24,37 @@
                 <th><input type="checkbox" id="all" ></th>
                 <td>
                     id
-                    <button class="arrow" type="button" name="idSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="idSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="idDescending" type="radio" name="sort" value="idDescending">
+                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="idAscending" type="radio" name="sort" value="idAscending">
+                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     Pay day
-                    <button class="arrow" type="button" name="payDaySortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="payDaySortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="payDayDescending" type="radio" name="sort" value="payDayDescending">
+                    <label for="payDayDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="payDayAscending" type="radio" name="sort" value="payDayAscending">
+                    <label for="payDayAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="payDay" value="${filterParams.get("payDay")}">
                 </td>
                 <td>
                     Specification id
-                    <button class="arrow" type="button" name="specIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="specIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
-                    <br>
+                    <input id="specIdDescending" type="radio" name="sort" value="specIdDescending">
+                    <label for="specIdDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="specIdAscending" type="radio" name="sort" value="specIdAscending">
+                    <label for="specIdAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                     <br>
                     <input type="text"name="specificationId" value="${filterParams.get("specificationId")}">
                 </td>
                 <td>
                     Service status
-                    <button class="arrow" type="button" name="serviceStatusSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="serviceStatusSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="serviceStatusDescending" type="radio" name="sort" value="serviceStatusDescending">
+                    <label for="serviceStatusDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="serviceStatusAscending" type="radio" name="sort" value="serviceStatusAscending">
+                    <label for="serviceStatusAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <select size="1"  name="serviceStatus">
                         <option disabled>Choose service status</option>
@@ -60,8 +67,10 @@
                 </td>
                 <td>
                     Customer id
-                    <button class="arrow" type="button" name="customerIdSortDescending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></button>
-                    <button class="arrow" type="button" name="customerIdSortAscending" value="click"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></button>
+                    <input id="customerIdDescending" type="radio" name="sort" value="customerIdDescending">
+                    <label for="customerIdDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="customerIdAscending" type="radio" name="sort" value="customerIdAscending">
+                    <label for="customerIdAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="customerId" value="${filterParams.get("customerId")}">
                 </td>
