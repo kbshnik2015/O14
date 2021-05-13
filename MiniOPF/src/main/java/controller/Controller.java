@@ -610,15 +610,11 @@ public class Controller
         if (services.isEmpty()){
             return "-";
         }
-        Date minimumDate = null;
+        Date minimumDate = new Date();
         for (ServiceDTO service : services)
         {
-            if (service.getPayDay() != null ){
-                if (minimumDate == null){
-                    minimumDate = service.getPayDay();
-                }else{
-                    minimumDate = service.getPayDay().before(minimumDate) ? service.getPayDay() : minimumDate;
-                }
+            if(ServiceStatus.ACTIVE.equals(service.getServiceStatus()) && service.getPayDay() != null && !isThereDisconnectionOrder(service.getId()) && !isThereSuspensionOrder(service.getId()) ){
+                minimumDate = service.getPayDay().after(minimumDate) ? service.getPayDay() : minimumDate;
             }
         }
         return minimumDate.toString();
