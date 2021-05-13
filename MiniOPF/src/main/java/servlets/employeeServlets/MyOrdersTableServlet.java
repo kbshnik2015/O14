@@ -15,6 +15,17 @@ import javax.servlet.http.HttpSession;
 
 import controller.Controller;
 import controller.RegexParser;
+import controller.comparators.districtComparators.DistrictIdComparator;
+import controller.comparators.districtComparators.DistrictNameComparator;
+import controller.comparators.districtComparators.DistrictParentIdComparator;
+import controller.comparators.orderComparators.OrderAddressComparator;
+import controller.comparators.orderComparators.OrderAimComparator;
+import controller.comparators.orderComparators.OrderCustomerIdComparator;
+import controller.comparators.orderComparators.OrderEmployeeIdComparator;
+import controller.comparators.orderComparators.OrderIdComparator;
+import controller.comparators.orderComparators.OrderServiceIdComparator;
+import controller.comparators.orderComparators.OrderSpecIdComparator;
+import controller.comparators.orderComparators.OrderStatusComparator;
 import controller.validators.OrderValidator;
 import model.Model;
 import model.ModelFactory;
@@ -109,7 +120,6 @@ public class MyOrdersTableServlet extends HttpServlet
             Controller controller = new Controller();
             HttpSession session = request.getSession();
             EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
-            List<OrderDTO> myOrders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
 
             filterParams.put("id", request.getParameter("id"));
             filterParams.put("serviceId", request.getParameter("serviceId"));
@@ -119,8 +129,86 @@ public class MyOrdersTableServlet extends HttpServlet
             filterParams.put("orderAim", request.getParameter("orderAim"));
             filterParams.put("orderStatus", request.getParameter("orderStatus"));
             filterParams.put("address", request.getParameter("address"));
+
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders = RegexParser.filterOrders(orders, filterParams);
+
+            if (request.getParameter("sort") != null)
+            {
+                switch (request.getParameter("sort"))
+                {
+                    case "idDescending":
+                        orders.sort(new OrderIdComparator().reversed());
+                        break;
+                    case "serviceIdAscending":
+                        orders.sort(new OrderServiceIdComparator());
+                        break;
+                    case "serviceIdDescending":
+                        orders.sort(new OrderServiceIdComparator().reversed());
+                        break;
+                    case "specIdAscending":
+                        orders.sort(new OrderSpecIdComparator());
+                        break;
+                    case "specIdDescending":
+                        orders.sort(new OrderSpecIdComparator().reversed());
+                        break;
+                    case "customerIdAscending":
+                        orders.sort(new OrderCustomerIdComparator());
+                        break;
+                    case "customerIdDescending":
+                        orders.sort(new OrderCustomerIdComparator().reversed());
+                        break;
+                    case "employeeIdAscending":
+                        orders.sort(new OrderEmployeeIdComparator());
+                        break;
+                    case "employeeIdDescending":
+                        orders.sort(new OrderEmployeeIdComparator().reversed());
+                        break;
+                    case "addressAscending":
+                        orders.sort(new OrderAddressComparator());
+                        break;
+                    case "addressDescending":
+                        orders.sort(new OrderAddressComparator().reversed());
+                        break;
+                    case "aimAscending":
+                        orders.sort(new OrderAimComparator());
+                        break;
+                    case "aimDescending":
+                        orders.sort(new OrderAimComparator().reversed());
+                        break;
+                    case "statusAscending":
+                        orders.sort(new OrderStatusComparator());
+                        break;
+                    case "statusDescending":
+                        orders.sort(new OrderStatusComparator().reversed());
+                        break;
+                    default:
+                        orders.sort(new OrderIdComparator());
+                        break;
+                }
+            }
+            else
+            {
+                orders.sort(new OrderIdComparator());
+            }
+
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", RegexParser.filterOrders(myOrders, filterParams));
+            request.setAttribute("myOrders", orders);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("discardFilter")))
+        {
+            Model model = ModelFactory.getModel();
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            Controller controller = new Controller();
+            HttpSession session = request.getSession();
+            EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -149,7 +237,9 @@ public class MyOrdersTableServlet extends HttpServlet
             Controller controller = new Controller();
             HttpSession session = request.getSession();
             EmployeeDTO employee = (EmployeeDTO) session.getAttribute("currentUser");
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -179,7 +269,9 @@ public class MyOrdersTableServlet extends HttpServlet
                 }
             }
 
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -239,7 +331,9 @@ public class MyOrdersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             Controller controller = new Controller();
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -276,7 +370,9 @@ public class MyOrdersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             Controller controller = new Controller();
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -305,7 +401,9 @@ public class MyOrdersTableServlet extends HttpServlet
 
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -341,7 +439,9 @@ public class MyOrdersTableServlet extends HttpServlet
 
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -370,7 +470,9 @@ public class MyOrdersTableServlet extends HttpServlet
 
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -399,7 +501,9 @@ public class MyOrdersTableServlet extends HttpServlet
 
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }
@@ -428,7 +532,9 @@ public class MyOrdersTableServlet extends HttpServlet
 
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("myOrders", controller.getEmployeeOrders(employee.getId()));
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getEmployeeOrders(employee.getId());
+            orders.sort(new OrderIdComparator());
+            request.setAttribute("myOrders", orders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/MyOrders.jsp")
                     .forward(request, response);
         }

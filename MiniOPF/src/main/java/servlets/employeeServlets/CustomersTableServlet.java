@@ -13,6 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.comparators.customerComparators.CustomerAddressComparator;
+import controller.comparators.customerComparators.CustomerBalanceComparator;
+import controller.comparators.customerComparators.CustomerFirstNameComparator;
+import controller.comparators.customerComparators.CustomerIdComparator;
+import controller.comparators.customerComparators.CustomerLastNameComparator;
+import controller.comparators.customerComparators.CustomerLoginComparator;
+import controller.comparators.districtComparators.DistrictIdComparator;
+import controller.comparators.districtComparators.DistrictNameComparator;
+import controller.comparators.districtComparators.DistrictParentIdComparator;
 import controller.validators.CustomerValidator;
 import model.Model;
 import model.ModelFactory;
@@ -51,8 +60,69 @@ public class CustomersTableServlet extends HttpServlet
             filterParams.put("address", request.getParameter("address"));
             filterParams.put("balance", request.getParameter("balance"));
 
+            List<CustomerDTO> customers = RegexParser.filterCustomers(model.getCustomers(), filterParams);
+
+            if (request.getParameter("sort") != null)
+            {
+                switch (request.getParameter("sort"))
+                {
+                    case "idDescending":
+                        customers.sort(new CustomerIdComparator().reversed());
+                        break;
+                    case "firstNameAscending":
+                        customers.sort(new CustomerFirstNameComparator());
+                        break;
+                    case "firstNameDescending":
+                        customers.sort(new CustomerFirstNameComparator().reversed());
+                        break;
+                    case "lastNameAscending":
+                        customers.sort(new CustomerLastNameComparator());
+                        break;
+                    case "lastNameDescending":
+                        customers.sort(new CustomerLastNameComparator().reversed());
+                        break;
+                    case "loginAscending":
+                        customers.sort(new CustomerLoginComparator());
+                        break;
+                    case "loginDescending":
+                        customers.sort(new CustomerLoginComparator().reversed());
+                        break;
+                    case "addressAscending":
+                        customers.sort(new CustomerAddressComparator());
+                        break;
+                    case "addressDescending":
+                        customers.sort(new CustomerAddressComparator().reversed());
+                        break;
+                    case "balanceAscending":
+                        customers.sort(new CustomerBalanceComparator());
+                        break;
+                    case "balanceDescending":
+                        customers.sort(new CustomerBalanceComparator().reversed());
+                        break;
+                    default:
+                        customers.sort(new CustomerIdComparator());
+                        break;
+                }
+            }
+            else
+            {
+                customers.sort(new CustomerIdComparator());
+            }
+
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("customers", RegexParser.filterCustomers(model.getCustomers(), filterParams));
+            request.setAttribute("customers", customers);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
+                    .forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("discardFilter")))
+        {
+            Model model = ModelFactory.getModel();
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+            customers.sort(new CustomerIdComparator());
+            request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
         }
@@ -77,9 +147,9 @@ public class CustomersTableServlet extends HttpServlet
             }
 
             HashMap<String, String> filterParams = new HashMap<>();
-
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+            customers.sort(new CustomerIdComparator());
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
@@ -121,6 +191,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+            customers.sort(new CustomerIdComparator());
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
@@ -159,6 +230,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
+            customers.sort(new CustomerIdComparator());
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);

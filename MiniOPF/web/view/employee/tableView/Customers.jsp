@@ -25,55 +25,55 @@
                 <th ><input type="checkbox" id="all" ></th>
                 <td class="idColumn">
                     id
-                    <input id="idDescending" type="radio" name="sort" value="idDescending">
-                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="idAscending" type="radio" name="sort" value="idAscending">
-                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="idAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="idDescending" type="radio" name="sort" value="idDescending">
+                    <label for="idDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                    <br>
                     <input class="ShortInput" type="text" name="id" value="${filterParams.get("id")}">
                 </td>
                 <td>
                     First name
-                    <input id="firstNameDescending" type="radio" name="sort" value="firstNameDescending">
-                    <label for="firstNameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="firstNameAscending" type="radio" name="sort" value="firstNameAscending">
-                    <label for="firstNameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="firstNameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="firstNameDescending" type="radio" name="sort" value="firstNameDescending">
+                    <label for="firstNameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="firstName" value="${filterParams.get("firstName")}">
                 </td>
                 <td>
                     Last name
-                    <input id="lastNameDescending" type="radio" name="sort" value="lastNameDescending">
-                    <label for="lastNameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="lastNameAscending" type="radio" name="sort" value="lastNameAscending">
-                    <label for="lastNameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="lastNameAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="lastNameDescending" type="radio" name="sort" value="lastNameDescending">
+                    <label for="lastNameDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="lastName" value="${filterParams.get("lastName")}">
                 </td>
                 <td>
                     Login
-                    <input id="loginDescending" type="radio" name="sort" value="loginDescending">
-                    <label for="loginDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="loginAscending" type="radio" name="sort" value="loginAscending">
-                    <label for="loginAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="loginAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="loginDescending" type="radio" name="sort" value="loginDescending">
+                    <label for="loginDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                      <br>
                     <input type="text" name="login" value="${filterParams.get("login")}">
                 </td>
                 <td>
                     Address
-                    <input id="addressDescending" type="radio" name="sort" value="addressDescending">
-                    <label for="addressDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="addressAscending" type="radio" name="sort" value="addressAscending">
-                    <label for="addressAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="addressAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="addressDescending" type="radio" name="sort" value="addressDescending">
+                    <label for="addressDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                    <br>
                     <input type="text" name="address" value="${filterParams.get("address")}">
                 </td>
                 <td>
                     Balance
-                    <input id="balanceDescending" type="radio" name="sort" value="balanceDescending">
-                    <label for="balanceDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
                     <input id="balanceAscending" type="radio" name="sort" value="balanceAscending">
-                    <label for="balanceAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <label for="balanceAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="balanceDescending" type="radio" name="sort" value="balanceDescending">
+                    <label for="balanceDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
                     <br>
                     <input type="text" name="balance" value="${filterParams.get("balance")}">
                 </td>

@@ -13,6 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
+import controller.comparators.districtComparators.DistrictIdComparator;
+import controller.comparators.districtComparators.DistrictNameComparator;
+import controller.comparators.districtComparators.DistrictParentIdComparator;
+import controller.comparators.specificationComparators.SpecificationAddressDependenceComparator;
+import controller.comparators.specificationComparators.SpecificationDescriptionComparator;
+import controller.comparators.specificationComparators.SpecificationIdComparator;
+import controller.comparators.specificationComparators.SpecificationNameComparator;
+import controller.comparators.specificationComparators.SpecificationPriceComparator;
 import controller.validators.SpecificationValidator;
 import model.Model;
 import model.ModelFactory;
@@ -54,8 +62,63 @@ public class SpecsTableServlet extends HttpServlet
             filterParams.put("isAddressDependence", request.getParameter("isAddressDependence"));
             filterParams.put("districtsIds", request.getParameter("districtsIds"));
 
+            List<SpecificationDTO> specs = RegexParser.filterSpecifications(model.getSpecifications(), filterParams);
+
+            if (request.getParameter("sort") != null)
+            {
+                switch (request.getParameter("sort"))
+                {
+                    case "idDescending":
+                        specs.sort(new SpecificationIdComparator().reversed());
+                        break;
+                    case "nameAscending":
+                        specs.sort(new SpecificationNameComparator());
+                        break;
+                    case "nameDescending":
+                        specs.sort(new SpecificationNameComparator().reversed());
+                        break;
+                    case "priceAscending":
+                        specs.sort(new SpecificationPriceComparator());
+                        break;
+                    case "priceDescending":
+                        specs.sort(new SpecificationPriceComparator().reversed());
+                        break;
+
+                    case "descriptionAscending":
+                        specs.sort(new SpecificationDescriptionComparator());
+                        break;
+                    case "descriptionDescending":
+                        specs.sort(new SpecificationDescriptionComparator().reversed());
+                        break;
+                    case "isAddressDependedAscending":
+                        specs.sort(new SpecificationAddressDependenceComparator());
+                        break;
+                    case "isAddressDependedDescending":
+                        specs.sort(new SpecificationAddressDependenceComparator().reversed());
+                        break;
+                    default:
+                        specs.sort(new SpecificationIdComparator());
+                        break;
+                }
+            }
+            else
+            {
+                specs.sort(new SpecificationIdComparator());
+            }
+
             request.setAttribute("filterParams", filterParams);
-            request.setAttribute("specs", RegexParser.filterSpecifications(model.getSpecifications(), filterParams));
+            request.setAttribute("specs", specs);
+            getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
+        }
+
+        if ("click".equals(request.getParameter("discardFilter")))
+        {
+            Model model = ModelFactory.getModel();
+            HashMap<String, String> filterParams = new HashMap<>();
+            request.setAttribute("filterParams", filterParams);
+            List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+            specs.sort(new SpecificationIdComparator());
+            request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
 
@@ -81,6 +144,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+            specs.sort(new SpecificationIdComparator());
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
@@ -139,6 +203,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+            specs.sort(new SpecificationIdComparator());
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
@@ -191,6 +256,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
+            specs.sort(new SpecificationIdComparator());
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
