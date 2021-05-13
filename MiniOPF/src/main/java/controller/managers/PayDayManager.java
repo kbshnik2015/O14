@@ -32,23 +32,25 @@ public class PayDayManager extends Thread
             Date currentDate = new Date();
             for (ServiceDTO service : services)
             {
-                boolean isPayDayComeForActiveService = service.getPayDay()
-                        .before(currentDate) && ServiceStatus.ACTIVE.equals(service.getServiceStatus());
-                if (isPayDayComeForActiveService ||
-                        ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus()))
-                {
-                    CustomerDTO customer = model.getCustomer(service.getCustomerId());
-                    SpecificationDTO serviceSpec = model.getSpecification(service.getSpecificationId());
+                if(service.getPayDay()!=null){
+                    boolean isPayDayComeForActiveService = service.getPayDay()
+                            .before(currentDate) && ServiceStatus.ACTIVE.equals(service.getServiceStatus());
+                    if (isPayDayComeForActiveService ||
+                            ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus()))
+                    {
+                        CustomerDTO customer = model.getCustomer(service.getCustomerId());
+                        SpecificationDTO serviceSpec = model.getSpecification(service.getSpecificationId());
 
-                    if (customer.getBalance() >= serviceSpec.getPrice())
-                    {
-                        controller.changeBalanceOn(customer.getId(), serviceSpec.getPrice() * (-1));
-                        service.setServiceStatus(ServiceStatus.ACTIVE);
-                        service.setPayDay(new Date(System.currentTimeMillis() + MONTH_IN_MILLI_SEC));
-                    }
-                    else
-                    {
-                        service.setServiceStatus(ServiceStatus.PAY_MONEY_SUSPENDED);
+                        if (customer.getBalance() >= serviceSpec.getPrice())
+                        {
+                            controller.changeBalanceOn(customer.getId(), serviceSpec.getPrice() * (-1));
+                            service.setServiceStatus(ServiceStatus.ACTIVE);
+                            service.setPayDay(new Date(System.currentTimeMillis() + MONTH_IN_MILLI_SEC));
+                        }
+                        else
+                        {
+                            service.setServiceStatus(ServiceStatus.PAY_MONEY_SUSPENDED);
+                        }
                     }
                 }
             }
