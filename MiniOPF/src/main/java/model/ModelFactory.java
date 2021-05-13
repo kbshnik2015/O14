@@ -11,7 +11,7 @@ public class ModelFactory
     @Setter
     @Getter
     private static String currentModel = "modeldb";
-    //    private static String currentModel = "modeljson";
+
 
     public static Model getModel() throws ObjectNotFoundException
     {

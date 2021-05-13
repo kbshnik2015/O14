@@ -17,12 +17,6 @@ import model.dto.EmployeeDTO;
 @WebServlet(name = "EmployeeServlet", value = "/employee/EmployeeServlet")
 public class EmployeeServlet extends HttpServlet
 {
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-
-    }
-
     @SneakyThrows
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -40,7 +34,6 @@ public class EmployeeServlet extends HttpServlet
             currentEmployee.setWaitingForOrders(false);
         }
         model.updateEmployee(currentEmployee);
-        session.removeAttribute("currentEmployee");
         session.setAttribute("currentEmployee", currentEmployee);
         response.sendRedirect(request.getHeader("referer"));
 

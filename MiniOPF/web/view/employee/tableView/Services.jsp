@@ -8,20 +8,17 @@
         <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
-    <form action="/employee/NavigationServlet" method="get" name="navigation" style="margin: 0px">
-        <button name="allOrders" value="click" type="submit" >All orders</button>
-        <button name="myOrders" value="click" type="submit">My orders</button>
-        <button name="services" value="click" type="submit" disabled="disabled">Services</button>
-        <button name="spec" value="click" type="submit">Specifications</button>
-        <button name="customers" value="click" type="submit">Customers</button>
-        <button name="districts" value="click" type="submit">Districts</button>
-    </form>
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/ServicesTableServlet" method="post">
             <c:import url="tableButtons/servicesButtons.jsp"/>
         <thead>
             <tr bgcolor="#a9a9a9">
-                <th><input type="checkbox" id="all" ></th>
+                <th><input type="checkbox" id="all"
+                           data-toggle="popover"
+                           data-placement="auto"
+                           title="Click here to check/uncheck all rows of the table."
+                           data-trigger="hover"
+                ></th>
                 <td>
                     id
                     <input id="idAscending" type="radio" name="sort" value="idAscending">
@@ -79,7 +76,12 @@
         <tbody>
             <c:forEach var="service" items="${services}">
                 <tr>
-                    <th><input type="checkbox" name="checks" value="${service.id}"></th>
+                    <th><input type="checkbox" name="checks" value="${service.id}"
+                               data-toggle="popover"
+                               data-placement="auto"
+                               title="Click here to highlight this line."
+                               data-trigger="hover"
+                    ></th>
                     <td><a href="/employee/ServicesTableServlet?id=${service.id }">${service.id }</a></td>
                     <td>${service.payDay}</td>
                     <td><a href="/employee/SpecsTableServlet?id=${service.specificationId}">${service.specificationId}</a></td>

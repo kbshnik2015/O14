@@ -5,6 +5,8 @@ import java.util.Scanner;
 import controller.Controller;
 import controller.exceptions.IllegalLoginOrPasswordException;
 import controller.managers.StartAppManager;
+import model.Model;
+import model.ModelFactory;
 import model.dto.AbstractUserDTO;
 import model.dto.CustomerDTO;
 import model.dto.EmployeeDTO;
@@ -13,6 +15,8 @@ public class LoginView
 {
     public static void start() throws Exception
     {
+        ModelFactory.setCurrentModel("modeljson");
+        Model model = ModelFactory.getModel();
         Controller controller = new Controller();
         AbstractUserDTO user = null;
         Scanner scanner = new Scanner(System.in);
