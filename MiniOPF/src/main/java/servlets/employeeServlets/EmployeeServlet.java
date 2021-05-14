@@ -24,7 +24,7 @@ public class EmployeeServlet extends HttpServlet
         ModelFactory modelFactory = new ModelFactory();
         Model model = modelFactory.getModel();
         HttpSession session = request.getSession();
-        EmployeeDTO currentEmployee = (EmployeeDTO) session.getAttribute("currentEmployee");
+        EmployeeDTO currentEmployee = (EmployeeDTO) session.getAttribute("currentUser");
         if ("on".equals(request.getParameter("waitForWork")))
         {
             currentEmployee.setWaitingForOrders(true);
@@ -34,7 +34,7 @@ public class EmployeeServlet extends HttpServlet
             currentEmployee.setWaitingForOrders(false);
         }
         model.updateEmployee(currentEmployee);
-        session.setAttribute("currentEmployee", currentEmployee);
+        session.setAttribute("currentUser", currentEmployee);
         response.sendRedirect(request.getHeader("referer"));
 
     }
