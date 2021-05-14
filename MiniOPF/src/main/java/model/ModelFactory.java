@@ -10,8 +10,10 @@ public class ModelFactory
 {
     @Setter
     @Getter
-//    private static String currentModel = "modeldb";
-        private static String currentModel = "modeljson";
+    private static String currentModel = "modeldb";
+//        private static String currentModel = "modeljson";
+
+    private static Model model;
 
     public static Model getModel() throws ObjectNotFoundException
     {
@@ -21,16 +23,19 @@ public class ModelFactory
         }
         else if ("modeldb".equalsIgnoreCase(currentModel))
         {
-            try
+            if (model == null)
             {
-                return new ModelDB();
+                try
+                {
+                    model = new ModelDB();
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
             }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
+            return model;
         }
-
         throw new ObjectNotFoundException("The model wasn't found");
     }
 }
