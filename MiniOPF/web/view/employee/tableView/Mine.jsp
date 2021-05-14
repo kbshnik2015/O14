@@ -88,7 +88,7 @@
                                 <option disabled>Choose aim</option>
                                 <option selected value="">-</option>
                                 <option value="NEW">NEW</option>
-                                <option value="SUSPENDED">SUSPENDED</option>
+                                <option value="SUSPEND">SUSPEND</option>
                                 <option value="RESTORE">RESTORE</option>
                                 <option value="DISCONNECT">DISCONNECT</option>
                             </select>
