@@ -26,6 +26,10 @@
                         <br>
                         This service will be suspended.
                     </c:when>
+                    <c:when test="${controller.isThereRestorationOrder(service.id)}">
+                        <br>
+                        This service will be restored.
+                    </c:when>
                     <c:when test="${service.serviceStatus.toString() eq 'ACTIVE'}">
                         <form action="/CustomerServicesServlet" method="post">
                             <input type="hidden" name="serviceId" value="${service.id}">
