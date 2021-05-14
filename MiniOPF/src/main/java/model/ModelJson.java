@@ -93,6 +93,7 @@ public class ModelJson implements Model
     {
         if (instance == null)
         {
+            instance = new ModelJson();
             loadFromFile();
         }
         return instance;
@@ -715,7 +716,14 @@ public class ModelJson implements Model
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            try (FileWriter writer = new FileWriter(sourceFile, false))
+            {
+                mapper.writeValue(writer, instance);
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
