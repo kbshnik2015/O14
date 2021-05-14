@@ -73,7 +73,7 @@
             </form>
             <form action="/employee/NavigationServlet" method="get" name="navigation">
                 <c:choose>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/Mine.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/Mine.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit" disabled
                                 data-toggle="popover"
                                 data-placement="auto"
@@ -110,7 +110,7 @@
                                 data-trigger="hover"
                         >Districts</button>
                     </c:when>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/MyOrders.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/MyOrders.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit"
                                  data-toggle="popover"
                                  data-placement="auto"
@@ -147,7 +147,7 @@
                                 data-trigger="hover"
                         >Districts</button>
                     </c:when>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/Customers.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/Customers.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit"
                                  data-toggle="popover"
                                  data-placement="auto"
@@ -183,7 +183,7 @@
                                 title="Click here for the districts management table"
                                 data-trigger="hover"
                         >Districts</button></c:when>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/Districts.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/Districts.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit"
                                  data-toggle="popover"
                                  data-placement="auto"
@@ -219,7 +219,7 @@
                                 title="Click here for the districts management table"
                                 data-trigger="hover"
                         >Districts</button></c:when>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/Spec.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/Spec.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit"
                                  data-toggle="popover"
                                  data-placement="auto"
@@ -255,7 +255,7 @@
                                 title="Click here for the districts management table"
                                 data-trigger="hover"
                         >Districts</button></c:when>
-                    <c:when test="${'http://localhost:8080/view/employee/tableView/Services.jsp' eq pageContext.request.requestURL}">
+                    <c:when test="${'/view/employee/tableView/Services.jsp' eq pageContext.request.requestURI}">
                         <button  name="allOrders" value="click" type="submit"
                                  data-toggle="popover"
                                  data-placement="auto"
