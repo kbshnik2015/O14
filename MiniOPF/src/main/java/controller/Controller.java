@@ -643,9 +643,17 @@ public class Controller
                 .count();
         return count>0;
     }
+
     public boolean isThereSuspensionOrder(BigInteger serviceId){
         long count = model.getOrders().values().stream()
                 .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.SUSPEND.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .count();
+        return count>0;
+    }
+
+    public boolean isThereRestorationOrder(BigInteger serviceId){
+        long count = model.getOrders().values().stream()
+                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.RESTORE.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
                 .count();
         return count>0;
     }
