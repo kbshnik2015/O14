@@ -21,21 +21,13 @@ public class EmployeeServlet extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        ModelFactory modelFactory = new ModelFactory();
-        Model model = modelFactory.getModel();
+        Model model = ModelFactory.getModel();
         HttpSession session = request.getSession();
         EmployeeDTO currentEmployee = (EmployeeDTO) session.getAttribute("currentUser");
-        if ("on".equals(request.getParameter("waitForWork")))
-        {
-            currentEmployee.setWaitingForOrders(true);
-        }
-        else
-        {
-            currentEmployee.setWaitingForOrders(false);
-        }
+
+        currentEmployee.setWaitingForOrders("on".equals(request.getParameter("waitForWork")));
         model.updateEmployee(currentEmployee);
         session.setAttribute("currentUser", currentEmployee);
         response.sendRedirect(request.getHeader("referer"));
-
     }
 }
