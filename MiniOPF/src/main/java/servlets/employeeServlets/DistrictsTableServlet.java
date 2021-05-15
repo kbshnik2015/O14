@@ -13,10 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
-import controller.comparators.districtComparators.DistrictIdComparator;
-import controller.comparators.districtComparators.DistrictNameComparator;
-import controller.comparators.districtComparators.DistrictParentIdComparator;
-import controller.validators.DistrictValidator;
+import controller.comparators.DistrictComparator;
+import controller.validators.CreateDistrictValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -60,28 +58,28 @@ public class DistrictsTableServlet extends HttpServlet
                 switch (request.getParameter("sort"))
                 {
                     case "idDescending":
-                        districts.sort(new DistrictIdComparator().reversed());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID).reversed());
                         break;
                     case "nameAscending":
-                        districts.sort(new DistrictNameComparator());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.NAME));
                         break;
                     case "nameDescending":
-                        districts.sort(new DistrictNameComparator().reversed());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.NAME).reversed());
                         break;
                     case "parentIdAscending":
-                        districts.sort(new DistrictParentIdComparator());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.PARENT_ID));
                         break;
                     case "parentIdDescending":
-                        districts.sort(new DistrictParentIdComparator().reversed());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.PARENT_ID).reversed());
                         break;
                     default:
-                        districts.sort(new DistrictIdComparator());
+                        districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
                         break;
                 }
             }
             else
             {
-                districts.sort(new DistrictIdComparator());
+                districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
             }
 
             request.setAttribute("filterParams", filterParams);
@@ -96,7 +94,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-            districts.sort(new DistrictIdComparator());
+            districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
@@ -124,7 +122,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-            districts.sort(new DistrictIdComparator());
+            districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
@@ -159,7 +157,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-            districts.sort(new DistrictIdComparator());
+            districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);
@@ -186,7 +184,7 @@ public class DistrictsTableServlet extends HttpServlet
 
             try
             {
-                DistrictValidator districtValidator = new DistrictValidator();
+                CreateDistrictValidator districtValidator = new CreateDistrictValidator();
                 if (districtValidator.validate(districtDTO))
                 {
                     model.createDistrict(districtDTO);
@@ -200,7 +198,7 @@ public class DistrictsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
-            districts.sort(new DistrictIdComparator());
+            districts.sort(new DistrictComparator(DistrictComparator.DistrictSortableField.ID));
             request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Districts.jsp")
                     .forward(request, response);

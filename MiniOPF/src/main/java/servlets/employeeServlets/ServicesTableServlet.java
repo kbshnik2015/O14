@@ -17,22 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
-import controller.comparators.districtComparators.DistrictIdComparator;
-import controller.comparators.districtComparators.DistrictNameComparator;
-import controller.comparators.districtComparators.DistrictParentIdComparator;
-import controller.comparators.serviceComparators.ServiceCustomerIdComparator;
-import controller.comparators.serviceComparators.ServiceIdComparator;
-import controller.comparators.serviceComparators.ServicePayDayComparator;
-import controller.comparators.serviceComparators.ServiceSpecIdComparator;
-import controller.comparators.serviceComparators.ServiceStatusComparator;
-import controller.validators.ServiceValidator;
+import controller.comparators.ServiceComparator;
+import controller.validators.CreateServiceValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
-import model.dto.DistrictDTO;
 import model.dto.ServiceDTO;
 import model.dto.SpecificationDTO;
 import model.enums.ServiceStatus;
@@ -98,40 +90,43 @@ public class ServicesTableServlet extends HttpServlet
                 switch (request.getParameter("sort"))
                 {
                     case "idDescending":
-                        services.sort(new ServiceIdComparator().reversed());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID).reversed());
                         break;
                     case "payDayAscending":
-                        services.sort(new ServicePayDayComparator());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.PAYDAY));
                         break;
                     case "payDayDescending":
-                        services.sort(new ServicePayDayComparator().reversed());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.PAYDAY).reversed());
                         break;
                     case "specIdAscending":
-                        services.sort(new ServiceSpecIdComparator());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.SPECIFICATION_ID));
                         break;
                     case "specIdDescending":
-                        services.sort(new ServiceSpecIdComparator().reversed());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.SPECIFICATION_ID)
+                                .reversed());
                         break;
                     case "serviceStatusAscending":
-                        services.sort(new ServiceStatusComparator());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.SERVICE_STATUS));
                         break;
                     case "serviceStatusDescending":
-                        services.sort(new ServiceStatusComparator().reversed());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.SERVICE_STATUS)
+                                .reversed());
                         break;
                     case "customerIdAscending":
-                        services.sort(new ServiceCustomerIdComparator());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.CUSTOMER_ID));
                         break;
                     case "customerIdDescending":
-                        services.sort(new ServiceCustomerIdComparator().reversed());
+                        services.sort(
+                                new ServiceComparator(ServiceComparator.ServiceSortableField.CUSTOMER_ID).reversed());
                         break;
                     default:
-                        services.sort(new ServiceIdComparator());
+                        services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
                         break;
                 }
             }
             else
             {
-                services.sort(new ServiceIdComparator());
+                services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
             }
 
             request.setAttribute("filterParams", filterParams);
@@ -146,7 +141,7 @@ public class ServicesTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-            services.sort(new ServiceIdComparator());
+            services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
             request.setAttribute("services", services);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
                     .forward(request, response);
@@ -174,7 +169,7 @@ public class ServicesTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-            services.sort(new ServiceIdComparator());
+            services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
             request.setAttribute("services", services);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
                     .forward(request, response);
@@ -227,7 +222,7 @@ public class ServicesTableServlet extends HttpServlet
 
             try
             {
-                ServiceValidator serviceValidator = new ServiceValidator();
+                CreateServiceValidator serviceValidator = new CreateServiceValidator();
                 if (serviceValidator.validate(serviceDTO))
                 {
                     model.createService(serviceDTO);
@@ -241,7 +236,7 @@ public class ServicesTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-            services.sort(new ServiceIdComparator());
+            services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
             request.setAttribute("services", services);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
                     .forward(request, response);
@@ -293,7 +288,7 @@ public class ServicesTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<ServiceDTO> services = new ArrayList<>(model.getServices().values());
-            services.sort(new ServiceIdComparator());
+            services.sort(new ServiceComparator(ServiceComparator.ServiceSortableField.ID));
             request.setAttribute("services", services);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Services.jsp")
                     .forward(request, response);

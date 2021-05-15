@@ -15,15 +15,8 @@ import javax.servlet.http.HttpSession;
 
 import controller.Controller;
 import controller.RegexParser;
-import controller.comparators.orderComparators.OrderAddressComparator;
-import controller.comparators.orderComparators.OrderAimComparator;
-import controller.comparators.orderComparators.OrderCustomerIdComparator;
-import controller.comparators.orderComparators.OrderEmployeeIdComparator;
-import controller.comparators.orderComparators.OrderIdComparator;
-import controller.comparators.orderComparators.OrderServiceIdComparator;
-import controller.comparators.orderComparators.OrderSpecIdComparator;
-import controller.comparators.orderComparators.OrderStatusComparator;
-import controller.validators.OrderValidator;
+import controller.comparators.OrderComparator;
+import controller.validators.CreateOrderValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -131,58 +124,59 @@ public class MineTableServlet extends HttpServlet
                 switch (request.getParameter("sort"))
                 {
                     case "idDescending":
-                        orders.sort(new OrderIdComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID).reversed());
                         break;
                     case "serviceIdAscending":
-                        orders.sort(new OrderServiceIdComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.SERVICE_ID));
                         break;
                     case "serviceIdDescending":
-                        orders.sort(new OrderServiceIdComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.SERVICE_ID).reversed());
                         break;
                     case "specIdAscending":
-                        orders.sort(new OrderSpecIdComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.SPECIFICATION_ID));
                         break;
                     case "specIdDescending":
-                        orders.sort(new OrderSpecIdComparator().reversed());
+                        orders.sort(
+                                new OrderComparator(OrderComparator.OrderSortableField.SPECIFICATION_ID).reversed());
                         break;
                     case "customerIdAscending":
-                        orders.sort(new OrderCustomerIdComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.CUSTOMER_ID));
                         break;
                     case "customerIdDescending":
-                        orders.sort(new OrderCustomerIdComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.CUSTOMER_ID).reversed());
                         break;
                     case "employeeIdAscending":
-                        orders.sort(new OrderEmployeeIdComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.EMPLOYEE_ID));
                         break;
                     case "employeeIdDescending":
-                        orders.sort(new OrderEmployeeIdComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.EMPLOYEE_ID).reversed());
                         break;
                     case "addressAscending":
-                        orders.sort(new OrderAddressComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ADDRESS));
                         break;
                     case "addressDescending":
-                        orders.sort(new OrderAddressComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ADDRESS).reversed());
                         break;
                     case "aimAscending":
-                        orders.sort(new OrderAimComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ORDER_AIM));
                         break;
                     case "aimDescending":
-                        orders.sort(new OrderAimComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ORDER_AIM).reversed());
                         break;
                     case "statusAscending":
-                        orders.sort(new OrderStatusComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ORDER_STATUS));
                         break;
                     case "statusDescending":
-                        orders.sort(new OrderStatusComparator().reversed());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ORDER_STATUS).reversed());
                         break;
                     default:
-                        orders.sort(new OrderIdComparator());
+                        orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
                         break;
                 }
             }
             else
             {
-                orders.sort(new OrderIdComparator());
+                orders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             }
 
             request.setAttribute("filterParams", filterParams);
@@ -196,7 +190,7 @@ public class MineTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-            allOrders.sort(new OrderIdComparator());
+            allOrders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
@@ -223,7 +217,7 @@ public class MineTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-            allOrders.sort(new OrderIdComparator());
+            allOrders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
@@ -254,7 +248,7 @@ public class MineTableServlet extends HttpServlet
             }
 
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-            allOrders.sort(new OrderIdComparator());
+            allOrders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
@@ -297,7 +291,7 @@ public class MineTableServlet extends HttpServlet
 
             try
             {
-                OrderValidator orderValidator = new OrderValidator();
+                CreateOrderValidator orderValidator = new CreateOrderValidator();
                 if (orderValidator.validate(orderDTO))
                 {
                     model.createOrder(orderDTO);
@@ -311,7 +305,7 @@ public class MineTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-            allOrders.sort(new OrderIdComparator());
+            allOrders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }
@@ -349,7 +343,7 @@ public class MineTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<OrderDTO> allOrders = new ArrayList<>(model.getOrders().values());
-            allOrders.sort(new OrderIdComparator());
+            allOrders.sort(new OrderComparator(OrderComparator.OrderSortableField.ID));
             request.setAttribute("allOrders", allOrders);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Mine.jsp").forward(request, response);
         }

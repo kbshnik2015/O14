@@ -13,16 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
-import controller.comparators.customerComparators.CustomerAddressComparator;
-import controller.comparators.customerComparators.CustomerBalanceComparator;
-import controller.comparators.customerComparators.CustomerFirstNameComparator;
-import controller.comparators.customerComparators.CustomerIdComparator;
-import controller.comparators.customerComparators.CustomerLastNameComparator;
-import controller.comparators.customerComparators.CustomerLoginComparator;
-import controller.comparators.districtComparators.DistrictIdComparator;
-import controller.comparators.districtComparators.DistrictNameComparator;
-import controller.comparators.districtComparators.DistrictParentIdComparator;
-import controller.validators.CustomerValidator;
+import controller.comparators.CustomerComparator;
+import controller.validators.CreateCustomerValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -67,46 +59,46 @@ public class CustomersTableServlet extends HttpServlet
                 switch (request.getParameter("sort"))
                 {
                     case "idDescending":
-                        customers.sort(new CustomerIdComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID).reversed());
                         break;
                     case "firstNameAscending":
-                        customers.sort(new CustomerFirstNameComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.FIRST_NAME));
                         break;
                     case "firstNameDescending":
-                        customers.sort(new CustomerFirstNameComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.FIRST_NAME).reversed());
                         break;
                     case "lastNameAscending":
-                        customers.sort(new CustomerLastNameComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.LAST_NAME));
                         break;
                     case "lastNameDescending":
-                        customers.sort(new CustomerLastNameComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.LAST_NAME).reversed());
                         break;
                     case "loginAscending":
-                        customers.sort(new CustomerLoginComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.LOGIN));
                         break;
                     case "loginDescending":
-                        customers.sort(new CustomerLoginComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.LOGIN).reversed());
                         break;
                     case "addressAscending":
-                        customers.sort(new CustomerAddressComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ADDRESS));
                         break;
                     case "addressDescending":
-                        customers.sort(new CustomerAddressComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ADDRESS).reversed());
                         break;
                     case "balanceAscending":
-                        customers.sort(new CustomerBalanceComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.BALANCE));
                         break;
                     case "balanceDescending":
-                        customers.sort(new CustomerBalanceComparator().reversed());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.BALANCE).reversed());
                         break;
                     default:
-                        customers.sort(new CustomerIdComparator());
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
                         break;
                 }
             }
             else
             {
-                customers.sort(new CustomerIdComparator());
+                customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
             }
 
             request.setAttribute("filterParams", filterParams);
@@ -121,7 +113,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-            customers.sort(new CustomerIdComparator());
+            customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
@@ -149,7 +141,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-            customers.sort(new CustomerIdComparator());
+            customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
@@ -177,7 +169,7 @@ public class CustomersTableServlet extends HttpServlet
 
             try
             {
-                CustomerValidator customerValidator = new CustomerValidator();
+                CreateCustomerValidator customerValidator = new CreateCustomerValidator();
                 if (customerValidator.validate(customerDTO))
                 {
                     model.createCustomer(customerDTO);
@@ -191,7 +183,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-            customers.sort(new CustomerIdComparator());
+            customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);
@@ -230,7 +222,7 @@ public class CustomersTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<CustomerDTO> customers = new ArrayList<>(model.getCustomers().values());
-            customers.sort(new CustomerIdComparator());
+            customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ID));
             request.setAttribute("customers", customers);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Customers.jsp")
                     .forward(request, response);

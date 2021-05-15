@@ -13,15 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import controller.RegexParser;
-import controller.comparators.districtComparators.DistrictIdComparator;
-import controller.comparators.districtComparators.DistrictNameComparator;
-import controller.comparators.districtComparators.DistrictParentIdComparator;
-import controller.comparators.specificationComparators.SpecificationAddressDependenceComparator;
-import controller.comparators.specificationComparators.SpecificationDescriptionComparator;
-import controller.comparators.specificationComparators.SpecificationIdComparator;
-import controller.comparators.specificationComparators.SpecificationNameComparator;
-import controller.comparators.specificationComparators.SpecificationPriceComparator;
-import controller.validators.SpecificationValidator;
+import controller.comparators.SpecificationComparator;
+import controller.validators.CreateSpecificationValidator;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -39,7 +32,8 @@ public class SpecsTableServlet extends HttpServlet
         response.setContentType("text/html; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         Model model = ModelFactory.getModel();
-        SpecificationDTO specificationDTO = model.getSpecification(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
+        SpecificationDTO specificationDTO = model
+                .getSpecification(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
         request.setAttribute("spec", specificationDTO);
         List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
         request.setAttribute("districts", districts);
@@ -69,41 +63,50 @@ public class SpecsTableServlet extends HttpServlet
                 switch (request.getParameter("sort"))
                 {
                     case "idDescending":
-                        specs.sort(new SpecificationIdComparator().reversed());
+                        specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID)
+                                .reversed());
                         break;
                     case "nameAscending":
-                        specs.sort(new SpecificationNameComparator());
+                        specs.sort(
+                                new SpecificationComparator(SpecificationComparator.SpecificationSortableField.NAME));
                         break;
                     case "nameDescending":
-                        specs.sort(new SpecificationNameComparator().reversed());
+                        specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.NAME)
+                                .reversed());
                         break;
                     case "priceAscending":
-                        specs.sort(new SpecificationPriceComparator());
+                        specs.sort(
+                                new SpecificationComparator(SpecificationComparator.SpecificationSortableField.PRICE));
                         break;
                     case "priceDescending":
-                        specs.sort(new SpecificationPriceComparator().reversed());
+                        specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.PRICE)
+                                .reversed());
                         break;
 
                     case "descriptionAscending":
-                        specs.sort(new SpecificationDescriptionComparator());
+                        specs.sort(new SpecificationComparator(
+                                SpecificationComparator.SpecificationSortableField.DESCRIPTION));
                         break;
                     case "descriptionDescending":
-                        specs.sort(new SpecificationDescriptionComparator().reversed());
+                        specs.sort(new SpecificationComparator(
+                                SpecificationComparator.SpecificationSortableField.DESCRIPTION).reversed());
                         break;
                     case "isAddressDependedAscending":
-                        specs.sort(new SpecificationAddressDependenceComparator());
+                        specs.sort(new SpecificationComparator(
+                                SpecificationComparator.SpecificationSortableField.ADDRESS_DEPENDENCE));
                         break;
                     case "isAddressDependedDescending":
-                        specs.sort(new SpecificationAddressDependenceComparator().reversed());
+                        specs.sort(new SpecificationComparator(
+                                SpecificationComparator.SpecificationSortableField.ADDRESS_DEPENDENCE).reversed());
                         break;
                     default:
-                        specs.sort(new SpecificationIdComparator());
+                        specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
                         break;
                 }
             }
             else
             {
-                specs.sort(new SpecificationIdComparator());
+                specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
             }
 
             request.setAttribute("filterParams", filterParams);
@@ -117,7 +120,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-            specs.sort(new SpecificationIdComparator());
+            specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
@@ -144,7 +147,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-            specs.sort(new SpecificationIdComparator());
+            specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
@@ -189,7 +192,7 @@ public class SpecsTableServlet extends HttpServlet
 
             try
             {
-                SpecificationValidator specificationValidator = new SpecificationValidator();
+                CreateSpecificationValidator specificationValidator = new CreateSpecificationValidator();
                 if (specificationValidator.validate(specificationDTO))
                 {
                     model.createSpecification(specificationDTO);
@@ -203,7 +206,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-            specs.sort(new SpecificationIdComparator());
+            specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
@@ -256,7 +259,7 @@ public class SpecsTableServlet extends HttpServlet
             HashMap<String, String> filterParams = new HashMap<>();
             request.setAttribute("filterParams", filterParams);
             List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-            specs.sort(new SpecificationIdComparator());
+            specs.sort(new SpecificationComparator(SpecificationComparator.SpecificationSortableField.ID));
             request.setAttribute("specs", specs);
             getServletContext().getRequestDispatcher("/view/employee/tableView/Spec.jsp").forward(request, response);
         }
