@@ -19,6 +19,7 @@ public class CustomerTransformer implements Transformer
         customerDTO.setLastName(((Customer) entity).getLastName());
         customerDTO.setLogin(((Customer) entity).getLogin());
         customerDTO.setPassword(((Customer) entity).getPassword());
+        customerDTO.setDistrictId(((Customer) entity).getDistrictId());
         customerDTO.setAddress(((Customer) entity).getAddress());
         customerDTO.setBalance(((Customer) entity).getBalance());
 
@@ -35,6 +36,7 @@ public class CustomerTransformer implements Transformer
         customer.setLastName(((CustomerDTO) entityDTO).getLastName());
         customer.setLogin(((CustomerDTO) entityDTO).getLogin());
         customer.setPassword(((CustomerDTO) entityDTO).getPassword());
+        customer.setDistrictId(((CustomerDTO) entityDTO).getDistrictId());
         customer.setAddress(((CustomerDTO) entityDTO).getAddress());
         customer.setBalance(((CustomerDTO) entityDTO).getBalance());
 

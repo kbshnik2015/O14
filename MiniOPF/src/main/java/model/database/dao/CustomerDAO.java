@@ -16,10 +16,14 @@ public class CustomerDAO extends AbstractDAO<Customer>
 {
     private static final String SELECT_ALL_CUSTOMERS = "SELECT * FROM customers ORDER BY id";
     private static final String SELECT_CUSTOMER_BY_ID = "SELECT * FROM customers WHERE id =?";
-    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (?, ?, ?, ?, ?, " +
+    private static final String INSERT_INTO_CUSTOMERS = "INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, " +
             "?, ?)";
+    private static final String INSERT_INTO_CUSTOMERS_WITHOUT_DISTRICT = "INSERT INTO customers (id, first_name, " +
+            "last_name, login, password, address, balance) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_CUSTOMER = "UPDATE customers SET first_name =?, last_name =?, password =?, " +
-            "address =?, balance =? WHERE id =?;";
+            "district_id=? ,address =?, balance =? WHERE id =?;";
+    private static final String UPDATE_CUSTOMER_WITHOUT_DISTRICT = "UPDATE customers SET first_name =?, last_name =?," +
+            " password =?, district_id=default ,address =?, balance =? WHERE id =?;";
 
     public CustomerDAO(final Connection connection)
     {
@@ -42,6 +46,14 @@ public class CustomerDAO extends AbstractDAO<Customer>
                 customer.setLastName(resultSet.getString("last_name"));
                 customer.setLogin(resultSet.getString("login"));
                 customer.setPassword(resultSet.getString("password"));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("district_id"))))
+                {
+                    customer.setDistrictId(null);
+                }
+                else
+                {
+                    customer.setDistrictId(parseToBigInteger(resultSet.getLong("district_id")));
+                }
                 customer.setAddress(resultSet.getString("address"));
                 customer.setBalance(resultSet.getFloat("balance"));
                 customers.add(customer);
@@ -66,6 +78,14 @@ public class CustomerDAO extends AbstractDAO<Customer>
                 customer.setLastName(resultSet.getString("last_name"));
                 customer.setLogin(resultSet.getString("login"));
                 customer.setPassword(resultSet.getString("password"));
+                if (BigInteger.valueOf(0).equals(parseToBigInteger(resultSet.getLong("district_id"))))
+                {
+                    customer.setDistrictId(null);
+                }
+                else
+                {
+                    customer.setDistrictId(parseToBigInteger(resultSet.getLong("district_id")));
+                }
                 customer.setAddress(resultSet.getString("address"));
                 customer.setBalance(resultSet.getFloat("balance"));
             }
@@ -77,39 +97,80 @@ public class CustomerDAO extends AbstractDAO<Customer>
     @Override
     public void create(final Customer entity) throws SQLException, DataNotCreatedWarning
     {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_CUSTOMERS))
+        boolean isObjectNotCreated;
+
+        if (entity.getDistrictId() != null)
         {
-            preparedStatement.setLong(1, parseToLong(entity.getId()));
-            preparedStatement.setString(2, entity.getFirstName());
-            preparedStatement.setString(3, entity.getLastName());
-            preparedStatement.setString(4, entity.getLogin());
-            preparedStatement.setString(5, entity.getPassword());
-            preparedStatement.setString(6, entity.getAddress());
-            preparedStatement.setFloat(7, entity.getBalance());
-            boolean isObjectNotCreated = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotCreated)
+            try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_CUSTOMERS))
             {
-                throw new DataNotCreatedWarning("Object wasn't created");
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setString(2, entity.getFirstName());
+                preparedStatement.setString(3, entity.getLastName());
+                preparedStatement.setString(4, entity.getLogin());
+                preparedStatement.setString(5, entity.getPassword());
+                preparedStatement.setLong(6, parseToLong(entity.getDistrictId()));
+                preparedStatement.setString(7, entity.getAddress());
+                preparedStatement.setFloat(8, entity.getBalance());
+                isObjectNotCreated = preparedStatement.executeUpdate() == 0;
             }
+        }
+        else
+        {
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement(INSERT_INTO_CUSTOMERS_WITHOUT_DISTRICT))
+            {
+                preparedStatement.setLong(1, parseToLong(entity.getId()));
+                preparedStatement.setString(2, entity.getFirstName());
+                preparedStatement.setString(3, entity.getLastName());
+                preparedStatement.setString(4, entity.getLogin());
+                preparedStatement.setString(5, entity.getPassword());
+                preparedStatement.setString(6, entity.getAddress());
+                preparedStatement.setFloat(7, entity.getBalance());
+                isObjectNotCreated = preparedStatement.executeUpdate() == 0;
+            }
+        }
+
+        if (isObjectNotCreated)
+        {
+            throw new DataNotCreatedWarning("Object wasn't created");
         }
     }
 
     @Override
     public void update(final Customer entity) throws SQLException, DataNotUpdatedWarning
     {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CUSTOMER))
+        boolean isObjectNotUpdated;
+
+        if (entity.getDistrictId() != null)
         {
-            preparedStatement.setString(1, entity.getFirstName());
-            preparedStatement.setString(2, entity.getLastName());
-            preparedStatement.setString(3, entity.getPassword());
-            preparedStatement.setString(4, entity.getAddress());
-            preparedStatement.setFloat(5, entity.getBalance());
-            preparedStatement.setLong(6, parseToLong(entity.getId()));
-            boolean isObjectNotUpdated = preparedStatement.executeUpdate() == 0;
-            if (isObjectNotUpdated)
+            try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CUSTOMER))
             {
-                throw new DataNotUpdatedWarning("Object wasn't updated");
+                preparedStatement.setString(1, entity.getFirstName());
+                preparedStatement.setString(2, entity.getLastName());
+                preparedStatement.setString(3, entity.getPassword());
+                preparedStatement.setLong(4, parseToLong(entity.getDistrictId()));
+                preparedStatement.setString(5, entity.getAddress());
+                preparedStatement.setFloat(6, entity.getBalance());
+                preparedStatement.setLong(7, parseToLong(entity.getId()));
+                isObjectNotUpdated = preparedStatement.executeUpdate() == 0;
             }
+        }
+        else
+        {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CUSTOMER_WITHOUT_DISTRICT))
+            {
+                preparedStatement.setString(1, entity.getFirstName());
+                preparedStatement.setString(2, entity.getLastName());
+                preparedStatement.setString(3, entity.getPassword());
+                preparedStatement.setString(4, entity.getAddress());
+                preparedStatement.setFloat(5, entity.getBalance());
+                preparedStatement.setLong(6, parseToLong(entity.getId()));
+                isObjectNotUpdated = preparedStatement.executeUpdate() == 0;
+            }
+        }
+        if (isObjectNotUpdated)
+        {
+            throw new DataNotUpdatedWarning("Object wasn't updated");
         }
     }
 }

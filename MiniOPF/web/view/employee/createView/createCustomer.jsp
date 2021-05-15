@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Title</title>
+    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <jsp:useBean id="districts" scope="request" type="java.util.List"/>
 </head>
 <body>
 <div align="middle">
@@ -23,6 +25,17 @@
             <tr>
                 <td>PASSWORD</td>
                 <td><input tabindex="1" placeholder="Enter password" type="text" name="password" required></td>
+            </tr>
+            <tr>
+                <td>DISTRICT ID</td>
+                <td>
+                    <select name="districtId">
+                        <option selected value="">-</option>
+                        <c:forEach var="district" items="${districts}" >
+                            <option value="${district.id}">${district.id} : ${district.name}</option>
+                        </c:forEach>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>ADDRESS</td>

@@ -57,7 +57,7 @@ public class WorkWaitersManagerTest
         float balance1 = 100;
 
         CustomerDTO expected1 = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, login1, password1, null, balance1));
+                .createCustomer(new CustomerDTO(null, null, login1, password1, null, null, balance1));
         EmployeeDTO expected2 = controller.getModel()
                 .createEmployee(new EmployeeDTO(null, null, empLogin1, empPassword1, EmployeeStatus.WORKING));
         EmployeeDTO expected3 = controller.getModel()

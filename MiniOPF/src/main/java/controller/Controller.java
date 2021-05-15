@@ -14,7 +14,6 @@ import controller.exceptions.ObjectNotFoundException;
 import controller.managers.WorkWaitersManager;
 import lombok.Data;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import model.Model;
 import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
@@ -39,6 +38,7 @@ public class Controller
 
     @Getter
     private Model model;
+
     public Controller()
     {
         model = ModelFactory.getModel();
@@ -599,62 +599,84 @@ public class Controller
         }
     }
 
-    public String getNameOfSpecByOrderId(BigInteger orderId){
+    public String getNameOfSpecByOrderId(BigInteger orderId)
+    {
         OrderDTO order = model.getOrder(orderId);
         SpecificationDTO specification = model.getSpecification(order.getSpecId());
         return specification.getName();
     }
 
-    public String getNextPayDay(BigInteger customerId){
+    public String getNextPayDay(BigInteger customerId)
+    {
         List<ServiceDTO> services = (List<ServiceDTO>) this.getCustomerServices(customerId);
-        if (services.isEmpty()){
+        if (services.isEmpty())
+        {
             return "-";
         }
         Date minimumDate = new Date();
         for (ServiceDTO service : services)
         {
-            if(ServiceStatus.ACTIVE.equals(service.getServiceStatus()) && service.getPayDay() != null && !isThereDisconnectionOrder(service.getId()) && !isThereSuspensionOrder(service.getId()) ){
+            if (ServiceStatus.ACTIVE.equals(service.getServiceStatus()) && service.getPayDay() != null &&
+                    !isThereDisconnectionOrder(service.getId()) && !isThereSuspensionOrder(service.getId()))
+            {
                 minimumDate = service.getPayDay().after(minimumDate) ? service.getPayDay() : minimumDate;
             }
         }
         return minimumDate.toString();
     }
 
-    public  boolean isAvailableService (BigInteger customerId, BigInteger specId){
+    public boolean isAvailableService(BigInteger customerId, BigInteger specId)
+    {
         CustomerDTO customer = model.getCustomer(customerId);
         SpecificationDTO specification = model.getSpecification(specId);
-        if(specification.isAddressDependence()){
+        if (specification.isAddressDependence())
+        {
             List<BigInteger> districtsIds = specification.getDistrictsIds();
-            for (BigInteger districtId:districtsIds)
+            for (BigInteger districtId : districtsIds)
             {
-                if (model.getDistrict(districtId).getName().equals(customer.getAddress())){
+                if (model.getDistrict(districtId).getName().equals(customer.getAddress()))
+                {
                     return true;
                 }
             }
             return false;
-        }else {
+        }
+        else
+        {
             return true;
         }
     }
 
-    public boolean isThereDisconnectionOrder(BigInteger serviceId){
+    public boolean isThereDisconnectionOrder(BigInteger serviceId)
+    {
         long count = model.getOrders().values().stream()
-                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.DISCONNECT.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .filter(order -> serviceId.equals(order.getServiceId()) &&
+                        OrderAim.DISCONNECT.equals(order.getOrderAim()) &&
+                        !OrderStatus.CANCELLED.equals(order.getOrderStatus()) &&
+                        !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
                 .count();
-        return count>0;
+        return count > 0;
     }
 
-    public boolean isThereSuspensionOrder(BigInteger serviceId){
+    public boolean isThereSuspensionOrder(BigInteger serviceId)
+    {
         long count = model.getOrders().values().stream()
-                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.SUSPEND.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .filter(order -> serviceId.equals(order.getServiceId()) &&
+                        OrderAim.SUSPEND.equals(order.getOrderAim()) &&
+                        !OrderStatus.CANCELLED.equals(order.getOrderStatus()) &&
+                        !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
                 .count();
-        return count>0;
+        return count > 0;
     }
 
-    public boolean isThereRestorationOrder(BigInteger serviceId){
+    public boolean isThereRestorationOrder(BigInteger serviceId)
+    {
         long count = model.getOrders().values().stream()
-                .filter(order -> serviceId.equals(order.getServiceId())&& OrderAim.RESTORE.equals(order.getOrderAim()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
+                .filter(order -> serviceId.equals(order.getServiceId()) &&
+                        OrderAim.RESTORE.equals(order.getOrderAim()) &&
+                        !OrderStatus.CANCELLED.equals(order.getOrderStatus()) &&
+                        !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
                 .count();
-        return count>0;
+        return count > 0;
     }
 }

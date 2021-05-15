@@ -57,6 +57,15 @@
                     <input type="text" name="login" value="${filterParams.get("login")}">
                 </td>
                 <td>
+                    District id
+                    <input id="districtIdAscending" type="radio" name="sort" value="districtIdAscending">
+                    <label for="districtIdAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
+                    <input id="districtIdDescending" type="radio" name="sort" value="districtIdDescending">
+                    <label for="districtIdDescending"><img src="https://img.icons8.com/officexs/16/000000/sort-up.png"/></label>
+                    <br>
+                    <input type="text" name="districtId" value=${filterParams.get("districtId")}>
+                </td>
+                <td>
                     Address
                     <input id="addressAscending" type="radio" name="sort" value="addressAscending">
                     <label for="addressAscending"><img src="https://img.icons8.com/officexs/16/000000/sort-down.png"/></label>
@@ -89,6 +98,7 @@
                     <td>${customer.firstName}</td>
                     <td>${customer.lastName}</td>
                     <td>${customer.login}</td>
+                    <td><a href="/employee/DistrictsTableServlet?id=${customer.districtId }">${customer.districtId }</a></td>
                     <td>${customer.address}</td>
                     <td>${customer.balance}</td>
                 </tr>

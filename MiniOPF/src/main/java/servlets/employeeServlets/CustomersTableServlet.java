@@ -21,6 +21,7 @@ import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotFoundWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
+import model.dto.DistrictDTO;
 
 @WebServlet(name = "CustomersTableServlet", value = "/employee/CustomersTableServlet")
 public class CustomersTableServlet extends HttpServlet
@@ -33,6 +34,8 @@ public class CustomersTableServlet extends HttpServlet
         Model model = ModelFactory.getModel();
         CustomerDTO customerDTO = model.getCustomer(BigInteger.valueOf(Long.valueOf(request.getParameter("id"))));
         request.setAttribute("customer", customerDTO);
+        List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+        request.setAttribute("districts", districts);
         getServletContext().getRequestDispatcher("/view/employee/editView/editCustomer.jsp")
                 .forward(request, response);
     }
@@ -49,6 +52,7 @@ public class CustomersTableServlet extends HttpServlet
             filterParams.put("firstName", request.getParameter("firstName"));
             filterParams.put("lastName", request.getParameter("lastName"));
             filterParams.put("login", request.getParameter("login"));
+            filterParams.put("districtId", request.getParameter("districtId"));
             filterParams.put("address", request.getParameter("address"));
             filterParams.put("balance", request.getParameter("balance"));
 
@@ -78,6 +82,12 @@ public class CustomersTableServlet extends HttpServlet
                         break;
                     case "loginDescending":
                         customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.LOGIN).reversed());
+                        break;
+                    case "districtIdAscending":
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.DISTRICT_ID));
+                        break;
+                    case "districtIdDescending":
+                        customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.DISTRICT_ID).reversed());
                         break;
                     case "addressAscending":
                         customers.sort(new CustomerComparator(CustomerComparator.CustomerSortableField.ADDRESS));
@@ -149,6 +159,9 @@ public class CustomersTableServlet extends HttpServlet
 
         if ("click".equals(request.getParameter("create")))
         {
+            Model model = ModelFactory.getModel();
+            List<DistrictDTO> districts = new ArrayList<>(model.getDistricts().values());
+            request.setAttribute("districts", districts);
             getServletContext().getRequestDispatcher("/view/employee/createView/createCustomer.jsp")
                     .forward(request, response);
         }
@@ -161,6 +174,10 @@ public class CustomersTableServlet extends HttpServlet
             customerDTO.setLastName(request.getParameter("lastName"));
             customerDTO.setLogin(request.getParameter("login"));
             customerDTO.setPassword(request.getParameter("password"));
+            if (!request.getParameter("districtId").equals(""))
+            {
+                customerDTO.setDistrictId(BigInteger.valueOf(Long.valueOf(request.getParameter("districtId"))));
+            }
             customerDTO.setAddress(request.getParameter("address"));
             if (!request.getParameter("balance").equals(""))
             {
@@ -200,6 +217,14 @@ public class CustomersTableServlet extends HttpServlet
             if (!request.getParameter("lastName").equals(""))
             {
                 customerDTO.setLastName(request.getParameter("lastName"));
+            }
+            if (!request.getParameter("districtId").equals(""))
+            {
+                customerDTO.setDistrictId(BigInteger.valueOf(Long.valueOf(request.getParameter("districtId"))));
+            }
+            else
+            {
+                customerDTO.setDistrictId(null);
             }
             if (!request.getParameter("address").equals(""))
             {

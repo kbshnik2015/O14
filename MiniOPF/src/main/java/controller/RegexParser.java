@@ -172,6 +172,7 @@ public class RegexParser
                     matchesString(customer.getFirstName(), regexps.get("firstName")) &&
                     matchesString(customer.getLastName(), regexps.get("lastName")) &&
                     matchesString(customer.getLogin(), regexps.get("login")) &&
+                    matchesBigInteger(customer.getDistrictId(), regexps.get("districtId")) &&
                     matchesString(customer.getAddress(), regexps.get("address")) &&
                     matchesFloat(customer.getBalance(), regexps.get("balance")))
             {

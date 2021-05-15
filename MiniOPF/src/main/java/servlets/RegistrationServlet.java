@@ -29,7 +29,8 @@ public class RegistrationServlet extends HttpServlet
                 String address = request.getParameter("address");
 
                 if(password.equals(repeatPassword)){
-                    CustomerDTO customer = new CustomerDTO(firstName,lastName,login,password,address,0);
+                    //todo: districtId against of null
+                    CustomerDTO customer = new CustomerDTO(firstName,lastName,login,password, null, address,0);
                     try
                     {
                         model.createCustomer(customer);

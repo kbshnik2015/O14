@@ -242,6 +242,7 @@ public class ModelJson implements Model
             customer.setFirstName(customerDTO.getFirstName());
             customer.setLastName(customerDTO.getLastName());
             customer.setPassword(customerDTO.getPassword());
+            customer.setDistrictId(customerDTO.getDistrictId());
             customer.setAddress(customerDTO.getAddress());
             customer.setBalance(customerDTO.getBalance());
         }

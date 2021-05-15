@@ -31,13 +31,21 @@ create table service_status
   name varchar(20) primary key not null
 );
 
+create table districts
+(
+  id bigint primary key not null,
+  name varchar(20) not null,
+  id_parent bigint references districts (id) on delete cascade default null
+);
+
 create table customers
 (
-  id BIGINT primary key not null,
+  id bigint primary key not null,
   first_name varchar(20),
   last_name varchar(30),
   login varchar(20) unique not null,
   password varchar(20) not null,
+  district_id bigint references districts (id) on delete restrict default null,
   address varchar (50),
   balance real
 );
@@ -51,13 +59,6 @@ create table employees
   password varchar(20) not null,
   status varchar(20) references employee_status (name) on delete restrict,
   is_waiting boolean
-);
-
-create table districts
-(
-  id bigint primary key not null,
-  name varchar(20) not null,
-  id_parent bigint references districts (id) on delete cascade default null
 );
 
 create table specifications
@@ -111,22 +112,22 @@ insert into employee_status values
 insert into service_status values
   ('ACTIVE'), ('DISCONNECTED'), ('PAY_MONEY_SUSPENDED'), ('SUSPENDED');
 
+insert into districts values
+  (nextval('idSeq'), 'Samara', default),
+  (nextval('idSeq'), 'Togliatti', default),
+  (nextval('idSeq'), 'Sovetskiy', 1),
+  (nextval('idSeq'), 'Mashstroy', 3),
+  (nextval('idSeq'), 'Promishlenniy', 1);
+
 insert into customers values
-  (nextval('idSeq'), 'Vladimir', 'Ivanov', 'ivanovlogin', 'ivanovpass', null, 500),
-  (nextval('idSeq'), 'Rassul', 'Biskek_Ogly', 'rassullogin', 'pass', 'Tadjikistan', 200),
-  (nextval('idSeq'), 'Ivan', 'Stukachev', 'stukachlogin', 'pass', null, 300);
+  (nextval('idSeq'), 'Vladimir', 'Ivanov', 'ivanovlogin', 'ivanovpass', default, null, 500),
+  (nextval('idSeq'), 'Rassul', 'Biskek_Ogly', 'rassullogin', 'pass', default, 'Tadjikistan', 200),
+  (nextval('idSeq'), 'Ivan', 'Stukachev', 'stukachlogin', 'pass', default, null, 300);
 
 insert into employees values
   (nextval('idSeq'), 'Rabotnik', 'Rabotnikov', 'emplogin', 'emppass', 'WORKING', false),
   (nextval('idSeq'), 'Artur', 'Arturov', 'artlogin', 'pass', 'WORKING', false),
   (nextval('idSeq'), 'Ivan', 'Durakov', 'durlogin', 'pass', 'ON_VACATION', false);
-
-insert into districts values
-  (nextval('idSeq'), 'Samara', default),
-  (nextval('idSeq'), 'Togliatti', default),
-  (nextval('idSeq'), 'Sovetskiy', 7),
-  (nextval('idSeq'), 'Mashstroy', 9),
-  (nextval('idSeq'), 'Promishlenniy', 7);
 
 insert into specifications values
   (nextval('idSeq'), 'Internet100', 100, 'Internet for 100 per month', true),
@@ -135,20 +136,20 @@ insert into specifications values
   (nextval('idSeq'), '500 minutes', 120, null, false);
 
 insert into specifications_to_districts values
-  (12, 7),
-  (12, 8);
+  (12, 1),
+  (12, 2);
 
 insert into services values
-  (nextval('idSeq'), null, 12, 'SUSPENDED', 1),
-  (nextval('idSeq'), current_date, 14, 'ACTIVE', 1),
-  (nextval('idSeq'), current_date, 13, 'ACTIVE', 2),
-  (nextval('idSeq'), null, 12, 'PAY_MONEY_SUSPENDED', 1),
-  (nextval('idSeq'), current_date, 15, 'ACTIVE', 3),
-  (nextval('idSeq'), current_date, 14, 'ACTIVE', 3);
+  (nextval('idSeq'), null, 12, 'SUSPENDED', 6),
+  (nextval('idSeq'), current_date, 14, 'ACTIVE', 6),
+  (nextval('idSeq'), current_date, 13, 'ACTIVE', 7),
+  (nextval('idSeq'), null, 12, 'PAY_MONEY_SUSPENDED', 6),
+  (nextval('idSeq'), current_date, 15, 'ACTIVE', 8),
+  (nextval('idSeq'), current_date, 14, 'ACTIVE', 8);
 
 insert into orders values
-  (nextval('idSeq'), 1, default, 14, 17, 'DISCONNECT', 'ENTERING', null),
-  (nextval('idSeq'), 1, 4, 12, 16, 'RESTORE', 'IN_PROGRESS', null),
-  (nextval('idSeq'), 2, default, 15, default, 'NEW', 'ENTERING', null),
-  (nextval('idSeq'), 2, 4, 13, 18, 'NEW', 'COMPLETED', null),
-  (nextval('idSeq'), 2, default, 12, default, 'NEW', 'ENTERING', null);
+  (nextval('idSeq'), 6, default, 14, 17, 'DISCONNECT', 'ENTERING', null),
+  (nextval('idSeq'), 6, 9, 12, 16, 'RESTORE', 'IN_PROGRESS', null),
+  (nextval('idSeq'), 7, default, 15, default, 'NEW', 'ENTERING', null),
+  (nextval('idSeq'), 7, 9, 13, 18, 'NEW', 'COMPLETED', null),
+  (nextval('idSeq'), 7, default, 12, default, 'NEW', 'ENTERING', null);

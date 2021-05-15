@@ -63,8 +63,8 @@ public class ControllerTest
         String address1 = "Customer1address";
         float balance1 = 100;
 
-        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
-        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
+        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         actual = controller.getModel().createCustomer(actual);
         expected.setId(actual.getId());
 
@@ -82,9 +82,9 @@ public class ControllerTest
         String address1 = "Customer1address";
         float balance1 = 100;
 
-        CustomerDTO customer = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO customer = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         CustomerDTO existedCustomer =
-                new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+                new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         controller.getModel().createCustomer(customer);
         controller.getModel().createCustomer(existedCustomer);
 
@@ -103,7 +103,7 @@ public class ControllerTest
 
         CustomerDTO customerWithoutLogin =
                 controller.getModel()
-                        .createCustomer(new CustomerDTO(firstName1, lastName1, null, password1, address1, balance1));
+                        .createCustomer(new CustomerDTO(firstName1, lastName1, null, password1, null, address1, balance1));
     }
 
     @Test(expected = IllegalLoginOrPasswordException.class)
@@ -119,7 +119,7 @@ public class ControllerTest
 
         CustomerDTO customerWithoutPassword =
                 controller.getModel()
-                        .createCustomer(new CustomerDTO(firstName1, lastName1, login1, null, address1, balance1));
+                        .createCustomer(new CustomerDTO(firstName1, lastName1, login1, null, null, address1, balance1));
     }
 
     @Test
@@ -134,8 +134,8 @@ public class ControllerTest
         String address1 = "Customer1address";
         float balance1 = 100;
 
-        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
-        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
+        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         actual = controller.getModel().createCustomer(actual);
         expected.setId(actual.getId());
         expected.setFirstName("newFirstName");
@@ -158,7 +158,7 @@ public class ControllerTest
         float balance1 = 100;
         BigInteger randomId = BigInteger.valueOf(666);
 
-        CustomerDTO actual = new CustomerDTO(randomId, firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO actual = new CustomerDTO(randomId, firstName1, lastName1, login1, password1, null, address1, balance1);
         controller.getModel().updateCustomer(actual);
     }
 
@@ -174,7 +174,7 @@ public class ControllerTest
         String address1 = "Customer1address";
         float balance1 = 100;
 
-        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO actual = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         actual = controller.getModel().createCustomer(actual);
         controller.getModel().deleteCustomer(actual.getId());
 
@@ -192,7 +192,7 @@ public class ControllerTest
         String address1 = "Customer1address";
         float balance1 = 100;
 
-        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1);
+        CustomerDTO expected = new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1);
         expected = controller.getModel().createCustomer(expected);
         CustomerDTO actual = controller.getModel().getCustomer(expected.getId());
 
@@ -461,7 +461,7 @@ public class ControllerTest
         float balance1 = 100;
 
         CustomerDTO expected = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         AbstractUserDTO actual = controller.login(login1, password1);
 
         Assert.assertEquals(expected, actual);
@@ -501,7 +501,7 @@ public class ControllerTest
         float balance1 = 100;
 
         CustomerDTO expected1 = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         EmployeeDTO expected2 = controller.getModel()
                 .createEmployee(new EmployeeDTO(empFirstName, empLastName, empLogin, empPassword, empStatus));
 
@@ -525,7 +525,7 @@ public class ControllerTest
         float balance1 = 100;
 
         CustomerDTO expected1 = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         EmployeeDTO expected2 = controller.getModel()
                 .createEmployee(new EmployeeDTO(empFirstName, empLastName, empLogin, empPassword, empStatus));
 
@@ -549,7 +549,7 @@ public class ControllerTest
         float balance1 = 200;
 
         CustomerDTO expected1 = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         EmployeeDTO expected2 = controller.getModel()
                 .createEmployee(new EmployeeDTO(empFirstName, empLastName, empLogin, empPassword, empStatus));
         AbstractUserDTO actual = controller.login(login1, "empPasswordRandom");
@@ -562,7 +562,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -606,7 +606,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -629,7 +629,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -652,7 +652,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -673,7 +673,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.
@@ -695,7 +695,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         controller.createNewOrder(customer.getId(), specId);
@@ -718,7 +718,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         ServiceDTO service = controller.getModel()
@@ -743,7 +743,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         ServiceDTO service = controller.getModel()
@@ -769,7 +769,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         ServiceDTO service = controller.getModel()
@@ -803,7 +803,7 @@ public class ControllerTest
         float balance1 = 200;
 
         CustomerDTO actual = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         controller.changeBalanceOn(actual.getId(), (float) 50);
         actual = controller.getModel().getCustomer(actual.getId());
 
@@ -823,7 +823,7 @@ public class ControllerTest
         float balance1 = 200;
 
         CustomerDTO actual = controller.getModel()
-                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, address1, balance1));
+                .createCustomer(new CustomerDTO(firstName1, lastName1, login1, password1, null, address1, balance1));
         controller.changeBalanceOn(actual.getId(), (float) -50);
         actual = controller.getModel().getCustomer(actual.getId());
 
@@ -859,14 +859,14 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(1);
         ServiceDTO service = controller.getModel()
                 .createService(new ServiceDTO(new Date(), specId, ServiceStatus.ACTIVE, customer.getId()));
         String newLogin = "newLogin";
         CustomerDTO otherCustomer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, newLogin, "pass", null, 0));
+                .createCustomer(new CustomerDTO(null, null, newLogin, "pass", null, null, 0));
 
         controller.createSuspendOrder(otherCustomer.getId(), service.getId());
     }
@@ -876,7 +876,7 @@ public class ControllerTest
     {
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         BigInteger randomId = BigInteger.valueOf(666);
 
         OrderDTO suspendOrder = controller.createSuspendOrder(customer.getId(), randomId);
@@ -1030,7 +1030,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         OrderDTO order = controller.createNewOrder(customer.getId(), specId);
@@ -1057,7 +1057,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         OrderDTO order = controller.createNewOrder(customer.getId(), specId);
@@ -1086,7 +1086,7 @@ public class ControllerTest
         EmployeeStatus empStatus = EmployeeStatus.WORKING;
         String cust1_login = "cust1_login";
         CustomerDTO customer = controller.getModel()
-                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, 500));
+                .createCustomer(new CustomerDTO(null, null, cust1_login, "cust1_pass", null, null, 500));
         controller.getModel().createSpecification(new SpecificationDTO("Spec name", 100, "Internet100", false, null));
         BigInteger specId = BigInteger.valueOf(2);
         OrderDTO order = controller.createNewOrder(customer.getId(), specId);
