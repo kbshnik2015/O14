@@ -8,20 +8,20 @@ import model.ModelFactory;
 import model.dto.DistrictDTO;
 import model.dto.EntityDTO;
 
-public class DistrictValidator implements Validator
+public class CreateDistrictValidator implements CreateEntityValidator
 {
-    @Override
-    public boolean validate(final EntityDTO entity)
-    {
-        Model model = ModelFactory.getModel();
-        String name = ((DistrictDTO) entity).getName();
-        BigInteger parentId = ((DistrictDTO) entity).getParentId();
+    private Model model = ModelFactory.getModel();
 
+    private void checkNameIsNull(String name)
+    {
         if (name == null)
         {
-            throw new IllegalTransitionException("District have to have a name");
+            throw new IllegalTransitionException("District has to have a name");
         }
+    }
 
+    private void checkParentIdExists(BigInteger parentId)
+    {
         if (parentId != null)
         {
             if (!model.getDistricts().keySet().contains(parentId))
@@ -30,6 +30,16 @@ public class DistrictValidator implements Validator
                         "District you choose as the parent (id: " + parentId + ") doesn't exist");
             }
         }
+    }
+
+    @Override
+    public boolean validate(final EntityDTO entity)
+    {
+        String name = ((DistrictDTO) entity).getName();
+        BigInteger parentId = ((DistrictDTO) entity).getParentId();
+
+        checkNameIsNull(name);
+        checkParentIdExists(parentId);
 
         return true;
     }

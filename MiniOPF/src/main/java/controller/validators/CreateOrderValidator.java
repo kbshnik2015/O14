@@ -11,53 +11,65 @@ import model.enums.OrderAim;
 import model.enums.OrderStatus;
 import model.enums.ServiceStatus;
 
-public class OrderValidator implements Validator
+public class CreateOrderValidator implements CreateEntityValidator
 {
-    @Override
-    public boolean validate(final EntityDTO entity)
-    {
-        Model model = ModelFactory.getModel();
-        BigInteger customerId = ((OrderDTO) entity).getCustomerId();
-        BigInteger specId = ((OrderDTO) entity).getSpecId();
-        BigInteger serviceId = ((OrderDTO) entity).getServiceId();
-        OrderAim orderAim = ((OrderDTO) entity).getOrderAim();
-        OrderStatus orderStatus = ((OrderDTO) entity).getOrderStatus();
+    private Model model = ModelFactory.getModel();
 
+    private void checkCustomerIdIsNull(BigInteger customerId)
+    {
         if (customerId == null)
         {
-            throw new IllegalTransitionException("Order have to have a customer");
+            throw new IllegalTransitionException("Order has to have a customer");
         }
+    }
 
+    private void checkOrderWithOrderAimNewHasSpecificationId(OrderAim orderAim, BigInteger specId)
+    {
         if (orderAim.equals(OrderAim.NEW) && specId == null)
         {
-            throw new IllegalTransitionException("Order with aim 'NEW' have to have a specification");
+            throw new IllegalTransitionException("Order with aim 'NEW' has to have a specification");
         }
+    }
 
+    private void checkOrderWithOrderAimNewDoesntHaveServiceId(OrderAim orderAim, BigInteger serviceId)
+    {
         if (orderAim.equals(OrderAim.NEW) && serviceId != null)
         {
             throw new IllegalTransitionException("Order with aim 'NEW' can't have a service");
         }
+    }
 
+    private void checkSuspendDisconnectRestoreOrdersHasServiceId(OrderAim orderAim, BigInteger serviceId)
+    {
         if (!orderAim.equals(OrderAim.NEW) && serviceId == null)
         {
             throw new IllegalTransitionException(
-                    "Order with aim 'SUSPEND'/'DISCONNECT'/'RESTORE' have to have a service");
+                    "Order with aim 'SUSPEND'/'DISCONNECT'/'RESTORE' has to have a service");
         }
+    }
 
+    private void checkSuspendDisconnectOrdersHasActiveService(OrderAim orderAim, BigInteger serviceId)
+    {
         if (!orderAim.equals(OrderAim.NEW) && !orderAim.equals(OrderAim.RESTORE) &&
                 !model.getService(serviceId).getServiceStatus().equals(ServiceStatus.ACTIVE))
         {
             throw new IllegalTransitionException(
-                    "Order with aim 'SUSPEND'/'DISCONNECT' have to have an active service");
+                    "Order with aim 'SUSPEND'/'DISCONNECT' has to have an active service");
         }
+    }
 
+    private void checkRestoreOrderHasNotActiveService(OrderAim orderAim, BigInteger serviceId)
+    {
         if (orderAim.equals(OrderAim.RESTORE) &&
                 model.getService(serviceId).getServiceStatus().equals(ServiceStatus.ACTIVE))
         {
             throw new IllegalTransitionException(
-                    "Order with aim 'RESTORE' have to have a not active service");
+                    "Order with aim 'RESTORE' has to have a not active service");
         }
+    }
 
+    private void checkIsServiceAlreadyInUse(BigInteger serviceId)
+    {
         if (serviceId != null)
         {
             for (OrderDTO orderDTO : model.getOrders().values())
@@ -75,7 +87,10 @@ public class OrderValidator implements Validator
                 }
             }
         }
+    }
 
+    private void checkServiceBelongsRightSpecification(BigInteger serviceId, BigInteger specId)
+    {
         if (serviceId != null && specId != null)
         {
             if (!model.getService(serviceId).getSpecificationId().equals(specId))
@@ -85,6 +100,25 @@ public class OrderValidator implements Validator
                                 specId + ") you set");
             }
         }
+    }
+
+    @Override
+    public boolean validate(final EntityDTO entity)
+    {
+        BigInteger customerId = ((OrderDTO) entity).getCustomerId();
+        BigInteger specId = ((OrderDTO) entity).getSpecId();
+        BigInteger serviceId = ((OrderDTO) entity).getServiceId();
+        OrderAim orderAim = ((OrderDTO) entity).getOrderAim();
+        OrderStatus orderStatus = ((OrderDTO) entity).getOrderStatus();
+
+        checkCustomerIdIsNull(customerId);
+        checkOrderWithOrderAimNewHasSpecificationId(orderAim, specId);
+        checkOrderWithOrderAimNewDoesntHaveServiceId(orderAim, serviceId);
+        checkSuspendDisconnectRestoreOrdersHasServiceId(orderAim, serviceId);
+        checkSuspendDisconnectOrdersHasActiveService(orderAim, serviceId);
+        checkRestoreOrderHasNotActiveService(orderAim, serviceId);
+        checkIsServiceAlreadyInUse(serviceId);
+        checkServiceBelongsRightSpecification(serviceId, specId);
 
         return true;
     }
