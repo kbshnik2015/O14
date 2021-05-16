@@ -21,15 +21,21 @@
             width: 600px; /* Ширина слоя */
             margin: 7px; /* Значение отступов */
             padding: 10px; /* Поля вокруг текста */
-            border: 1px solid black; /* Параметры границы */
-            background: #ff000c;
+            border: 1px solid #ff000c; /* Параметры границы */
+            background: #fffdfe;
+        }
+        p {
+            color: #ff000c;
+        }
+        h2 {
+            color: #ff000c;
         }
     </style>
 </head>
 <body>
 <div align="center">
     <h2 align="center">ERROR</h2>
-    <p align="center"><%= message.toUpperCase()%>
+    <p align="center"><%= message%>
     </p>
 </div>
 </body>
