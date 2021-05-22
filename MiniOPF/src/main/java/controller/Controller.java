@@ -436,22 +436,17 @@ public class Controller
     {
         List<SpecificationDTO> customerSpecifications = getCustomerServices(customer.getId())
                 .stream()
+                .filter(service-> !ServiceStatus.DISCONNECTED.equals(service.getServiceStatus()))
                 .map(service -> model.getSpecification(service.getSpecificationId()))
                 .collect(Collectors.toList());
 
         customerSpecifications.addAll(getCustomerOrders(customer.getId())
                 .stream()
+                .filter(order -> OrderAim.NEW.equals(order.getOrderAim()) && (OrderStatus.ENTERING.equals(order.getOrderStatus()) || OrderStatus.IN_PROGRESS.equals(order.getOrderStatus()) ))
                 .map(order -> model.getSpecification(order.getSpecId()))
                 .collect(Collectors.toList()));
 
-        return filterSpecsFromCustomerOnes(customerSpecifications);
-    }
-
-    private List<SpecificationDTO> filterSpecsFromCustomerOnes(final List<SpecificationDTO> customerSpecifications)
-    {
-        return model.getSpecifications().values().stream()
-                .filter(x -> !customerSpecifications.contains(x))
-                .collect(Collectors.toList());
+        return customerSpecifications;
     }
 
     public Collection<OrderDTO> getEmployeeOrders(BigInteger id)
@@ -625,7 +620,7 @@ public class Controller
         return minimumDate.toString();
     }
 
-    public boolean isAvailableService(BigInteger customerId, BigInteger specId)
+    public boolean isAvailableSpecByDistrict(BigInteger customerId, BigInteger specId)
     {
         CustomerDTO customer = model.getCustomer(customerId);
         SpecificationDTO specification = model.getSpecification(specId);
@@ -634,7 +629,7 @@ public class Controller
             List<BigInteger> districtsIds = specification.getDistrictsIds();
             for (BigInteger districtId : districtsIds)
             {
-                if (model.getDistrict(districtId).getName().equals(customer.getAddress()))
+                if (districtId.equals(customer.getDistrictId()))
                 {
                     return true;
                 }
@@ -645,6 +640,12 @@ public class Controller
         {
             return true;
         }
+    }
+
+    public  boolean isAvailableSpecByMoney(BigInteger customerId, BigInteger specId){
+        CustomerDTO customer = model.getCustomer(customerId);
+        SpecificationDTO specification = model.getSpecification(specId);
+        return customer.getBalance() >= specification.getPrice();
     }
 
     public boolean isThereDisconnectionOrder(BigInteger serviceId)
@@ -678,5 +679,43 @@ public class Controller
                         !OrderStatus.COMPLETED.equals(order.getOrderStatus()))
                 .count();
         return count > 0;
+    }
+
+    public List<SpecificationDTO> getAccessibleSpecs(BigInteger customerId){
+        CustomerDTO customer = model.getCustomer(customerId);
+        List<SpecificationDTO> connectedSpecs = this.getCustomerSpecifications(customer);
+
+        return model.getSpecifications().values().stream()
+                .filter(specification -> !connectedSpecs.contains(specification) && this.isAvailableSpecByDistrict(customerId,specification.getId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<SpecificationDTO> getNotAvailableSpecs(BigInteger customerId){
+        Model model =ModelFactory.getModel();
+        CustomerDTO customer = model.getCustomer(customerId);
+        List<SpecificationDTO> connectedSpecs = this.getCustomerSpecifications(customer);
+
+        return model.getSpecifications().values().stream()
+                .filter(specification -> !connectedSpecs.contains(specification) && !this.isAvailableSpecByDistrict(customerId,specification.getId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderDTO> getNotFinishedOrders(BigInteger customerId){
+        return this.getCustomerOrders(customerId).stream()
+                .filter(order -> !OrderStatus.COMPLETED.equals(order.getOrderStatus()) && !OrderStatus.CANCELLED.equals(order.getOrderStatus()))
+                .collect(Collectors.toList());
+    }
+
+    public OrderDTO getNotCompletedOrderOnService (BigInteger serviceId){
+        return model.getOrders().values().stream()
+                .filter(order -> serviceId.equals(order.getServiceId()) && !order.getOrderStatus().equals(OrderStatus.CANCELLED) && !OrderStatus.COMPLETED.equals(order.getOrderStatus()) && !OrderAim.NEW.equals(order.getOrderAim()))
+                .findFirst()
+                .get();
+    }
+
+    public List<ServiceDTO> getCustomersNotDisconnectedServices(BigInteger customerId){
+        return this.getCustomerServices(customerId).stream()
+                .filter(serviceDTO -> !ServiceStatus.DISCONNECTED.equals(serviceDTO.getServiceStatus()))
+                .collect(Collectors.toList());
     }
 }

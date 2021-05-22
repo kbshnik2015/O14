@@ -37,7 +37,7 @@
                     </form>
                     <br>
                     <br>
-                    <a href="/CustomerNavigationServlet?ref=options" class="hrefButton">Cancel</a>
+                    <a href="/view/customer/MyProfile.jsp" class="hrefButton">Cancel</a>
                 </div>
             </div>
 </body>

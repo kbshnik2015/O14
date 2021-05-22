@@ -77,3 +77,56 @@ p{
 .name{
     font-weight: bold;
 }
+
+.disconnect_button_in_center{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: red;
+    color: white;
+    position: absolute;
+    left:0;
+    right:0;
+    bottom: 4%;
+    margin:auto;
+}
+
+.disconnect_button{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: red;
+    color: white;
+
+}
+
+.restore_button{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: lawngreen;
+    color: white;
+}
+
+.suspend_button{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: royalblue;
+    color: white;
+}
+
+.cancel_button{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: lawngreen;
+    color: white;
+}
+
+.cancel_button_in_centre{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: lawngreen;
+    color: white;
+    position: absolute;
+    left:0;
+    right:0;
+    bottom: 4%;
+    margin:auto;
+}

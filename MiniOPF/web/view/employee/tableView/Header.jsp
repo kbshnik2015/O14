@@ -1,12 +1,11 @@
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
+<jsp:useBean id="currentUser" scope="session" class="model.dto.EmployeeDTO"/>
+<link rel="stylesheet" href="/src/main/resources/css/employee/header.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <html>
     <head>
-        <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
-        <jsp:useBean id="currentUser" scope="session" class="model.dto.EmployeeDTO"/>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script>
             (function ($) {
                 $.fn.checkboxTable = function () {
@@ -49,12 +48,14 @@
             });
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-        <p>You are login as: ${currentUser.firstName}  ${currentUser.lastName}</p>
+        <p>
+            You are login as: <a href="${pageContext.request.contextPath}/view/employee/Options.jsp">${currentUser.firstName}  ${currentUser.lastName}</a>
+            <a class="LogOut" href="/LogOutServlet"><img src="https://img.icons8.com/metro/26/000000/exit.png" alt="log out"/></a>
+        </p>
         <form action="/employee/EmployeeServlet" method="post" name="waitForWorkForm">
             <c:choose>
                 <c:when test="${currentUser.waitingForOrders}" >
-                    <input type = "checkbox"  name = "waitForWork" value="on" checked onClick="waitForWorkForm.submit()"
+                    <input type = "checkbox"  name = "waitForWork" value="off" checked onClick="waitForWorkForm.submit()"
                            data-toggle="popover"
                            data-placement="auto"
                            title="When this function is activated, a free order will appear - it will be transferred to you for processing"
@@ -70,7 +71,7 @@
                     > Wait for work
                 </c:otherwise>
             </c:choose>
-            </form>
+        </form>
             <form action="/employee/NavigationServlet" method="get" name="navigation">
                 <c:choose>
                     <c:when test="${'/view/employee/tableView/Mine.jsp' eq pageContext.request.requestURI}">
@@ -137,7 +138,7 @@
                         >Specifications</button>
                         <button name="customers" value="click" type="submit"
                                 data-toggle="popover"
-                                data-placement="right"
+                                data-placement="auto"
                                 title="Click here for the customers management table"
                                 data-trigger="hover">Customers</button>
                         <button name="districts" value="click" type="submit"

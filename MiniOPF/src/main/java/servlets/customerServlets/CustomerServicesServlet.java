@@ -1,8 +1,12 @@
 package servlets.customerServlets;
 
 import controller.Controller;
+import model.Model;
+import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
+import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
+import model.dto.ServiceDTO;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -16,10 +20,20 @@ public class CustomerServicesServlet extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+
         BigInteger serviceId = new BigInteger(request.getParameter("serviceId"));
         CustomerDTO customer = (CustomerDTO) request.getSession().getAttribute("currentUser");
         Controller controller = new Controller();
         if("click".equals(request.getParameter("disconnect"))){
+            if(controller.isThereSuspensionOrder(serviceId) || controller.isThereRestorationOrder(serviceId)){
+                try
+                {
+                    controller.cancelOrder(controller.getNotCompletedOrderOnService(serviceId).getId());
+                } catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+                {
+                    dataNotUpdatedWarning.printStackTrace();
+                }
+            }
             try
             {
                 controller.createDisconnectOrder(customer.getId(),serviceId);
@@ -42,6 +56,15 @@ public class CustomerServicesServlet extends HttpServlet
             } catch (DataNotCreatedWarning dataNotCreatedWarning)
             {
                 dataNotCreatedWarning.printStackTrace();
+            }
+        }else if("click".equals(request.getParameter("cancel"))){
+            BigInteger orderId = controller.getNotCompletedOrderOnService(serviceId).getId();
+            try
+            {
+                controller.cancelOrder(orderId);
+            } catch (DataNotUpdatedWarning dataNotUpdatedWarning)
+            {
+                dataNotUpdatedWarning.printStackTrace();
             }
         }
         response.sendRedirect("/CustomerNavigationServlet?ref=myServices");

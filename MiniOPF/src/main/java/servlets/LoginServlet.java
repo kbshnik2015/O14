@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet
         {
             CustomerDTO customer = (CustomerDTO) user;
             session.setAttribute("currentUser", customer);
-            response.sendRedirect("/CustomerNavigationServlet?ref=main");
+            response.sendRedirect("/CustomerNavigationServlet?ref=myServices");
         }
         else if(user instanceof EmployeeDTO)
         {

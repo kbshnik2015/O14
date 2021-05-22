@@ -34,6 +34,6 @@ public class CustomerTopUpServlet extends HttpServlet
             }
         }
         request.getSession().setAttribute("currentUser",model.getCustomer(customer.getId()));
-        response.sendRedirect("/CustomerNavigationServlet?ref=main");
+        response.sendRedirect("/CustomerNavigationServlet?ref=myProfile");
     }
 }

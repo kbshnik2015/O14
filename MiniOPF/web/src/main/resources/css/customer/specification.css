@@ -1,0 +1,53 @@
+
+.grid_body{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    min-height: 33%;
+    max-height: 50%;
+}
+.item{
+    font-family: 'Montserrat', sans-serif;
+    text-align: left;
+    border: 2px solid royalblue;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 25px;
+    position: relative;
+}
+button{
+    border-radius: 10px;
+    padding: 5px;
+    background-color: royalblue;
+    color: white;
+    position: absolute;
+    left:0;
+    right:0;
+    bottom: 4%;
+    margin:auto;
+}
+
+p{
+    padding: 2px;
+}
+
+.payMoney{
+    color: red;
+}
+
+.descriptions{
+    font-style: italic;
+}
+
+.name{
+    font-weight: bold;
+}
+
+.field{
+    font-weight: bold;
+    font-size: 11px;
+}
+
+h2{
+    font-weight: bold;
+    font-size: 15px;
+}

@@ -92,9 +92,9 @@ p{
 
 .hrefButton{
 
-    background:royalblue; /*фон*/
-    padding: 5px; /*отступы внутри*/
+    background:royalblue;
+    padding: 5px;
     border-radius: 5px;
     color:white;
-    text-decoration: none; /*убрать подчеркивание ссылки*/
+    text-decoration: none;
 }

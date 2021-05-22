@@ -27,34 +27,36 @@ public class CustomerNavigationServlet extends HttpServlet
         HttpSession session = request.getSession();
         CustomerDTO currentUser = (CustomerDTO)session.getAttribute("currentUser");
 
-        if ("main".equals(request.getParameter("ref")))
+        if ("myProfile".equals(request.getParameter("ref")))
         {
             String nextPayDay = controller.getNextPayDay(currentUser.getId());
             request.setAttribute("nextPayDay",nextPayDay);
-            getServletContext().getRequestDispatcher("/view/customer/Mine.jsp").forward(request, response);
+            getServletContext().getRequestDispatcher("/view/customer/MyProfile.jsp").forward(request, response);
         }
         else if ("myOrders".equals(request.getParameter("ref")))
         {
-            List<OrderDTO> orders = (List<OrderDTO>) controller.getCustomerOrders(currentUser.getId());
+            List<OrderDTO> orders = (List<OrderDTO>) controller.getNotFinishedOrders(currentUser.getId());
             request.setAttribute("orders",orders);
             getServletContext().getRequestDispatcher("/view/customer/MyOrders.jsp").forward(request, response);
 
         }
         else if ("specs".equals(request.getParameter("ref")))
         {
-            List<SpecificationDTO> specs = new ArrayList<>(model.getSpecifications().values());
-            request.setAttribute("specs",specs);
+            List<SpecificationDTO> accessibleSpecs = controller.getAccessibleSpecs(currentUser.getId());
+            List<SpecificationDTO> notAvailableSpecs = controller.getNotAvailableSpecs(currentUser.getId());
+            request.setAttribute("accessibleSpecs",accessibleSpecs);
+            request.setAttribute("notAvailableSpecs",notAvailableSpecs);
             getServletContext().getRequestDispatcher("/view/customer/Specifications.jsp").forward(request, response);
         }
         else if ("myServices".equals(request.getParameter("ref")))
         {
-            List<ServiceDTO> services = (List<ServiceDTO>) controller.getCustomerServices(currentUser.getId());
+            List<ServiceDTO> services = (List<ServiceDTO>) controller.getCustomersNotDisconnectedServices(currentUser.getId());
             request.setAttribute("services",services);
             getServletContext().getRequestDispatcher("/view/customer/Services.jsp").forward(request, response);
         }
-        else if ("options".equals(request.getParameter("ref")))
+        else if ("editProfile".equals(request.getParameter("ref")))
         {
-            getServletContext().getRequestDispatcher("/view/customer/Options.jsp").forward(request, response);
+            getServletContext().getRequestDispatcher("/view/customer/EditProfile.jsp").forward(request, response);
         }
 
     }
