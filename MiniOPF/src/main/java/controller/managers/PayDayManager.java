@@ -46,11 +46,13 @@ public class PayDayManager extends Thread
                             controller.changeBalanceOn(customer.getId(), serviceSpec.getPrice() * (-1));
                             service.setServiceStatus(ServiceStatus.ACTIVE);
                             service.setPayDay(new Date(System.currentTimeMillis() + MONTH_IN_MILLI_SEC));
+                            model.updateCustomer(customer);
                         }
                         else
                         {
                             service.setServiceStatus(ServiceStatus.PAY_MONEY_SUSPENDED);
                         }
+                        model.updateService(service);
                     }
                 }
             }

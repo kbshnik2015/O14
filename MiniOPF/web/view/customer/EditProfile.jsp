@@ -10,6 +10,19 @@
 <body>
 <c:import url="Header.jsp"/>
 <br>
+<p><a href="#popup"
+      style="position: absolute;
+           top: 9%;
+           right: 10px;"
+      data-toggle="popover"
+      data-placement="auto"
+      title="Click here to learn more."
+      data-trigger="hover"
+><img src="https://img.icons8.com/officexs/18/000000/info.png" alt=""
+      style="position: relative;
+      bottom: 2px;"
+/> About this page</a></p>
+<br>
             <div class="grid_body">
                 <div class="passwordInfo">
                     <form action="/CustomerOptionsServlet" method="post">
@@ -40,5 +53,6 @@
                     <a href="/view/customer/MyProfile.jsp" class="hrefButton">Cancel</a>
                 </div>
             </div>
+<c:import url="/view/employee/popUps/customerPopUps/EditProfilePopUp.jsp"/>
 </body>
 </html>

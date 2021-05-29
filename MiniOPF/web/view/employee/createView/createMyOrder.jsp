@@ -10,6 +10,17 @@
     <jsp:useBean id="employee" scope="request" type="model.dto.EmployeeDTO"/>
 </head>
 <body>
+<a href="#popup"
+   style="position: absolute;
+           top: 10px;
+           right: 10px;
+"
+   class="info"
+   data-toggle="popover"
+   data-placement="auto"
+   title="Click here to learn more."
+   data-trigger="hover"
+>About this page</a>
 <div align="middle">
     <form action="/employee/MyOrdersTableServlet" method="post">
         <table>
@@ -87,65 +98,6 @@
         </div>
     </form>
 </div>
-
-
-<%--<div align="middle">--%>
-<%--<form action="/employee/MineTableServlet" method="post">--%>
-<%--<input type="radio" name="aim" value="NEW"> NEW--%>
-<%--<input type="radio" name="aim" value="SUSPEND"> SUSPEND--%>
-<%--<input type="radio" name="aim" value="RESTORE"> RESTORE--%>
-<%--<input type="radio" name="aim" value="DISCONNECT"> DISCONNECT--%>
-<%--&lt;%&ndash;<c:when test="${pageContext.getAttribute('radio') != null}">&ndash;%&gt;--%>
-<%--<table>--%>
-<%--<tbody>--%>
-<%--<tr>--%>
-<%--<td>CUSTOMER</td>--%>
-<%--<td>--%>
-<%--<select name="customerId" required>--%>
-<%--<c:forEach var="customer" items="${customers}">--%>
-<%--<option value="${customer.id}">--%>
-<%--${customer.id} : ${customer.firstName} ${customer.lastName}</option>--%>
-<%--</c:forEach>--%>
-<%--</select>--%>
-<%--</td>--%>
-<%--</tr>--%>
-<%--<c:choose>--%>
-<%--<c:when test="${pageContext.getAttribute('radio') == 'NEW'}">--%>
-<%--<tr>--%>
-<%--<td>SPECIFICATION</td>--%>
-<%--<td>--%>
-<%--<select name="specId" required>--%>
-<%--<c:forEach var="spec" items="${specs}">--%>
-<%--<option value="${spec.id}">${spec.id} : ${spec.name}</option>--%>
-<%--</c:forEach>--%>
-<%--</select>--%>
-<%--</td>--%>
-<%--</tr>--%>
-<%--</c:when>--%>
-<%--<c:otherwise>--%>
-<%--<tr>--%>
-<%--<td>SERVICE</td>--%>
-<%--<td>--%>
-<%--<select name="serviceId" required>--%>
-<%--<c:if test="${pageContext.getAttribute('customerId') != null}">--%>
-<%--<c:forEach var="service" items="${services}">--%>
-<%--<option value="${service.id}">${service.id}</option>--%>
-<%--</c:forEach>--%>
-<%--</c:if>--%>
-<%--</select>--%>
-<%--</td>--%>
-<%--</tr>--%>
-<%--</c:otherwise>--%>
-<%--</c:choose>--%>
-<%--</tbody>--%>
-<%--</table>--%>
-<%--&lt;%&ndash;</c:when>&ndash;%&gt;--%>
-
-<%--<div>--%>
-<%--<button type="submit" name="confirmCreate" value="click">OK</button>--%>
-<%--</div>--%>
-<%--</form>--%>
-<%--</div>--%>
-
+<c:import url="/view/employee/popUps/createOrderPagePopUp.jsp"/>
 </body>
 </html>

@@ -1,17 +1,17 @@
-
+<jsp:useBean id="districts" scope="request" type="java.util.List"/>
+<jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
+<%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
 <html>
     <head>
         <title>Districts</title>
-        <link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
-        <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"  %>
         <c:import url="Header.jsp"/>
-        <jsp:useBean id="districts" scope="request" type="java.util.List"/>
-        <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
     </head>
     <body>
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/DistrictsTableServlet" method="post">
             <c:import url="tableButtons/districtsButtons.jsp"/>
+            <br>
         <thead>
             <tr bgcolor="#a9a9a9">
                 <th ><input type="checkbox" id="all"
@@ -55,7 +55,7 @@
                     <th><input type="checkbox" name="checks" value="${district.id}"
                                data-toggle="popover"
                                data-placement="auto"
-                               title="Click here to highlight this line."
+                               title="Click here to select this entity."
                                data-trigger="hover"
                     ></th>
                     <td><a href="/employee/DistrictsTableServlet?id=${district.id }">${district.id }</a></td>

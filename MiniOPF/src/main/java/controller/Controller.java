@@ -2,10 +2,10 @@ package controller;
 
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import controller.exceptions.IllegalLoginOrPasswordException;
@@ -603,7 +603,8 @@ public class Controller
 
     public String getNextPayDay(BigInteger customerId)
     {
-        List<ServiceDTO> services = (List<ServiceDTO>) this.getCustomerServices(customerId);
+
+        List<ServiceDTO> services = this.getCustomersNotDisconnectedServices(customerId);
         if (services.isEmpty())
         {
             return "-";
@@ -617,7 +618,7 @@ public class Controller
                 minimumDate = service.getPayDay().after(minimumDate) ? service.getPayDay() : minimumDate;
             }
         }
-        return minimumDate.toString();
+        return this.transformDateInCorrectForm(minimumDate);
     }
 
     public boolean isAvailableSpecByDistrict(BigInteger customerId, BigInteger specId)
@@ -691,13 +692,14 @@ public class Controller
     }
 
     public List<SpecificationDTO> getNotAvailableSpecs(BigInteger customerId){
-        Model model =ModelFactory.getModel();
         CustomerDTO customer = model.getCustomer(customerId);
         List<SpecificationDTO> connectedSpecs = this.getCustomerSpecifications(customer);
 
-        return model.getSpecifications().values().stream()
+        List<SpecificationDTO> notAvailableSpecs = model.getSpecifications().values().stream()
                 .filter(specification -> !connectedSpecs.contains(specification) && !this.isAvailableSpecByDistrict(customerId,specification.getId()))
                 .collect(Collectors.toList());
+        notAvailableSpecs.addAll(connectedSpecs);
+        return notAvailableSpecs;
     }
 
     public List<OrderDTO> getNotFinishedOrders(BigInteger customerId){
@@ -717,5 +719,17 @@ public class Controller
         return this.getCustomerServices(customerId).stream()
                 .filter(serviceDTO -> !ServiceStatus.DISCONNECTED.equals(serviceDTO.getServiceStatus()))
                 .collect(Collectors.toList());
+    }
+
+    public String transformDateInCorrectForm(Date date){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyy", Locale.ENGLISH);
+        return dateFormat.format(date);
+    }
+
+    public String transformPriceInCorrectForm(float value){
+        if(value == (long) value)
+            return String.format("%d",(long)value);
+        else
+            return String.format("%s",value);
     }
 }

@@ -1,12 +1,9 @@
 package servlets.customerServlets;
 
 import controller.Controller;
-import model.Model;
-import model.ModelFactory;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;
-import model.dto.ServiceDTO;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

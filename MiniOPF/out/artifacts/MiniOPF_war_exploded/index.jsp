@@ -15,7 +15,7 @@
         </div>
         <br>
         <div>
-            <button type="submit">Sing in</button>
+            <button type="submit">Sign in</button>
         </div>
     </form>
     <button type="button" onClick='location.href="/view/registration/CustomerRegistration.jsp"' >Register Customer</button>

@@ -69,6 +69,7 @@ button{
     padding: 5px;
     color: white;
 }
+
 input[type="text"] {
     border: 1px solid royalblue;
     border-radius: 3px;
@@ -91,7 +92,6 @@ p{
 }
 
 .hrefButton{
-
     background:royalblue;
     padding: 5px;
     border-radius: 5px;

@@ -1,7 +1,6 @@
 package servlets.customerServlets;
 
 import controller.Controller;
-import model.database.dao.CustomerDAO;
 import model.database.exceptions.DataNotCreatedWarning;
 import model.database.exceptions.DataNotUpdatedWarning;
 import model.dto.CustomerDTO;

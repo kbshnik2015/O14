@@ -1,17 +1,30 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
+<jsp:useBean id="customers" scope="request" type="java.util.List"/>
+<%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
+<link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
 <html>
     <head>
         <title>Customers</title>
-        <link rel="stylesheet" href="/src/main/resources/css/employee/table.css">
-        <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
         <c:import url="Header.jsp"/>
-        <jsp:useBean id="customers" scope="request" type="java.util.List"/>
-        <jsp:useBean id="filterParams" scope="request" type="java.util.Map"/>
+        <br>
     </head>
     <body>
+    <a href="#popup"
+       style="position: absolute;
+           top: 7%;
+           right: 10px;
+"
+       class="info"
+       data-toggle="popover"
+       data-placement="auto"
+       title="Click here to learn more."
+       data-trigger="hover"
+    >About this page</a>
+    <br>
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/CustomersTableServlet" method="post">
             <c:import url="tableButtons/customersButtons.jsp"/>
+            <br>
         <thead>
             <tr bgcolor="#a9a9a9">
                 <th ><input type="checkbox" id="all"
@@ -91,7 +104,7 @@
                     <th><input type="checkbox" name="checks" value="${customer.id}"
                                data-toggle="popover"
                                data-placement="auto"
-                               title="Click here to highlight this line."
+                               title="Click here to select this entity."
                                data-trigger="hover"
                     ></th>
                     <td><a href="/employee/CustomersTableServlet?id=${customer.id }">${customer.id }</a></td>

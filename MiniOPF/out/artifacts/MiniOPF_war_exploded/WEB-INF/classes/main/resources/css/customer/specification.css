@@ -2,9 +2,10 @@
 .grid_body{
     display: grid;
     grid-template-columns: repeat(4,1fr);
-    min-height: 33%;
+    min-height: 1%;
     max-height: 50%;
 }
+
 .item{
     font-family: 'Montserrat', sans-serif;
     text-align: left;
@@ -14,9 +15,10 @@
     border-radius: 25px;
     position: relative;
 }
+
 button{
     border-radius: 10px;
-    padding: 5px;
+    padding: 5px 12px;
     background-color: royalblue;
     color: white;
     position: absolute;
@@ -47,7 +49,46 @@ p{
     font-size: 11px;
 }
 
+.red_message{
+    font-size: smaller;
+    color: #9c080f;
+}
+
+.green_message{
+    font-size: smaller;
+    color: green;
+}
+
+.price{
+    color: green;
+}
+
+.small{
+    font-size: small;
+}
+
+.header{
+    margin-left: 21px;
+}
+
+.gray{
+    color: #999999;
+}
+
+.message{
+    margin-bottom: 10px;
+    position: absolute;
+    bottom: 2%;
+}
+
 h2{
-    font-weight: bold;
-    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.spec_message{
+    font-family: 'Montserrat', sans-serif;
+    margin: 4% 30px;
+    color: #666666;
+    font-style: italic;
+    font-size: 16px;
 }

@@ -2,8 +2,6 @@ package servlets.customerServlets;
 
 import controller.Controller;
 import model.database.exceptions.DataNotUpdatedWarning;
-import model.dto.CustomerDTO;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;

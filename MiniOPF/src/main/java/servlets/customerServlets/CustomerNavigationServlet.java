@@ -13,13 +13,11 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet (name = "CustomerNavigationServlet", value = "/CustomerNavigationServlet")
 public class CustomerNavigationServlet extends HttpServlet
 {
-    Model model = ModelFactory.getModel();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -35,7 +33,7 @@ public class CustomerNavigationServlet extends HttpServlet
         }
         else if ("myOrders".equals(request.getParameter("ref")))
         {
-            List<OrderDTO> orders = (List<OrderDTO>) controller.getNotFinishedOrders(currentUser.getId());
+            List<OrderDTO> orders = controller.getNotFinishedOrders(currentUser.getId());
             request.setAttribute("orders",orders);
             getServletContext().getRequestDispatcher("/view/customer/MyOrders.jsp").forward(request, response);
 
@@ -50,7 +48,7 @@ public class CustomerNavigationServlet extends HttpServlet
         }
         else if ("myServices".equals(request.getParameter("ref")))
         {
-            List<ServiceDTO> services = (List<ServiceDTO>) controller.getCustomersNotDisconnectedServices(currentUser.getId());
+            List<ServiceDTO> services = controller.getCustomersNotDisconnectedServices(currentUser.getId());
             request.setAttribute("services",services);
             getServletContext().getRequestDispatcher("/view/customer/Services.jsp").forward(request, response);
         }

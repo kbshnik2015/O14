@@ -1,4 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Title</title>
@@ -7,6 +6,17 @@
     <jsp:useBean id="spec" scope="request" type="model.dto.SpecificationDTO"/>
 </head>
 <body>
+<a href="#popup"
+   style="position: absolute;
+           top: 10px;
+           right: 10px;
+"
+   class="info"
+   data-toggle="popover"
+   data-placement="auto"
+   title="Click here to learn more."
+   data-trigger="hover"
+>About this page</a>
 <div align="middle">
     <form action="/employee/SpecsTableServlet" method="post">
         <input hidden name="id" value="${spec.id}">
@@ -62,5 +72,6 @@
         </div>
     </form>
 </div>
+<c:import url="/view/employee/popUps/editSpecificationPopUp.jsp"/>
 </body>
 </html>

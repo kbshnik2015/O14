@@ -1,7 +1,5 @@
 package contextListeners;
-import controller.managers.PayDayManager;
 import controller.managers.StartAppManager;
-import controller.managers.WorkWaitersManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;

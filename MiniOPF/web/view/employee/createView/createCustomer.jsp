@@ -6,6 +6,17 @@
     <jsp:useBean id="districts" scope="request" type="java.util.List"/>
 </head>
 <body>
+<a href="#popup"
+   style="position: absolute;
+           top: 10px;
+           right: 10px;
+"
+   class="info"
+   data-toggle="popover"
+   data-placement="auto"
+   title="Click here to learn more."
+   data-trigger="hover"
+>About this page</a>
 <div align="middle">
     <form action="/employee/CustomersTableServlet" method="post">
         <table>
@@ -53,5 +64,6 @@
         </div>
     </form>
 </div>
+<c:import url="/view/employee/popUps/createCustomerPopUp.jsp"/>
 </body>
 </html>

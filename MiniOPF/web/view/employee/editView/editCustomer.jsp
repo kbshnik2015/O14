@@ -1,4 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Title</title>
@@ -7,6 +6,17 @@
     <jsp:useBean id="customer" scope="request" type="model.dto.CustomerDTO"/>
 </head>
 <body>
+<a href="#popup"
+   style="position: absolute;
+           top: 10px;
+           right: 10px;
+"
+   class="info"
+   data-toggle="popover"
+   data-placement="auto"
+   title="Click here to learn more."
+   data-trigger="hover"
+>About this page</a>
 <div align="middle">
     <form action="/employee/CustomersTableServlet" method="post">
         <input hidden name="id" value="${customer.id}">
@@ -54,5 +64,6 @@
         </div>
     </form>
 </div>
+<c:import url="/view/employee/popUps/editCustomerPopUp.jsp"/>
 </body>
 </html>

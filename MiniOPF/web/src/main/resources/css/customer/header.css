@@ -33,18 +33,10 @@ a:hover{text-decoration: none;}
 ul li{list-style: none;}
 img{vertical-align: top;}
 
-h1,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
-
 li {
     list-style-type: none;
 }
 
-.header{
-
-}
-.header_menu{
-
-}
 .header_list{
     display: grid;
     grid-template-columns: repeat(24,1fr);

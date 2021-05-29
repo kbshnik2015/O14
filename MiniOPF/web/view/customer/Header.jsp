@@ -1,3 +1,4 @@
+<jsp:useBean id="controller"  class="controller.Controller"/>
 <jsp:useBean id="currentUser" scope="session" class="model.dto.CustomerDTO"/>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -43,13 +44,13 @@
                         </c:choose>
                     </li>
                     <li class="balance">
-                        <span class="header_link">Balance: ${currentUser.balance}</span>
+                        <span class="header_link"><strong>Balance:</strong> ${controller.transformPriceInCorrectForm(currentUser.balance)} $</span>
                     </li>
                     <li class="login" >
                         <a href="/CustomerNavigationServlet?ref=myProfile" class="header_link"><img class="picture_to_text" alt=""  src="https://img.icons8.com/pastel-glyph/26/ffffff/person-male--v1.png"><span class="text_to_picture">${currentUser.login}</span></a>
                     </li>
                     <li class="log_out">
-                        <a href="/LogOutServlet" class="header_link"><img src="https://img.icons8.com/metro/26/ffffff/exit.png"></a>
+                        <a href="/LogOutServlet" class="header_link"><img src="https://img.icons8.com/material-outlined/24/ffffff/export.png"/></a>
                     </li>
                 </ul>
         </nav>
