@@ -36,6 +36,7 @@ img{vertical-align: top;}
 h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 
 .grid_body{
+    padding-left: 4px;
     height: 92%;
     display: grid;
     grid-template: repeat(7, 1fr)/repeat(11, 1fr);
@@ -97,4 +98,8 @@ p{
     border-radius: 5px;
     color:white;
     text-decoration: none;
+}
+
+.about_this_page{
+    font-size: 14px;
 }

@@ -10,7 +10,8 @@
         <nav class="header_menu">
                 <ul class="header_list">
                     <li class="logo">
-                        <img src="/src/main/resources/picture/MiniOPF.JPG" alt="LOGO">
+                        <form action=""></form>
+                        <a href="/CustomerNavigationServlet?ref=myServices"><img class="logo_picture" src="https://img.icons8.com/ios/30/ffffff/internet--v1.png"/><span class="logo_text">MiniOPF</span></a>
                     </li>
                     <li class="my_services">
                         <c:choose>

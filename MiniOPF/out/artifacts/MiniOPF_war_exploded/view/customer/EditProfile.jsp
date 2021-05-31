@@ -1,4 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>My orders</title>
@@ -10,7 +9,7 @@
 <body>
 <c:import url="Header.jsp"/>
 <br>
-<p><a href="#popup"
+<p class="about_this_page"><a href="#popup"
       style="position: absolute;
            top: 9%;
            right: 10px;"

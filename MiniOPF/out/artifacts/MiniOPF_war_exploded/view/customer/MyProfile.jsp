@@ -24,7 +24,7 @@
     <main class="main">
         <p><img src="https://img.icons8.com/pastel-glyph/40/4a90e2/person-male--v1.png"/><span class="username"> ${currentUser.firstName} ${currentUser.lastName}</span></p>
         <br>
-        <a href="/view/customer/EditProfile.jsp" class="edit_profile"><img src="https://img.icons8.com/nolan/40/gear.png"/></a>
+        <a href="/view/customer/EditProfile.jsp" class="edit_profile"><img src="https://img.icons8.com/color/40/000000/settings--v1.png"/></a>
         <p><strong>Address: </strong>${currentUser.address}</p>
         <p><strong>Balance: </strong>${currentUser.balance}</p>
         <p><strong>The next day of debiting money: </strong>${nextPayDay}</p>

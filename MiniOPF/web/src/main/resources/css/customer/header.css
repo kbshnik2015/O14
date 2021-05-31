@@ -89,7 +89,7 @@ li {
 .header_link{
     position: absolute;
     top: 50%;
-    left: 0%;
+    left: 0;
     transform: translate(0, -50%);
     color: white;
     font-size: 12px;
@@ -114,4 +114,18 @@ li {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
+}
+
+.logo_text{
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: white;
+    font-family: "Palatino Linotype", serif;
+    font-size: 20px;
+
+}
+
+.logo_picture{
+    margin: 0 5px;
 }
