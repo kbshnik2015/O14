@@ -8,17 +8,6 @@
         <c:import url="Header.jsp"/>
     </head>
     <body>
-    <a href="#popup"
-       style="position: absolute;
-           top: 7%;
-           right: 10px;
-"
-       class="info"
-       data-toggle="popover"
-       data-placement="auto"
-       title="Click here to learn more."
-       data-trigger="hover"
-    >About this page</a>
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/CustomersTableServlet" method="post">
             <c:import url="tableButtons/customersButtons.jsp"/>
