@@ -5,7 +5,7 @@
 </head>
 <body>
 <div align="middle">
-    <form action="/login" method="get" name="loginForm">
+    <form action="/login" method="post" name="loginForm">
         <div>
             <input tabindex="1" placeholder="LOGIN" type="text" name="login" required>
         </div>
