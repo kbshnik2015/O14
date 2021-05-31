@@ -2,8 +2,6 @@ package servlets;
 
 import controller.Controller;
 import lombok.SneakyThrows;
-import model.Model;
-import model.ModelFactory;
 import model.dto.*;
 
 import javax.servlet.ServletException;
@@ -18,20 +16,10 @@ import java.io.IOException;
 @WebServlet(name = "LoginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet
 {
-    @SneakyThrows
-    @Override
-    public void init() throws ServletException
-    {
-        super.init();
-
-    }
 
     @SneakyThrows
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-
-        ModelFactory modelFactory = new ModelFactory();
-        Model model = modelFactory.getModel();
         Controller controller = new Controller();
         HttpSession session = request.getSession();
         session.setMaxInactiveInterval(-1);
