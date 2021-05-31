@@ -34,6 +34,7 @@ public class LoginServlet extends HttpServlet
         Model model = modelFactory.getModel();
         Controller controller = new Controller();
         HttpSession session = request.getSession();
+        session.setMaxInactiveInterval(-1);
 
         String login = request.getParameter("login");
         String password = request.getParameter("password");
