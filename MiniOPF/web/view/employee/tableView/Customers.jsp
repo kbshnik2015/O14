@@ -6,7 +6,6 @@
     <head>
         <title>Customers</title>
         <c:import url="Header.jsp"/>
-        <br>
     </head>
     <body>
     <a href="#popup"
@@ -20,11 +19,9 @@
        title="Click here to learn more."
        data-trigger="hover"
     >About this page</a>
-    <br>
     <table class="table table-bordered" border="1" cellspacing="0">
         <form action="/employee/CustomersTableServlet" method="post">
             <c:import url="tableButtons/customersButtons.jsp"/>
-            <br>
         <thead>
             <tr bgcolor="#a9a9a9">
                 <th ><input type="checkbox" id="all"

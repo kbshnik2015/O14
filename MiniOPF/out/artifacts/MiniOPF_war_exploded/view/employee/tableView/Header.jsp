@@ -79,6 +79,7 @@
             >About this page</a>
             <br>
         </form>
+        <br>
             <form action="/employee/NavigationServlet" method="get" name="navigation">
                 <c:choose>
                     <c:when test="${'/view/employee/tableView/Mine.jsp' eq pageContext.request.requestURI}">
@@ -301,6 +302,7 @@
                         >Districts</button></c:when>
                 </c:choose>
             </form>
+        <br>
     </head>
 <body>
 <c:import url="/view/employee/popUps/tablePopUp.jsp"/>
