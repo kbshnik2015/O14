@@ -6,7 +6,7 @@
 <div class="popup" id="popup">
     <div class="popup_body">
         <div class="popup_content">
-            <a href="" class="popup_close"><img src="https://img.icons8.com/material-sharp/24/fa314a/close-window.png"/></a>
+            <a href="#" class="popup_close"><img src="https://img.icons8.com/material-sharp/24/fa314a/close-window.png"/></a>
             <div class="popup_text">
                 <p>
                     All fields are required.
