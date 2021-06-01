@@ -116,40 +116,46 @@ insert into districts values
   (nextval('idSeq'), 'Samara', default),
   (nextval('idSeq'), 'Togliatti', default),
   (nextval('idSeq'), 'Sovetskiy', 1),
-  (nextval('idSeq'), 'Mashstroy', 3),
+  (nextval('idSeq'), 'Zheleznodorozhniy', 1),
   (nextval('idSeq'), 'Promishlenniy', 1);
 
 insert into customers values
-  (nextval('idSeq'), 'Vladimir', 'Ivanov', 'ivanovlogin', 'ivanovpass', default, null, 500),
-  (nextval('idSeq'), 'Rassul', 'Biskek_Ogly', 'rassullogin', 'pass', default, 'Tadjikistan', 200),
-  (nextval('idSeq'), 'Ivan', 'Stukachev', 'stukachlogin', 'pass', default, null, 300);
+  (nextval('idSeq'), 'Vladimir', 'Ivanov', 'ivanovlogin', 'ivanovpass', 1, 'Gagarina 41', 1500),
+  (nextval('idSeq'), 'Oleg', 'Seleznyov', 'oseleznyov', 'qwerty123', default, null, 1200),
+  (nextval('idSeq'), 'Ivan', 'Sidorov', 'ivansid', 'dubai201', 1, null, 1399.99),
+  (nextval('idSeq'), 'Vadim', 'Ivlev', 'ivlev2000', 'kort141598', 4, 'Vladimirskaya 114', 150),
+  (nextval('idSeq'), 'Nikolay', 'Kuprin', 'kuprinnik', '123qwerty', 1, null, 650);
 
 insert into employees values
-  (nextval('idSeq'), 'Rabotnik', 'Rabotnikov', 'emplogin', 'emppass', 'WORKING', false),
-  (nextval('idSeq'), 'Artur', 'Arturov', 'artlogin', 'pass', 'WORKING', false),
-  (nextval('idSeq'), 'Ivan', 'Durakov', 'durlogin', 'pass', 'ON_VACATION', false);
+  (nextval('idSeq'), 'Alexey', 'Konev', 'emplogin', 'emppass', 'WORKING', false),
+  (nextval('idSeq'), 'Artur', 'Starodub', 'artlogin', 'zxcvbn123', 'WORKING', false),
+  (nextval('idSeq'), 'Ivan', 'Belenko', 'belenk76', 'beilipe118', 'ON_VACATION', false);
 
 insert into specifications values
-  (nextval('idSeq'), 'Internet100', 100, 'Internet for 100 per month', true),
-  (nextval('idSeq'), 'Internet200', 200, null, false),
-  (nextval('idSeq'), '600minutes', 150, '600 minutes for 150 per month', false),
-  (nextval('idSeq'), '500 minutes', 120, null, false);
+  (nextval('idSeq'), 'Unlimited Internet', 599.99, 'Unlimited internet for 599.99 per month', true),
+  (nextval('idSeq'), '10GB of Internet', 199.99, '10GB of internet for 199.99 per month. After 30 days period you will lose remains of GBs', false),
+  (nextval('idSeq'), '20GB of Internet', 299.99, '20GB of internet for 299.99 per month. After 30 days period you will lose remains of GBs', false),
+  (nextval('idSeq'), '30GB of Internet', 359.99, '10GB of internet for 359.99 per month. After 30 days period you will lose remains of GBs', false),
+  (nextval('idSeq'), '700 minutes', 450, '700 minutes for outgoing calls for 450 per month', false),
+  (nextval('idSeq'), '500 minutes', 350, '500 minutes for outgoing calls for 350 per month', false),
+  (nextval('idSeq'), '300 minutes', 250, '300 minutes for outgoing calls for 250 per month', false),
+  (nextval('idSeq'), '150 minutes', 150, '150 minutes for outgoing calls for 150 per month', false);
 
 insert into specifications_to_districts values
-  (12, 1),
-  (12, 2);
+  (14, 1),
+  (14, 2);
 
 insert into services values
-  (nextval('idSeq'), null, 12, 'SUSPENDED', 6),
-  (nextval('idSeq'), current_date, 14, 'ACTIVE', 6),
-  (nextval('idSeq'), current_date, 13, 'ACTIVE', 7),
-  (nextval('idSeq'), null, 12, 'PAY_MONEY_SUSPENDED', 6),
-  (nextval('idSeq'), current_date, 15, 'ACTIVE', 8),
-  (nextval('idSeq'), current_date, 14, 'ACTIVE', 8);
+  (nextval('idSeq'), null, 14, 'SUSPENDED', 6),
+  (nextval('idSeq'), current_date, 16, 'ACTIVE', 6),
+  (nextval('idSeq'), current_date, 15, 'ACTIVE', 7),
+  (nextval('idSeq'), null, 14, 'PAY_MONEY_SUSPENDED', 6),
+  (nextval('idSeq'), current_date, 17, 'ACTIVE', 8),
+  (nextval('idSeq'), current_date, 16, 'ACTIVE', 8);
 
 insert into orders values
-  (nextval('idSeq'), 6, default, 14, 17, 'DISCONNECT', 'ENTERING', null),
-  (nextval('idSeq'), 6, 9, 12, 16, 'RESTORE', 'IN_PROGRESS', null),
-  (nextval('idSeq'), 7, default, 15, default, 'NEW', 'ENTERING', null),
-  (nextval('idSeq'), 7, 9, 13, 18, 'NEW', 'COMPLETED', null),
-  (nextval('idSeq'), 7, default, 12, default, 'NEW', 'ENTERING', null);
+  (nextval('idSeq'), 6, 11, 16, 23, 'DISCONNECT', 'ENTERING', null),
+  (nextval('idSeq'), 6, 11, 14, 22, 'RESTORE', 'IN_PROGRESS', null),
+  (nextval('idSeq'), 7, default, 21, default, 'NEW', 'ENTERING', null),
+  (nextval('idSeq'), 7, 11, 15, 24, 'NEW', 'COMPLETED', null),
+  (nextval('idSeq'), 7, default, 14, default, 'NEW', 'ENTERING', null);
