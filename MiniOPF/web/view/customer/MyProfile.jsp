@@ -1,6 +1,7 @@
 <jsp:useBean id="nextPayDay" scope="request" class="java.lang.String"/>
 <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
 <jsp:useBean id="currentUser" scope="session" class="model.dto.CustomerDTO"/>
+<jsp:useBean id="model" scope="page" class="model.ModelDB"/>
 <link rel="stylesheet" href="/src/main/resources/css/customer/myProfile.css">
 <html>
 <head>
@@ -28,6 +29,16 @@
         <p><strong>Address: </strong>${currentUser.address}</p>
         <p><strong>Balance: </strong>${currentUser.balance}</p>
         <p><strong>The next day of debiting money: </strong>${nextPayDay}</p>
+        <p><strong>District: </strong>
+            <c:choose>
+                <c:when test="${currentUser.districtId == null }">
+                    district not established
+                </c:when>
+                <c:otherwise>
+                    ${model.getDistrict(currentUser.districtId).name}
+                </c:otherwise>
+            </c:choose>
+            </p>
         <br>
         <form action="/CustomerTopUpServlet" method="post">
             <p>Enter the top-up amount: <input type="number" min="0" name="topUp">

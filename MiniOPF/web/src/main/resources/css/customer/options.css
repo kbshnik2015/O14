@@ -103,3 +103,12 @@ p{
 .about_this_page{
     font-size: 14px;
 }
+
+select{
+    border: 1px solid royalblue;
+    border-radius: 3px;
+    font-size: 20px;
+    position: absolute;
+    left: 17%;
+    width: 245px;
+}

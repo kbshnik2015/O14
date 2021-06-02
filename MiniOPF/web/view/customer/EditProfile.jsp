@@ -5,6 +5,7 @@
     <%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core"%>
     <jsp:useBean id="model" scope="page" class="model.ModelDB"/>
     <jsp:useBean id="currentUser" scope="session" class="model.dto.CustomerDTO"/>
+    <c:set scope="page" value="${model.districts.values()}" var="districts"/>
 </head>
 <body>
 <c:import url="Header.jsp"/>
@@ -41,7 +42,32 @@
                         <br>
                         <p>Lsat name: <input type="text" name="lastName" value="${currentUser.lastName}"></p>
                         <br>
-                        <p>Login: <input type="text" name="login" readonly value="${currentUser.login}"></p></p>
+                        <p>Login: <input type="text" name="login" readonly value="${currentUser.login}"></p>
+                        <br>
+                        <p>District:
+                            <c:choose>
+                                <c:when test="${currentUser.districtId == null }">
+                                    <select name="districtId">
+                                        <option selected value="">-</option>
+                                        <c:forEach var="district" items="${districts}" >
+                                            <option value="${district.id}">${district.name}</option>
+                                        </c:forEach>
+                                    </select>
+                                </c:when>
+                                <c:otherwise>
+                                    <select name="districtId">
+                                        <option selected value="${currentUser.districtId}">${model.getDistrict(currentUser.districtId).name}</option>
+                                        <option value="">-</option>
+                                        <c:forEach var="district" items="${districts}" >
+                                            <c:if test="${! currentUser.districtId eq district.id}">
+                                                <option value="${district.id}">${district.name}</option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </select>
+                                </c:otherwise>
+                            </c:choose>
+
+                        </p>
                         <br>
                         <p>Address: <input type="text" name="address"  value="${currentUser.address}"></p>
                         <br>

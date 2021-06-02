@@ -12,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.math.BigInteger;
 
 @WebServlet (name = "RegistrationServlet", value = "/RegistrationServlet")
 public class RegistrationServlet extends HttpServlet
@@ -27,10 +28,10 @@ public class RegistrationServlet extends HttpServlet
                 String password = request.getParameter("password");
                 String repeatPassword = request.getParameter("repeatPassword");
                 String address = request.getParameter("address");
-
+                BigInteger districtId = new BigInteger(request.getParameter("districtId"));
                 if(password.equals(repeatPassword)){
 
-                    CustomerDTO customer = new CustomerDTO(firstName,lastName,login,password, null, address,0);
+                    CustomerDTO customer = new CustomerDTO(firstName,lastName,login,password, districtId, address,0);
                     try
                     {
                         model.createCustomer(customer);

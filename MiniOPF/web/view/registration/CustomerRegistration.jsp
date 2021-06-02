@@ -1,4 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="model" scope="page" class="model.ModelDB" />
 <html>
 <head>
     <title>Customer registration</title>
@@ -21,6 +22,15 @@
     <br>
     <br>
     Repeat password: <input type="password" name="repeatPassword">
+    <br>
+    <br>
+    District:
+    <select name="districtId">
+        <option selected value="">-</option>
+        <c:forEach var="district" items="${districts}" >
+            <option value="${district.id}">${district.name}</option>
+        </c:forEach>
+    </select>
     <br>
     <br>
     Address: <input type="text" name="address">

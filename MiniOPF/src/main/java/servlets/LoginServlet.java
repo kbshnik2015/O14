@@ -18,7 +18,7 @@ public class LoginServlet extends HttpServlet
 {
 
     @SneakyThrows
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         Controller controller = new Controller();
         HttpSession session = request.getSession();

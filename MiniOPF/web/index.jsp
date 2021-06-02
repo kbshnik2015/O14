@@ -1,11 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>MiniOPF</title>
 </head>
 <body>
 <div align="middle">
-    <form action="/login" method="post" name="loginForm">
+    <form action="/login" method="get" name="loginForm">
         <div>
             <input tabindex="1" placeholder="LOGIN" type="text" name="login" required>
         </div>
