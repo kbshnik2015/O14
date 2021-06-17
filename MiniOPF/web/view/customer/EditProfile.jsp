@@ -59,7 +59,7 @@
                                         <option selected value="${currentUser.districtId}">${model.getDistrict(currentUser.districtId).name}</option>
                                         <option value="">-</option>
                                         <c:forEach var="district" items="${districts}" >
-                                            <c:if test="${! currentUser.districtId eq district.id}">
+                                            <c:if test="${currentUser.districtId != district.id}">
                                                 <option value="${district.id}">${district.name}</option>
                                             </c:if>
                                         </c:forEach>

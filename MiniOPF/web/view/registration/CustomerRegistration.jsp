@@ -1,4 +1,3 @@
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="model" scope="page" class="model.ModelDB" />
 <html>
 <head>
