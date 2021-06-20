@@ -32,8 +32,14 @@ public class PayDayManager extends Thread
             Date currentDate = new Date();
             for (ServiceDTO service : services)
             {
-                if(service.getPayDay()!=null ||  ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus())){
-                    boolean isPayDayComeForActiveService = service.getPayDay().before(currentDate) && ServiceStatus.ACTIVE.equals(service.getServiceStatus());
+                boolean isPayDayComeForActiveService;
+                if(service.getPayDay()!=null || ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus())){
+                    if(!ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus())){
+                         isPayDayComeForActiveService = service.getPayDay().before(currentDate) && ServiceStatus.ACTIVE.equals(service.getServiceStatus());
+                    }
+                    else {
+                         isPayDayComeForActiveService = false;
+                    }
                     if (isPayDayComeForActiveService || ServiceStatus.PAY_MONEY_SUSPENDED.equals(service.getServiceStatus()))
                     {
                         CustomerDTO customer = model.getCustomer(service.getCustomerId());
