@@ -17,7 +17,10 @@
    data-placement="auto"
    title="Click here to learn more."
    data-trigger="hover"
->About this page</a>
+><img src="https://img.icons8.com/officexs/18/000000/info.png" alt=""
+      style="position: relative;
+      bottom: -3px;"
+/>About this page</a>
 <div align="middle">
     <form action="/employee/ServicesTableServlet" method="post">
         <input hidden name="id" value="${service.id}">

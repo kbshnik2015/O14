@@ -76,7 +76,10 @@
                data-placement="auto"
                title="Click here to learn more."
                data-trigger="hover"
-            >About this page</a>
+            ><img src="https://img.icons8.com/officexs/18/000000/info.png" alt=""
+                  style="position: relative;
+      bottom: 2px;"
+            />About this page</a>
             <br>
         </form>
         <br>

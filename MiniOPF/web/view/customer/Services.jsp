@@ -105,7 +105,7 @@
                         </form>
                     </c:when>
                     <c:when test="${'PAY_MONEY_SUSPENDED' eq service.serviceStatus.toString()}">
-                        <p><span class="payMoney">Top up your balance on ${model.getSpecification(service.specificationId).price} rub and service will be restore</span>
+                        <p><span class="payMoney">Top up your balance on ${model.getSpecification(service.specificationId).price} $ and service service will be restored</span>
                         </p>
                         <br>
                         <br>
